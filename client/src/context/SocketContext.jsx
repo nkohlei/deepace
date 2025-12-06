@@ -19,8 +19,23 @@ export const SocketProvider = ({ children }) => {
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            const newSocket = io('http://localhost:5000', {
+            // Determine Socket URL
+            let socketUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+            // Remove '/api' suffix if present, as Socket.io connects to root
+            if (socketUrl.endsWith('/api')) {
+                socketUrl = socketUrl.slice(0, -4);
+            }
+            if (socketUrl.endsWith('/')) {
+                socketUrl = socketUrl.slice(0, -1);
+            }
+
+            console.log('Connecting to socket:', socketUrl);
+
+            const newSocket = io(socketUrl, {
                 transports: ['websocket'],
+                // Add secure option for https
+                secure: true,
             });
 
             newSocket.on('connect', () => {
