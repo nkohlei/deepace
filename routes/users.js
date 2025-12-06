@@ -1,0 +1,308 @@
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import { protect } from '../middleware/auth.js';
+import User from '../models/User.js';
+import Post from '../models/Post.js';
+
+const router = express.Router();
+
+// Configure multer for avatar uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+
+        if (extname && mimetype) {
+            return cb(null, true);
+        }
+        cb(new Error('Only image files are allowed (jpeg, jpg, png, gif)'));
+    }
+});
+
+// @route   GET /api/users/me
+// @desc    Get current user profile
+// @access  Private
+router.get('/me', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password -verificationToken');
+
+        // Calculate post count
+        const postCount = await Post.countDocuments({ author: req.user._id });
+
+        const userObj = user.toObject();
+        userObj.postCount = postCount;
+
+        res.json(userObj);
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   PUT /api/users/me
+// @desc    Update current user profile
+// @access  Private
+router.put('/me', protect, async (req, res) => {
+    try {
+        const { displayName, bio, avatar } = req.body;
+
+        const user = await User.findById(req.user._id);
+
+        if (displayName !== undefined) user.profile.displayName = displayName;
+        if (bio !== undefined) user.profile.bio = bio;
+        if (avatar !== undefined) user.profile.avatar = avatar;
+
+        await user.save();
+
+        res.json({
+            message: 'Profile updated successfully',
+            user: {
+                id: user._id,
+                email: user.email,
+                username: user.username,
+                profile: user.profile,
+            },
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/search
+// @desc    Search users by username
+// @access  Private
+router.get('/search', protect, async (req, res) => {
+    try {
+        const { q } = req.query;
+
+        if (!q || q.trim().length === 0) {
+            return res.json([]);
+        }
+
+        const users = await User.find({
+            username: { $regex: q, $options: 'i' },
+            _id: { $ne: req.user._id }, // Exclude current user
+        })
+            .select('username profile.displayName profile.avatar')
+            .limit(20);
+
+        res.json(users);
+    } catch (error) {
+        console.error('Search users error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/:username
+// @desc    Get user profile by username
+// @access  Private
+router.get('/:username', protect, async (req, res) => {
+    try {
+        const user = await User.findOne({ username: req.params.username })
+            .select('username profile.displayName profile.bio profile.avatar profile.coverImage followerCount followingCount createdAt');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Calculate post count dynamically
+        const postCount = await Post.countDocuments({ author: user._id });
+
+        const userObj = user.toObject();
+        userObj.postCount = postCount;
+
+        res.json(userObj);
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/me/avatar
+// @desc    Upload profile photo
+// @access  Private
+router.post('/me/avatar', protect, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        // Update avatar URL
+        user.profile.avatar = `/uploads/${req.file.filename}`;
+        await user.save();
+
+        res.json({
+            message: 'Avatar uploaded successfully',
+            avatar: user.profile.avatar
+        });
+    } catch (error) {
+        console.error('Upload avatar error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/me/cover
+// @desc    Upload cover image
+// @access  Private
+router.post('/me/cover', protect, upload.single('cover'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        // Update cover image URL
+        user.profile.coverImage = `/uploads/${req.file.filename}`;
+        await user.save();
+
+        res.json({
+            message: 'Cover image uploaded successfully',
+            coverImage: user.profile.coverImage
+        });
+    } catch (error) {
+        console.error('Upload cover error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/me/save/:postId
+// @desc    Save/unsave a post
+// @access  Private
+router.post('/me/save/:postId', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const postId = req.params.postId;
+
+        const isSaved = user.savedPosts.includes(postId);
+
+        if (isSaved) {
+            user.savedPosts = user.savedPosts.filter(id => id.toString() !== postId);
+        } else {
+            user.savedPosts.push(postId);
+        }
+
+        await user.save();
+
+        res.json({
+            saved: !isSaved,
+            message: isSaved ? 'Post unsaved' : 'Post saved'
+        });
+    } catch (error) {
+        console.error('Save post error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/me/saved
+// @desc    Get saved posts
+// @access  Private
+router.get('/me/saved', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+            .populate({
+                path: 'savedPosts',
+                populate: {
+                    path: 'author',
+                    select: 'username profile.displayName profile.avatar'
+                }
+            });
+
+        res.json(user.savedPosts || []);
+    } catch (error) {
+        console.error('Get saved posts error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/me/hide/:postId
+// @desc    Hide/unhide a post
+// @access  Private
+router.post('/me/hide/:postId', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        const postId = req.params.postId;
+
+        const isHidden = user.hiddenPosts.includes(postId);
+
+        if (isHidden) {
+            user.hiddenPosts = user.hiddenPosts.filter(id => id.toString() !== postId);
+        } else {
+            user.hiddenPosts.push(postId);
+        }
+
+        await user.save();
+
+        res.json({
+            hidden: !isHidden,
+            message: isHidden ? 'Post unhidden' : 'Post hidden'
+        });
+    } catch (error) {
+        console.error('Hide post error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/me/hidden
+// @desc    Get hidden post IDs
+// @access  Private
+router.get('/me/hidden', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('hiddenPosts');
+        res.json(user.hiddenPosts || []);
+    } catch (error) {
+        console.error('Get hidden posts error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/:id/followers
+// @desc    Get user followers
+// @access  Private
+router.get('/:id/followers', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate('followers', 'username profile.displayName profile.avatar profile.bio');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user.followers);
+    } catch (error) {
+        console.error('Get followers error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   GET /api/users/:id/following
+// @desc    Get user following
+// @access  Private
+router.get('/:id/following', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate('following', 'username profile.displayName profile.avatar profile.bio');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user.following);
+    } catch (error) {
+        console.error('Get following error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+export default router;

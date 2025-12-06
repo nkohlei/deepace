@@ -1,0 +1,222 @@
+.post-detail-container {
+    padding: 0;
+}
+
+/* Back Button - Modern */
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.back-btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+.back-btn:hover {
+    color: var(--primary-cyan);
+}
+
+/* Post Detail */
+.post-detail {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-detail-header {
+    padding: 16px;
+}
+
+.author-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-neon);
+}
+
+.author-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--border-neon);
+    background: rgba(0, 30, 50, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-cyan);
+}
+
+.author-avatar-placeholder svg {
+    width: 24px;
+    height: 24px;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.author-username {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+/* Post Text */
+.post-detail-text {
+    padding: 0 16px 16px;
+}
+
+.post-detail-text p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Post Media */
+.post-detail-media {
+    width: 100%;
+    border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-detail-media img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: contain;
+    background: var(--bg-darker);
+}
+
+/* Post Meta */
+.post-detail-meta {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-date {
+    color: var(--text-tertiary);
+    font-size: 0.9rem;
+}
+
+/* Post Stats */
+.post-detail-stats {
+    display: flex;
+    gap: 20px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.post-detail-stats span {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.post-detail-stats strong {
+    color: var(--text-primary);
+}
+
+/* Post Actions */
+.post-detail-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 16px;
+}
+
+.post-detail-actions .action-btn {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.post-detail-actions .action-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.post-detail-actions .action-btn:hover {
+    background: var(--bg-hover);
+    color: var(--primary-cyan);
+}
+
+.post-detail-actions .action-btn.liked {
+    color: #ff4757;
+}
+
+.post-detail-actions .action-btn.saved {
+    color: var(--primary-cyan);
+}
+
+/* Comments Section */
+.post-detail-comments {
+    background: var(--bg-card);
+    padding: 16px;
+}
+
+.post-detail-comments h3 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Loading */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-subtle);
+    border-top-color: var(--primary-cyan);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-tertiary);
+}

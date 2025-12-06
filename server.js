@@ -1,0 +1,95 @@
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import passport from 'passport';
+import session from 'express-session';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import connectDB from './config/db.js';
+import { configurePassport } from './config/passport.js';
+import { initializeSocket } from './sockets/index.js';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import postRoutes from './routes/posts.js';
+import messageRoutes from './routes/messages.js';
+import likesRoutes from './routes/likes.js';
+import commentsRoutes from './routes/comments.js';
+import followRoutes from './routes/follow.js';
+
+// ES Module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables
+dotenv.config();
+
+// Initialize Express app
+const app = express();
+const httpServer = createServer(app);
+
+// Initialize Socket.IO
+const io = new Server(httpServer, {
+    cors: {
+        origin: process.env.CLIENT_URL || 'http://localhost:5173',
+        credentials: true,
+    },
+});
+
+// Make io accessible in routes
+app.set('io', io);
+
+// Connect to MongoDB
+connectDB();
+
+// Configure Passport
+configurePassport();
+
+// Middleware
+app.use(cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session middleware (required for Passport)
+app.use(
+    session({
+        secret: process.env.JWT_SECRET || 'fallback-secret',
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/likes', likesRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/follow', followRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'GlobalMessage API is running' });
+});
+
+// Initialize Socket.IO
+initializeSocket(io);
+
+// Start server
+const PORT = process.env.PORT || 5000;
+httpServer.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 Socket.IO ready for real-time connections`);
+});

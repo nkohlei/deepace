@@ -1,0 +1,376 @@
+:root {
+  /* Deepace Color Palette - Elegant Theme */
+  --bg-dark: #020617;
+  /* Dark Midnight Blue (approx) */
+  --bg-darker: #0f172a;
+  --bg-card: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.7);
+  --bg-hover: rgba(0, 150, 200, 0.08);
+
+  /* Primary Accent */
+  --primary-cyan: rgb(0, 150, 200);
+  --primary-red: #ff2400;
+  /* Bright Fire Red */
+  --primary-cyan-light: #40c8e0;
+  --primary-cyan-dark: #007a9a;
+  --primary-glow: rgba(0, 150, 200, 0.2);
+  --primary-glow-soft: rgba(0, 150, 200, 0.08);
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+  --text-muted: rgba(255, 255, 255, 0.25);
+
+  /* Borders - More subtle */
+  --border-neon: rgba(0, 150, 200, 0.2);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-glass: rgba(255, 255, 255, 0.05);
+
+  /* Gradients - Less intense */
+  --gradient-space: linear-gradient(180deg, #0a1520 0%, #0d1a28 50%, #081318 100%);
+  --gradient-card: linear-gradient(145deg, rgba(15, 30, 50, 0.9) 0%, rgba(10, 20, 35, 0.95) 100%);
+  --gradient-neon: linear-gradient(135deg, rgb(0, 150, 200) 0%, rgb(0, 120, 160) 100%);
+  --gradient-button: linear-gradient(135deg, rgba(0, 150, 200, 0.12) 0%, rgba(0, 120, 160, 0.06) 100%);
+
+  /* Shadows - Softer, more elegant */
+  --shadow-neon: 0 2px 15px rgba(0, 150, 200, 0.15);
+  --shadow-neon-soft: 0 2px 8px rgba(0, 150, 200, 0.08);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 4px 20px rgba(0, 150, 200, 0.2);
+
+  /* Animations */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --transition-slow: 0.4s ease;
+
+  /* Spacing for mobile nav */
+  --nav-top-height: 60px;
+  --nav-bottom-height: 70px;
+  --bg-input: rgba(0, 20, 40, 0.6);
+  /* Default dark input */
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card Style - Elegant, minimal */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+/* Button Styles */
+button,
+.btn {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all var(--transition-normal);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+  background: var(--gradient-neon);
+  color: #000;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: var(--shadow-neon);
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: var(--gradient-button);
+  color: var(--primary-cyan);
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-neon);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: var(--shadow-neon-soft);
+}
+
+/* Input Styles */
+input,
+textarea {
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: var(--text-primary);
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-cyan);
+  box-shadow: 0 0 0 3px var(--primary-glow-soft);
+  background: var(--bg-input);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px var(--primary-glow);
+  }
+
+  50% {
+    box-shadow: 0 0 25px var(--primary-glow), 0 0 40px var(--primary-glow-soft);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-neon);
+}
+
+/* Global Layout */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 16px;
+  margin: 0 auto;
+}
+
+/* Phone Frame Container */
+.app-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--gradient-space);
+  position: relative;
+}
+
+/* App wrapper with nav spacing */
+.app-content {
+  padding-top: var(--nav-top-height);
+  padding-bottom: calc(var(--nav-bottom-height) + var(--safe-area-bottom));
+  min-height: 100vh;
+}
+
+/* Desktop: Show phone frame effect */
+@media (min-width: 520px) {
+  body {
+    background: var(--bg-dark);
+  }
+
+  .app-wrapper {
+    border-left: 1px solid var(--border-neon);
+    border-right: 1px solid var(--border-neon);
+    box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+  }
+}
+
+/* Text utilities */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-cyan {
+  color: var(--primary-cyan);
+}
+
+.text-gradient {
+  background: var(--gradient-neon);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Links */
+a {
+  color: var(--primary-cyan);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-cyan-light);
+  text-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Error & Success Messages */
+.error-message {
+  background: rgba(255, 70, 70, 0.15);
+  border: 1px solid rgba(255, 70, 70, 0.3);
+  color: #ff6b6b;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.success-message {
+  background: rgba(0, 212, 255, 0.15);
+  border: 1px solid var(--border-neon);
+  color: var(--primary-cyan);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+/* Spinner */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--primary-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Avatar glow effect */
+.avatar-glow {
+  box-shadow: 0 0 0 2px var(--bg-dark), 0 0 15px var(--primary-glow);
+}
+
+/* Neon border effect */
+.neon-border {
+  border: 1px solid var(--border-neon);
+  box-shadow: inset 0 0 10px var(--primary-glow-soft), 0 0 10px var(--primary-glow-soft);
+}

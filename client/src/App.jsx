@@ -1,0 +1,127 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
+import { ThemeProvider } from './context/ThemeContext';
+import PrivateRoute from './components/PrivateRoute';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
+import GoogleCallback from './pages/GoogleCallback';
+import Home from './pages/Home';
+import CreatePost from './pages/CreatePost';
+import Profile from './pages/Profile';
+import Search from './pages/Search';
+import Inbox from './pages/Inbox';
+import Settings from './pages/Settings';
+import Saved from './pages/Saved';
+import PostDetail from './pages/PostDetail';
+import CommentDetail from './pages/CommentDetail';
+
+
+function App() {
+    return (
+        <ThemeProvider>
+            <Router>
+                <AuthProvider>
+                    <SocketProvider>
+                        <Routes>
+                            {/* Public routes */}
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/verify-email" element={<VerifyEmail />} />
+                            <Route path="/auth/google/success" element={<GoogleCallback />} />
+
+                            {/* Private routes */}
+                            <Route
+                                path="/"
+                                element={
+                                    <PrivateRoute>
+                                        <Home />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/create"
+                                element={
+                                    <PrivateRoute>
+                                        <CreatePost />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/search"
+                                element={
+                                    <PrivateRoute>
+                                        <Search />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/profile"
+                                element={
+                                    <PrivateRoute>
+                                        <Profile />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/profile/:username"
+                                element={
+                                    <PrivateRoute>
+                                        <Profile />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/inbox"
+                                element={
+                                    <PrivateRoute>
+                                        <Inbox />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/settings"
+                                element={
+                                    <PrivateRoute>
+                                        <Settings />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/saved"
+                                element={
+                                    <PrivateRoute>
+                                        <Saved />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/post/:postId"
+                                element={
+                                    <PrivateRoute>
+                                        <PostDetail />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/comment/:commentId"
+                                element={
+                                    <PrivateRoute>
+                                        <CommentDetail />
+                                    </PrivateRoute>
+                                }
+                            />
+
+                            {/* Catch all */}
+                            <Route path="*" element={<Navigate to="/" />} />
+                        </Routes>
+                    </SocketProvider>
+                </AuthProvider>
+            </Router>
+        </ThemeProvider>
+    );
+}
+
+export default App;
+
