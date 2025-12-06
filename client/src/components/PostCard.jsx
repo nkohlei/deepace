@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
+import { getImageUrl } from '../utils/imageUtils';
 import './PostCard.css';
 
 const PostCard = ({ post, onDelete, onUnsave }) => {
