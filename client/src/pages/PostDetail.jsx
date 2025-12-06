@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import CommentSection from '../components/CommentSection';
+import { getImageUrl } from '../utils/imageUtils';
 import './PostDetail.css';
 
 const PostDetail = () => {
@@ -116,7 +117,7 @@ const PostDetail = () => {
                         <header className="post-detail-header">
                             <Link to={`/profile/${post.author?.username}`} className="author-link">
                                 {post.author?.profile?.avatar ? (
-                                    <img src={post.author.profile.avatar} alt="" className="author-avatar" />
+                                    <img src={getImageUrl(post.author.profile.avatar)} alt="" className="author-avatar" />
                                 ) : (
                                     <div className="author-avatar-placeholder">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -144,7 +145,13 @@ const PostDetail = () => {
                         {/* Post Media */}
                         {post.media && post.media.length > 0 && (
                             <div className="post-detail-media">
-                                <img src={post.media} alt="Post" />
+                                {Array.isArray(post.media) ? (
+                                    post.media.map((mediaUrl, index) => (
+                                        <img key={index} src={getImageUrl(mediaUrl)} alt={`Post media ${index + 1}`} />
+                                    ))
+                                ) : (
+                                    <img src={getImageUrl(post.media)} alt="Post" />
+                                )}
                             </div>
                         )}
 

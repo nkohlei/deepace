@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import Navbar from '../components/Navbar';
 import MessageBubble from '../components/MessageBubble';
+import { getImageUrl } from '../utils/imageUtils';
 import './Inbox.css';
 
 const Inbox = () => {
@@ -193,7 +194,7 @@ const Inbox = () => {
                                             <div className="conv-avatar-wrapper">
                                                 {conv.user.profile?.avatar ? (
                                                     <img
-                                                        src={conv.user.profile.avatar}
+                                                        src={getImageUrl(conv.user.profile.avatar)}
                                                         alt={conv.user.username}
                                                         className="conv-avatar"
                                                     />
