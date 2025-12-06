@@ -1,6 +1,7 @@
 import express from 'express';
 import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
+import Notification from '../models/Notification.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -100,6 +101,17 @@ router.post('/post/:postId', protect, async (req, res) => {
         post.commentCount += 1;
         await post.save();
 
+        // Create Notification (if not own post)
+        if (post.author.toString() !== req.user.id) {
+            await Notification.create({
+                recipient: post.author,
+                sender: req.user.id,
+                type: 'comment',
+                post: post._id,
+                comment: comment._id
+            });
+        }
+
         // Populate author info
         await comment.populate('author', 'username profile.displayName profile.avatar');
 
@@ -137,6 +149,17 @@ router.post('/comment/:commentId', protect, async (req, res) => {
         // Update parent comment reply count
         parentComment.replyCount += 1;
         await parentComment.save();
+
+        // Create Notification (if not own comment) - Notify the comment author
+        if (parentComment.author.toString() !== req.user.id) {
+            await Notification.create({
+                recipient: parentComment.author,
+                sender: req.user.id,
+                type: 'reply',
+                post: parentComment.post,
+                comment: reply._id
+            });
+        }
 
         // Populate author info
         await reply.populate('author', 'username profile.displayName profile.avatar');

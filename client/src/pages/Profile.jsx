@@ -234,7 +234,7 @@ const Profile = () => {
                     <div className="cover-section">
                         {profileUser?.profile?.coverImage ? (
                             <img
-                                src={profileUser.profile.coverImage}
+                                src={getImageUrl(profileUser.profile.coverImage)}
                                 alt="Cover"
                                 className="cover-image"
                             />
@@ -247,7 +247,7 @@ const Profile = () => {
                             <div className="avatar-wrapper">
                                 {profileUser?.profile?.avatar ? (
                                     <img
-                                        src={profileUser.profile.avatar}
+                                        src={getImageUrl(profileUser.profile.avatar)}
                                         alt={profileUser.username}
                                         className="profile-avatar"
                                     />
@@ -400,7 +400,7 @@ const Profile = () => {
                                 <div className="media-grid">
                                     {mediaPosts.map(post => (
                                         <Link to={`/post/${post._id}`} key={post._id} className="media-item">
-                                            <img src={post.media} alt="" />
+                                            <img src={getImageUrl(post.media)} alt="" />
                                         </Link>
                                     ))}
                                 </div>
@@ -443,7 +443,7 @@ const Profile = () => {
                                                     >
                                                         <div className="follow-avatar">
                                                             {user.profile?.avatar ? (
-                                                                <img src={user.profile.avatar} alt={user.username} />
+                                                                <img src={getImageUrl(user.profile.avatar)} alt={user.username} />
                                                             ) : (
                                                                 <div className="follow-avatar-placeholder">
                                                                     {user.username[0].toUpperCase()}
@@ -476,7 +476,7 @@ const Profile = () => {
                                         <div className="edit-media-item">
                                             <div className="edit-media-preview">
                                                 {profileUser?.profile?.avatar ? (
-                                                    <img src={profileUser.profile.avatar} alt="Avatar" className="edit-avatar-preview" />
+                                                    <img src={getImageUrl(profileUser.profile.avatar)} alt="Avatar" className="edit-avatar-preview" />
                                                 ) : (
                                                     <div className="edit-avatar-placeholder">PP</div>
                                                 )}
@@ -495,7 +495,7 @@ const Profile = () => {
                                         <div className="edit-media-item">
                                             <div className="edit-banner-preview">
                                                 {profileUser?.profile?.coverImage && (
-                                                    <img src={profileUser.profile.coverImage} alt="Cover" />
+                                                    <img src={getImageUrl(profileUser.profile.coverImage)} alt="Cover" />
                                                 )}
                                             </div>
                                             <button type="button" className="btn-secondary btn-sm" onClick={() => coverInputRef.current.click()}>
