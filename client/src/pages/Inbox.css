@@ -1,5 +1,5 @@
 .inbox-container {
-    max-width: 500px;
+    max-width: 600px;
     margin: 0 auto;
     height: calc(100vh - var(--nav-top-height) - var(--nav-bottom-height));
     display: flex;
@@ -168,14 +168,27 @@
 .conv-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    /* Align top for multi-line */
     margin-bottom: 4px;
+}
+
+.conv-user-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .conv-name {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.conv-username {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
 }
 
 .conv-time {

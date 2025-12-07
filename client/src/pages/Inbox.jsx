@@ -300,7 +300,14 @@ const Inbox = () => {
                                             {conv.unreadCount > 0 && (
                                                 <div className="unread-dot"></div>
                                             )}
-                                            <div className="conv-avatar-wrapper">
+                                            <div
+                                                className="conv-avatar-wrapper"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/profile/${conv.user.username}`);
+                                                }}
+                                                title="Profili Gör"
+                                            >
                                                 {conv.user.profile?.avatar ? (
                                                     <img
                                                         src={getImageUrl(conv.user.profile.avatar)}
@@ -318,9 +325,14 @@ const Inbox = () => {
                                             </div>
                                             <div className="conv-content">
                                                 <div className="conv-header">
-                                                    <span className="conv-name">
-                                                        {conv.user.profile?.displayName || conv.user.username}
-                                                    </span>
+                                                    <div className="conv-user-info">
+                                                        <span className="conv-name">
+                                                            {conv.user.profile?.displayName || conv.user.username}
+                                                        </span>
+                                                        <span className="conv-username">
+                                                            @{conv.user.username}
+                                                        </span>
+                                                    </div>
                                                     <span className="conv-time">
                                                         {formatTime(conv.lastMessage.createdAt)}
                                                     </span>

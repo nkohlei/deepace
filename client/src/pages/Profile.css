@@ -48,42 +48,29 @@
 
 .profile-header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* Align everything to start */
     align-items: flex-start;
-    gap: 16px;
+    gap: 32px;
+    /* Add some space between info and stats */
 }
 
 /* Left Side: Avatar is absolute, so just text here */
 .profile-text-info {
-    flex: 1;
+    /* flex: 1; Removed to prevent pushing right side away */
     margin-top: 0;
-}
-
-.profile-name {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.profile-username {
-    font-size: 0.95rem;
-    color: var(--text-tertiary);
-    margin-bottom: 12px;
-}
-
-.profile-bio {
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    line-height: 1.5;
+    max-width: 300px;
+    /* Prevent text from getting too wide if needed */
 }
 
 /* Right Side: Stats & Actions */
 .profile-right-side {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
+    /* Align stats to left */
     gap: 16px;
+    padding-top: 4px;
 }
 
 /* Header Top: Just Actions now */
