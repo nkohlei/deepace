@@ -28,6 +28,7 @@
 }
 
 /* The bubble itself */
+/* The bubble itself */
 .message-bubble {
     max-width: 75%;
     position: relative;
@@ -40,14 +41,26 @@
 .message-actions {
     display: flex;
     align-items: center;
-    gap: 0px;
-    /* Minimal gap */
+    gap: 0 !important;
+    /* FORCE ZERO GAP */
     opacity: 0;
     transition: opacity 0.2s ease;
-    padding: 0;
+    padding: 0 !important;
     z-index: 5;
     background: transparent;
-    margin: 0 0 0 2px;
+    margin: 0 4px 0 0 !important;
+    /* Small margin between actions and bubble */
+}
+
+/* Specific margins for own/other to keep actions close to bubble */
+.message-row.own .message-actions {
+    margin: 0 4px 0 0 !important;
+    /* Actions on left of bubble */
+}
+
+.message-row.other .message-actions {
+    margin: 0 0 0 4px !important;
+    /* Actions on right of bubble */
 }
 
 /* Show actions on hover */
@@ -73,8 +86,8 @@
 
 /* Reaction Wrapper Correction */
 .reaction-wrapper {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,15 +101,16 @@
     outline: none !important;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 0 !important;
+    padding: 0 1px !important;
+    /* Extreme tight padding */
     margin: 0 !important;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    width: 16px;
-    /* TIGHT HITBOX */
-    height: 16px;
+    width: auto !important;
+    /* Let content define width */
+    height: 18px !important;
     line-height: 0;
 }
 
