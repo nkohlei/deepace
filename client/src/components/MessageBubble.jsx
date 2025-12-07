@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { getImageUrl } from '../utils/imageUtils';
@@ -124,7 +125,8 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
                     className={`message-bubble ${isOwn ? 'own' : 'other'} ${message.isOptimistic ? 'optimistic' : ''}`}
                 >
                     {/* Full Screen Foggy Overlay for Delete Confirmation */}
-                    {confirmDelete && (
+                    {/* Full Screen Foggy Overlay for Delete Confirmation */}
+                    {confirmDelete && createPortal(
                         <div className="delete-confirm-overlay">
                             <div className="delete-confirm-modal">
                                 <p>Sil?</p>
@@ -133,7 +135,7 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
                                         className="confirm-btn"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            onDelete(message._id);
+                                            onDelete(message._id); // This calls handleDeleteMessage in Inbox.jsx
                                             setConfirmDelete(false);
                                         }}
                                     >
@@ -150,7 +152,8 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div>,
+                        document.body
                     )}
 
                     <div className="message-bubble-content">
