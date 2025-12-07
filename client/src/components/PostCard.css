@@ -24,23 +24,26 @@
 }
 
 .author-avatar {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    /* Increased from 44px */
+    height: 56px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--border-subtle);
 }
 
 .author-placeholder {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    /* Increased from 44px */
+    height: 56px;
     border-radius: 50%;
     background: var(--bg-darker);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-tertiary);
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    /* Larger placeholder text */
     font-weight: 600;
 }
 
@@ -74,7 +77,8 @@
 
 .author-name {
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
+    /* Larger name */
     color: var(--text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -126,8 +130,9 @@
 }
 
 .post-content-text p {
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 1.05rem;
+    /* Larger content text */
+    line-height: 1.6;
     color: var(--text-primary);
     margin: 0;
     white-space: pre-wrap;
@@ -136,28 +141,36 @@
 
 /* Media */
 .post-media {
-    margin-bottom: 12px;
+    margin-bottom: 24px;
+    /* More breathing room */
+    margin-top: 8px;
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--border-subtle);
+    /* width constraint removed to fill natural column */
 }
 
 .post-media img,
 .post-media video {
     width: 100%;
     height: auto;
-    max-height: 500px;
+    max-height: 280px;
+    /* Reduced height as requested */
     object-fit: cover;
     display: block;
 }
 
 /* Actions */
+/* Actions */
 .post-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    /* Left (Comment) - Center (Like) - Right (Share/Save) */
     align-items: center;
-    justify-content: space-between;
-    max-width: 400px;
-    /* Optional: Constrain width like Twitter */
+    width: 100%;
+    max-width: 100%;
+    padding-right: 12px;
+    margin-top: 10px;
 }
 
 .action-btn {
@@ -168,13 +181,28 @@
     border: none;
     color: var(--text-tertiary);
     cursor: pointer;
-    padding: 8px;
+    padding: 10px;
+    /* Slightly larger hit area */
     border-radius: 50%;
-    /* Twitter round hover */
     transition: all 0.2s ease;
+    justify-content: start;
+    /* Default left align */
     min-width: 40px;
-    /* Hit target */
+}
+
+/* Center Column (Like Button) */
+.post-actions>.action-btn:nth-child(2) {
+    justify-self: center;
     justify-content: center;
+}
+
+/* Share and Save Container */
+.actions-right {
+    display: flex;
+    gap: 8px;
+    /* Space between Share and Save */
+    justify-self: end;
+    align-items: center;
 }
 
 .action-btn svg {
