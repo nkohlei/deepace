@@ -46,12 +46,19 @@ const Inbox = () => {
                 fetchConversations();
             };
 
+            const handleMessageDeleted = (id) => {
+                setMessages((prev) => prev.filter((msg) => msg._id !== id));
+                fetchConversations(); // Update previews if last message deleted
+            };
+
             socket.on('newMessage', handleNewMessage);
             socket.on('messageSent', handleNewMessage);
+            socket.on('messageDeleted', handleMessageDeleted);
 
             return () => {
                 socket.off('newMessage', handleNewMessage);
                 socket.off('messageSent', handleNewMessage);
+                socket.off('messageDeleted', handleMessageDeleted);
             };
         }
     }, [socket, selectedUser, user]);
@@ -166,6 +173,18 @@ const Inbox = () => {
             // Restore inputs (optional)
             setNewMessage(tempContent);
             setMedia(tempMedia);
+        }
+    };
+
+    const handleDeleteMessage = async (messageId) => {
+        if (window.confirm('Bu mesajı silmek istediğinize emin misiniz?')) {
+            try {
+                await axios.delete(`/api/messages/${messageId}`);
+                // State update will happen via socket event
+            } catch (err) {
+                console.error('Failed to delete message:', err);
+                alert('Mesaj silinemedi.');
+            }
         }
     };
 
@@ -321,6 +340,7 @@ const Inbox = () => {
                                         key={message._id}
                                         message={message}
                                         isOwn={message.sender._id === user._id}
+                                        onDelete={handleDeleteMessage}
                                     />
                                 ))}
                                 <div ref={messagesEndRef} />
