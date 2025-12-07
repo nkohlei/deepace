@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import CommentSection from '../components/CommentSection';
 import { getImageUrl } from '../utils/imageUtils';
+import Badge from '../components/Badge';
 import './PostDetail.css';
 
 const PostDetail = () => {
@@ -129,6 +130,7 @@ const PostDetail = () => {
                                 <div className="author-info">
                                     <span className="author-name">
                                         {post.author?.profile?.displayName || post.author?.username}
+                                        <Badge type={post.author?.verificationBadge} />
                                     </span>
                                     <span className="author-username">@{post.author?.username}</span>
                                 </div>

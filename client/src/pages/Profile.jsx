@@ -254,32 +254,31 @@ const Profile = () => {
                             <div className="cover-placeholder"></div>
                         )}
 
-                        {/* Avatar - Positioned absolute on cover border */}
-                        <div className="profile-avatar-container">
-                            <div className="avatar-wrapper">
-                                {profileUser?.profile?.avatar ? (
-                                    <img
-                                        src={getImageUrl(profileUser.profile.avatar)}
-                                        alt={profileUser.username}
-                                        className="profile-avatar"
-                                    />
-                                ) : (
-                                    <div className="profile-avatar-placeholder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                            <circle cx="12" cy="7" r="4" />
-                                        </svg>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        {/* Avatar Moved to Profile Card */}
                     </div>
 
-                    {/* Profile Card Info */}
                     <div className="profile-card-info">
-
                         {/* Top Row: Name/User & Stats */}
                         <div className="profile-header-row">
+                            <div className="profile-avatar-container">
+                                <div className="avatar-wrapper">
+                                    {profileUser?.profile?.avatar ? (
+                                        <img
+                                            src={getImageUrl(profileUser.profile.avatar)}
+                                            alt={profileUser.username}
+                                            className="profile-avatar"
+                                        />
+                                    ) : (
+                                        <div className="profile-avatar-placeholder">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                <circle cx="12" cy="7" r="4" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="profile-text-info">
                                 <h1 className="profile-name">
                                     {profileUser?.profile?.displayName || profileUser?.username}
@@ -467,7 +466,10 @@ const Profile = () => {
                                                             )}
                                                         </div>
                                                         <div className="follow-info">
-                                                            <span className="follow-name">{user.profile?.displayName || user.username}</span>
+                                                            <span className="follow-name">
+                                                                {user.profile?.displayName || user.username}
+                                                                <Badge type={user.verificationBadge} />
+                                                            </span>
                                                             <span className="follow-username">@{user.username}</span>
                                                         </div>
                                                     </Link>

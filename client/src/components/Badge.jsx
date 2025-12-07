@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Badge = ({ type, size = 16, className = '' }) => {
+const Badge = ({ type, size = 22, className = '' }) => {
     if (!type || type === 'none') return null;
 
     const styles = {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getImageUrl } from '../utils/imageUtils';
+import Badge from './Badge';
 import './ShareModal.css';
 
 const ShareModal = ({ postId, onClose }) => {
@@ -89,7 +90,10 @@ const ShareModal = ({ postId, onClose }) => {
                                         className="user-avatar"
                                     />
                                     <div className="user-text">
-                                        <span className="user-name">{user.profile?.displayName || user.username}</span>
+                                        <span className="user-name">
+                                            {user.profile?.displayName || user.username}
+                                            <Badge type={user.verificationBadge} />
+                                        </span>
                                         <span className="user-username">@{user.username}</span>
                                     </div>
                                 </div>

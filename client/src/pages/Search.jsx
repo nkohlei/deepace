@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { getImageUrl } from '../utils/imageUtils';
+import Badge from '../components/Badge';
 import './Search.css';
 
 const Search = () => {
@@ -121,6 +122,7 @@ const Search = () => {
                                         <div className="result-info">
                                             <span className="result-name">
                                                 {user.profile?.displayName || user.username}
+                                                <Badge type={user.verificationBadge} />
                                             </span>
                                             <span className="result-username">@{user.username}</span>
                                         </div>

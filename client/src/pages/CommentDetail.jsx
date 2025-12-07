@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import Badge from '../components/Badge';
 import './CommentDetail.css';
 
 const CommentDetail = () => {
@@ -186,6 +187,7 @@ const CommentDetail = () => {
                                 <div className="author-info">
                                     <span className="author-name">
                                         {comment.author?.profile?.displayName || comment.author?.username}
+                                        <Badge type={comment.author?.verificationBadge} />
                                     </span>
                                     <span className="author-username">@{comment.author?.username}</span>
                                 </div>
@@ -281,6 +283,7 @@ const CommentDetail = () => {
                                             <div className="reply-header">
                                                 <Link to={`/profile/${reply.author?.username}`} className="reply-author-name">
                                                     {reply.author?.profile?.displayName || reply.author?.username}
+                                                    <Badge type={reply.author?.verificationBadge} />
                                                 </Link>
                                                 <span className="reply-author-username">@{reply.author?.username}</span>
                                                 <span className="reply-time">· {formatDate(reply.createdAt)}</span>
