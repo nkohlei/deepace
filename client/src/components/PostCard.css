@@ -52,6 +52,7 @@
     min-width: 0;
     /* Prevents flex/grid blowouts */
     display: flex;
+    flex-direction: column;
 }
 
 /* Content Text */
@@ -72,22 +73,26 @@
 
 /* Media */
 .post-media {
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     /* More breathing room */
     margin-top: 8px;
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--border-subtle);
-    /* width constraint removed to fill natural column */
+    max-height: 600px;
+    background: var(--bg-darker);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .post-media img,
 .post-media video {
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
-    max-height: 280px;
-    /* Reduced height as requested */
-    object-fit: cover;
+    max-height: 600px;
+    object-fit: contain;
     display: block;
 }
 
