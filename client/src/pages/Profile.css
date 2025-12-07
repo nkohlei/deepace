@@ -25,17 +25,10 @@
 }
 
 .profile-avatar-container {
-    /* No longer absolute */
     flex-shrink: 0;
     margin-right: 16px;
-    margin-top: -30px;
-    /* Slight negative margin if we still want it to pop out a bit, or 0 to keep it inside */
-}
-
-/* If we want it strictly INSIDE */
-/* Let's keep it clean. */
-.profile-avatar-container {
-    margin-right: 16px;
+    /* Removed negative margin to keep it inside the box */
+    margin-top: 0;
 }
 
 /* Updated Profile Card Info Box - Minimal */
