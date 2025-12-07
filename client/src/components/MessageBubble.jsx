@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getImageUrl } from '../utils/imageUtils';
 import './MessageBubble.css';
 
-const MessageBubble = ({ message, isOwn, onDelete }) => {
+const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
     const formatTime = (date) => {
         return new Date(date).toLocaleTimeString('tr-TR', {
             hour: '2-digit',
