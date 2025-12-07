@@ -60,3 +60,35 @@
         transform: translateY(0);
     }
 }
+
+.msg-download-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.message-media {
+    position: relative;
+    display: inline-block;
+}
+
+.message-media:hover .msg-download-btn {
+    opacity: 1;
+}
+
+.msg-download-btn svg {
+    width: 16px;
+    height: 16px;
+}
