@@ -206,7 +206,9 @@ const Inbox = () => {
     const handleDeleteMessage = async (messageId) => {
         try {
             await axios.delete(`/api/messages/${messageId}`);
-            // State update will happen via socket event
+            // Manually remove from state immediately for better UX
+            setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+            fetchConversations(); // Update previews
         } catch (err) {
             console.error('Failed to delete message:', err);
         }
