@@ -204,14 +204,11 @@ const Inbox = () => {
     };
 
     const handleDeleteMessage = async (messageId) => {
-        if (window.confirm('Bu mesajı silmek istediğinize emin misiniz?')) {
-            try {
-                await axios.delete(`/api/messages/${messageId}`);
-                // State update will happen via socket event
-            } catch (err) {
-                console.error('Failed to delete message:', err);
-                alert('Mesaj silinemedi.');
-            }
+        try {
+            await axios.delete(`/api/messages/${messageId}`);
+            // State update will happen via socket event
+        } catch (err) {
+            console.error('Failed to delete message:', err);
         }
     };
 
