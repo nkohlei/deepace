@@ -10,7 +10,8 @@ const router = express.Router();
 // Configure multer for avatar uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        // Use process.cwd() for absolute path on Render
+        cb(null, path.join(process.cwd(), 'uploads'));
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -136,7 +137,19 @@ router.get('/:username', protect, async (req, res) => {
 // @route   POST /api/users/me/avatar
 // @desc    Upload profile photo
 // @access  Private
-router.post('/me/avatar', protect, upload.single('avatar'), async (req, res) => {
+// @route   POST /api/users/me/avatar
+// @desc    Upload profile photo
+// @access  Private
+router.post('/me/avatar', protect, (req, res, next) => {
+    upload.single('avatar')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ message: `Upload error: ${err.message}` });
+        } else if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
@@ -161,7 +174,19 @@ router.post('/me/avatar', protect, upload.single('avatar'), async (req, res) => 
 // @route   POST /api/users/me/cover
 // @desc    Upload cover image
 // @access  Private
-router.post('/me/cover', protect, upload.single('cover'), async (req, res) => {
+// @route   POST /api/users/me/cover
+// @desc    Upload cover image
+// @access  Private
+router.post('/me/cover', protect, (req, res, next) => {
+    upload.single('cover')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ message: `Upload error: ${err.message}` });
+        } else if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });

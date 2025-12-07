@@ -8,9 +8,11 @@ import User from '../models/User.js';
 const router = express.Router();
 
 // Configure multer for file uploads
+// Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        // Use process.cwd() for absolute path on Render
+        cb(null, path.join(process.cwd(), 'uploads'));
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -39,7 +41,16 @@ const upload = multer({
 // @route   POST /api/posts
 // @desc    Create a new post
 // @access  Private
-router.post('/', protect, upload.single('media'), async (req, res) => {
+router.post('/', protect, (req, res, next) => {
+    upload.single('media')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ message: `Upload error: ${err.message}` });
+        } else if (err) {
+            return res.status(400).json({ message: err.message });
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         const { content } = req.body;
 
