@@ -276,56 +276,59 @@ const Profile = () => {
 
                     {/* Profile Card Info */}
                     <div className="profile-card-info">
-                        <div className="profile-header-content">
-                            {/* Left Side: Text Info */}
+
+                        {/* Top Row: Name/User & Stats */}
+                        <div className="profile-header-row">
                             <div className="profile-text-info">
                                 <h1 className="profile-name">
                                     {profileUser?.profile?.displayName || profileUser?.username}
                                 </h1>
                                 <p className="profile-username">@{profileUser?.username}</p>
-                                {profileUser?.profile?.bio && (
-                                    <p className="profile-bio">{profileUser.profile.bio}</p>
-                                )}
                             </div>
 
-                            {/* Right Side: Stats & Actions */}
-                            <div className="profile-right-side">
-                                <div className="profile-stats">
-                                    <div className="stat-item">
-                                        <span className="stat-value">{formatCount(profileUser?.postCount)}</span>
-                                        <span className="stat-label">Gönderi</span>
-                                    </div>
-                                    <button className="stat-item clickable" onClick={() => openFollowModal('followers')}>
-                                        <span className="stat-value">{formatCount(profileUser?.followerCount)}</span>
-                                        <span className="stat-label">Takipçi</span>
-                                    </button>
-                                    <button className="stat-item clickable" onClick={() => openFollowModal('following')}>
-                                        <span className="stat-value">{formatCount(profileUser?.followingCount)}</span>
-                                        <span className="stat-label">Takip</span>
-                                    </button>
+                            <div className="profile-stats">
+                                <div className="stat-item box-stat">
+                                    <span className="stat-label">Gönderi</span>
+                                    <span className="stat-value">{formatCount(profileUser?.postCount)}</span>
                                 </div>
-
-                                <div className="profile-actions-top">
-                                    {isOwnProfile ? (
-                                        <button
-                                            className="action-btn-outline"
-                                            onClick={() => setEditing(true)}
-                                        >
-                                            Profili Düzenle
-                                        </button>
-                                    ) : (
-                                        <>
-                                            <button
-                                                className="action-btn-outline"
-                                                onClick={handleMessageClick}
-                                            >
-                                                Mesaj
-                                            </button>
-                                            <FollowButton userId={profileUser?._id} />
-                                        </>
-                                    )}
-                                </div>
+                                <button className="stat-item clickable box-stat" onClick={() => openFollowModal('followers')}>
+                                    <span className="stat-label">Takipçi</span>
+                                    <span className="stat-value">{formatCount(profileUser?.followerCount)}</span>
+                                </button>
+                                <button className="stat-item clickable box-stat" onClick={() => openFollowModal('following')}>
+                                    <span className="stat-label">Takip</span>
+                                    <span className="stat-value">{formatCount(profileUser?.followingCount)}</span>
+                                </button>
                             </div>
+                        </div>
+
+                        {/* Middle: Bio Box */}
+                        {profileUser?.profile?.bio && (
+                            <div className="profile-bio-box">
+                                <p>{profileUser.profile.bio}</p>
+                            </div>
+                        )}
+
+                        {/* Bottom: Action Button */}
+                        <div className="profile-actions-bottom">
+                            {isOwnProfile ? (
+                                <button
+                                    className="action-btn-full"
+                                    onClick={() => setEditing(true)}
+                                >
+                                    Profili Düzenle
+                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        className="action-btn-full"
+                                        onClick={handleMessageClick}
+                                    >
+                                        Mesaj
+                                    </button>
+                                    <FollowButton userId={profileUser?._id} className="action-btn-full" />
+                                </>
+                            )}
                         </div>
                     </div>
 

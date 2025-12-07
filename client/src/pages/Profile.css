@@ -46,37 +46,43 @@
     /* Space for avatar */
 }
 
-.profile-header-content {
+/* Updated Header Layout */
+.profile-header-row {
     display: flex;
-    justify-content: flex-start;
-    /* Align everything to start */
+    justify-content: space-between;
     align-items: flex-start;
-    gap: 32px;
-    /* Add some space between info and stats */
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-/* Left Side: Avatar is absolute, so just text here */
+/* Left: Name and Username */
 .profile-text-info {
-    /* flex: 1; Removed to prevent pushing right side away */
     margin-top: 0;
-    max-width: 300px;
-    /* Prevent text from getting too wide if needed */
+    max-width: 50%;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.profile-username {
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
 }
 
 /* Right Side: Stats & Actions */
 .profile-right-side {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    /* Align stats to left */
-    gap: 16px;
-    padding-top: 4px;
+    display: none;
+    /* Deprecated in new layout */
 }
 
-/* Header Top: Just Actions now */
 .profile-actions-top {
-    display: flex;
-    gap: 8px;
+    display: none;
+    /* Deprecated in new layout */
 }
 
 .action-btn-outline {
@@ -131,19 +137,73 @@
 }
 
 /* Stats */
+/* Right: Boxed Stats */
 .profile-stats {
     display: flex;
-    gap: 24px;
+    gap: 8px;
 }
 
-.stat-item {
+.box-stat {
+    background: var(--bg-hover);
+    /* Darker box bg */
+    border-radius: 12px;
+    padding: 8px 12px;
+    /* Compact padding */
+    min-width: 70px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: none;
-    border: none;
-    cursor: default;
-    padding: 0;
+    justify-content: center;
+    border: 1px solid var(--border-subtle);
+}
+
+.box-stat .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.box-stat .stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Bio Box */
+.profile-bio-box {
+    background: var(--bg-hover);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Bottom Actions */
+.profile-actions-bottom {
+    margin-top: auto;
+}
+
+.action-btn-full {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    /* Fully rounded pill shape */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+.action-btn-full:hover {
+    background: var(--bg-darker);
+    border-color: var(--border-neon);
 }
 
 .stat-item.clickable {
