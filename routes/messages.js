@@ -133,139 +133,142 @@ router.post('/', protect, (req, res, next) => {
         req.app.get('io').to(req.user._id.toString()).emit('messageSent', populatedMessage);
 
         res.status(201).json(populatedMessage);
+    } catch (error) {
+        console.error('Send message error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+// @desc    Get all conversations
+// @access  Private
+router.get('/conversations', protect, async (req, res) => {
+    try {
+        const userId = req.user._id;
 
-        // @route   GET /api/messages/conversations
-        // @desc    Get all conversations
-        // @access  Private
-        router.get('/conversations', protect, async (req, res) => {
-            try {
-                const userId = req.user._id;
+        // Get unique users the current user has messaged with
+        const messages = await Message.find({
+            $or: [{ sender: userId }, { recipient: userId }],
+        })
+            .sort({ createdAt: -1 })
+            .populate('sender', 'username profile.displayName profile.avatar')
+            .populate('recipient', 'username profile.displayName profile.avatar')
+            .populate({
+                path: 'sharedPost',
+                populate: {
+                    path: 'author',
+                    select: 'username profile.displayName profile.avatar'
+                }
+            })
+            .populate({
+                path: 'replyTo',
+                select: 'content media sender',
+                populate: { path: 'sender', select: 'username' }
+            });
 
-                // Get unique users the current user has messaged with
-                const messages = await Message.find({
-                    $or: [{ sender: userId }, { recipient: userId }],
-                })
-                    .sort({ createdAt: -1 })
-                    .populate('sender', 'username profile.displayName profile.avatar')
-                    .populate('recipient', 'username profile.displayName profile.avatar')
-                    .populate({
-                        path: 'sharedPost',
-                        populate: {
-                            path: 'author',
-                            select: 'username profile.displayName profile.avatar'
-                        }
-                    })
-                    .populate({
-                        path: 'replyTo',
-                        select: 'content media sender',
-                        populate: { path: 'sender', select: 'username' }
-                    });
+        // Extract unique conversations
+        const conversationsMap = new Map();
 
-                // Extract unique conversations
-                const conversationsMap = new Map();
+        messages.forEach((msg) => {
+            const otherUser = msg.sender._id.toString() === userId.toString()
+                ? msg.recipient
+                : msg.sender;
 
-                messages.forEach((msg) => {
-                    const otherUser = msg.sender._id.toString() === userId.toString()
-                        ? msg.recipient
-                        : msg.sender;
+            const otherUserId = otherUser._id.toString();
 
-                    const otherUserId = otherUser._id.toString();
-
-                    if (!conversationsMap.has(otherUserId)) {
-                        conversationsMap.set(otherUserId, {
-                            user: otherUser,
-                            lastMessage: msg,
-                            unreadCount: 0,
-                        });
-                    }
-
-                    // Count unread messages
-                    if (msg.recipient._id.toString() === userId.toString() && !msg.read) {
-                        conversationsMap.get(otherUserId).unreadCount++;
-                    }
+            if (!conversationsMap.has(otherUserId)) {
+                conversationsMap.set(otherUserId, {
+                    user: otherUser,
+                    lastMessage: msg,
+                    unreadCount: 0,
                 });
+            }
 
-                const conversations = Array.from(conversationsMap.values());
-
-                res.json(conversations);
-            } catch (error) {
-                console.error('Get conversations error:', error);
-                res.status(500).json({ message: 'Server error' });
+            // Count unread messages
+            if (msg.recipient._id.toString() === userId.toString() && !msg.read) {
+                conversationsMap.get(otherUserId).unreadCount++;
             }
         });
 
-        // @route   GET /api/messages/:userId
-        // @desc    Get conversation with a specific user
-        // @access  Private
-        router.get('/:userId', protect, async (req, res) => {
-            try {
-                const currentUserId = req.user._id;
-                const otherUserId = req.params.userId;
+        const conversations = Array.from(conversationsMap.values());
 
-                const messages = await Message.find({
-                    $or: [
-                        { sender: currentUserId, recipient: otherUserId },
-                        { sender: otherUserId, recipient: currentUserId },
-                    ],
-                })
-                    .sort({ createdAt: 1 })
-                    .populate('sender', 'username profile.displayName profile.avatar')
-                    .populate('recipient', 'username profile.displayName profile.avatar')
-                    .populate({
-                        path: 'sharedPost',
-                        populate: {
-                            path: 'author',
-                            select: 'username profile.displayName profile.avatar'
-                        }
-                    })
-                    .populate({
-                        path: 'replyTo',
-                        select: 'content media sender',
-                        populate: { path: 'sender', select: 'username' }
-                    });
+        res.json(conversations);
+    } catch (error) {
+        console.error('Get conversations error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
-                // Mark messages as read
-                await Message.updateMany(
-                    { sender: otherUserId, recipient: currentUserId, read: false },
-                    { read: true }
-                );
+// @route   GET /api/messages/:userId
+// @desc    Get conversation with a specific user
+// @access  Private
+router.get('/:userId', protect, async (req, res) => {
+    try {
+        const currentUserId = req.user._id;
+        const otherUserId = req.params.userId;
 
-                res.json(messages);
-            } catch (error) {
-                console.error('Get messages error:', error);
-                res.status(500).json({ message: 'Server error' });
-            }
-        });
-
-        // @route   DELETE /api/messages/:id
-        // @desc    Delete a message
-        // @access  Private
-        router.delete('/:id', protect, async (req, res) => {
-            try {
-                const message = await Message.findById(req.params.id);
-
-                if (!message) {
-                    return res.status(404).json({ message: 'Message not found' });
+        const messages = await Message.find({
+            $or: [
+                { sender: currentUserId, recipient: otherUserId },
+                { sender: otherUserId, recipient: currentUserId },
+            ],
+        })
+            .sort({ createdAt: 1 })
+            .populate('sender', 'username profile.displayName profile.avatar')
+            .populate('recipient', 'username profile.displayName profile.avatar')
+            .populate({
+                path: 'sharedPost',
+                populate: {
+                    path: 'author',
+                    select: 'username profile.displayName profile.avatar'
                 }
+            })
+            .populate({
+                path: 'replyTo',
+                select: 'content media sender',
+                populate: { path: 'sender', select: 'username' }
+            });
 
-                // Check if user is sender
-                if (message.sender.toString() !== req.user._id.toString()) {
-                    return res.status(401).json({ message: 'Not authorized' });
-                }
+        // Mark messages as read
+        await Message.updateMany(
+            { sender: otherUserId, recipient: currentUserId, read: false },
+            { read: true }
+        );
 
-                const recipientId = message.recipient.toString();
+        res.json(messages);
+    } catch (error) {
+        console.error('Get messages error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
-                await message.deleteOne();
+// @route   DELETE /api/messages/:id
+// @desc    Delete a message
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const message = await Message.findById(req.params.id);
 
-                // Emit socket event for real-time deletion
-                req.app.get('io').to(recipientId).emit('messageDeleted', req.params.id);
-                req.app.get('io').to(req.user._id.toString()).emit('messageDeleted', req.params.id);
+        if (!message) {
+            return res.status(404).json({ message: 'Message not found' });
+        }
 
-                res.json({ message: 'Message removed' });
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({ message: 'Server error' });
-            }
-        });
+        // Check if user is sender
+        if (message.sender.toString() !== req.user._id.toString()) {
+            return res.status(401).json({ message: 'Not authorized' });
+        }
 
-        export default router;
+        const recipientId = message.recipient.toString();
+
+        await message.deleteOne();
+
+        // Emit socket event for real-time deletion
+        req.app.get('io').to(recipientId).emit('messageDeleted', req.params.id);
+        req.app.get('io').to(req.user._id.toString()).emit('messageDeleted', req.params.id);
+
+        res.json({ message: 'Message removed' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+export default router;
