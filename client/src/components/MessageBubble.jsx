@@ -30,6 +30,29 @@ const MessageBubble = ({ message, isOwn }) => {
     };
 
     const [showLightbox, setShowLightbox] = React.useState(false);
+    const [dynamicPost, setDynamicPost] = React.useState(null);
+
+    React.useEffect(() => {
+        if (message.sharedPost && typeof message.sharedPost === 'string') {
+            const fetchSharedPost = async () => {
+                try {
+                    // Try to fetch the post details if only ID is provided
+                    const response = await fetch(`/api/posts/${message.sharedPost}`, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setDynamicPost(data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch shared post:', error);
+                }
+            };
+            fetchSharedPost();
+        }
+    }, [message.sharedPost]);
+
+    const displayPost = (typeof message.sharedPost === 'object') ? message.sharedPost : dynamicPost;
 
     const toggleLightbox = (e) => {
         if (e) e.stopPropagation();
@@ -57,32 +80,30 @@ const MessageBubble = ({ message, isOwn }) => {
                     </div>
                 )}
 
-                {message.sharedPost && (
-                    typeof message.sharedPost === 'object' ? (
-                        <Link to={`/post/${message.sharedPost._id}`} className="shared-post-card">
-                            <div className="shared-post-header">
-                                <img
-                                    src={getImageUrl(message.sharedPost.author?.profile?.avatar)}
-                                    alt={message.sharedPost.author?.username}
-                                    className="shared-post-avatar"
-                                />
-                                <span className="shared-post-username">@{message.sharedPost.author?.username}</span>
+                {displayPost ? (
+                    <Link to={`/post/${displayPost._id}`} className="shared-post-card">
+                        <div className="shared-post-header">
+                            <img
+                                src={getImageUrl(displayPost.author?.profile?.avatar)}
+                                alt={displayPost.author?.username}
+                                className="shared-post-avatar"
+                            />
+                            <span className="shared-post-username">@{displayPost.author?.username}</span>
+                        </div>
+                        {displayPost.content && <p className="shared-post-content">{displayPost.content.substring(0, 100)}...</p>}
+                        {displayPost.media && (
+                            <div className="shared-post-media-preview">
+                                <img src={getImageUrl(Array.isArray(displayPost.media) ? displayPost.media[0] : displayPost.media)} alt="Shared Post" />
                             </div>
-                            {message.sharedPost.content && <p className="shared-post-content">{message.sharedPost.content.substring(0, 100)}...</p>}
-                            {message.sharedPost.media && (
-                                <div className="shared-post-media-preview">
-                                    <img src={getImageUrl(Array.isArray(message.sharedPost.media) ? message.sharedPost.media[0] : message.sharedPost.media)} alt="Shared Post" />
-                                </div>
-                            )}
-                        </Link>
-                    ) : (
-                        <Link to={`/post/${message.sharedPost}`} className="shared-post-card fallback">
-                            <div className="shared-post-content">
-                                Gönderiyi görüntüle (Yükleniyor...)
-                            </div>
-                        </Link>
-                    )
-                )}
+                        )}
+                    </Link>
+                ) : message.sharedPost ? (
+                    <Link to={`/post/${message.sharedPost}`} className="shared-post-card fallback">
+                        <div className="shared-post-content">
+                            Gönderi yükleniyor...
+                        </div>
+                    </Link>
+                ) : null}
 
                 {message.content && <div className="message-content">{message.content}</div>}
                 <div className="message-time">
