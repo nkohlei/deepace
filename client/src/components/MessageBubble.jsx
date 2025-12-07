@@ -10,11 +10,38 @@ const MessageBubble = ({ message, isOwn }) => {
         });
     };
 
+    const handleDownload = async (e, url) => {
+        e.stopPropagation();
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `deepace-msg-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Download error:', error);
+        }
+    };
+
     return (
         <div className={`message-bubble ${isOwn ? 'own' : 'other'} ${message.isOptimistic ? 'optimistic' : ''}`}>
             {message.media && (
                 <div className="message-media">
                     <img src={message.isOptimistic ? message.media : getImageUrl(message.media)} alt="Attachment" />
+                    {!message.isOptimistic && (
+                        <button className="msg-download-btn" onClick={(e) => handleDownload(e, getImageUrl(message.media))}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
             )}
 

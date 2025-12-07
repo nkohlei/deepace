@@ -338,6 +338,29 @@
     box-shadow: var(--shadow-glow);
 }
 
+.attach-btn {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    color: var(--primary-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.attach-btn:hover {
+    background: var(--bg-hover);
+}
+
+.attach-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
 .send-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;

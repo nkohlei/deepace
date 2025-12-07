@@ -138,9 +138,7 @@ const Inbox = () => {
             if (tempContent) formData.append('content', tempContent);
             if (tempMedia) formData.append('media', tempMedia);
 
-            const response = await axios.post('/api/messages', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const response = await axios.post('/api/messages', formData);
 
             // Replace optimistic message with real one
             setMessages((prev) => prev.map(msg =>

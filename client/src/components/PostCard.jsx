@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from './CommentSection';
+import ShareModal from './ShareModal';
 import { getImageUrl } from '../utils/imageUtils';
 import './PostCard.css';
 
@@ -95,9 +96,30 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
         }
     };
 
+    const [showShareModal, setShowShareModal] = useState(false);
+
     const handleShare = () => {
-        // Navigate to search to select a user to share with
-        navigate(`/search?sharePostId=${post._id}`);
+        setShowShareModal(true);
+    };
+
+    const handleDownload = async () => {
+        if (!post.media) return;
+        try {
+            const response = await fetch(getImageUrl(post.media));
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deepace-post-${post._id}.${post.mediaType === 'video' ? 'mp4' : 'png'}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            setShowMenu(false);
+        } catch (error) {
+            console.error('Download failed:', error);
+            alert('İndirme başarısız.');
+        }
     };
 
     const formatLikeCount = (count) => {
@@ -191,6 +213,16 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
                                         Sil
                                     </button>
                                 )}
+                                {post.media && (
+                                    <button className="menu-item" onClick={(e) => { e.stopPropagation(); handleDownload(); }}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                        </svg>
+                                        İndir
+                                    </button>
+                                )}
                                 <button className="menu-item" onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
@@ -274,6 +306,10 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {showShareModal && (
+                <ShareModal postId={post._id} onClose={() => setShowShareModal(false)} />
             )}
         </article>
     );
