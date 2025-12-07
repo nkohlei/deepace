@@ -20,6 +20,7 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showAnyway, setShowAnyway] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     // Safe check for author existence (Process orphaned posts)
     const author = post.author || {
@@ -209,22 +210,49 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
 
             {/* Right Column: Content */}
             <div className="post-right">
-                <div className="post-header">
+                <div className="post-header-row">
                     <Link
                         to={`/profile/${post.author.username}`}
-                        className="post-author-name"
+                        className="header-info-link"
                         onClick={handleProfileClick}
                     >
-                        {post.author.profile?.displayName || post.author.username}
+                        <span className="author-name">{post.author.profile?.displayName || post.author.username}</span>
+                        <Badge type={post.author.verificationBadge} />
+                        <span className="author-username">@{post.author.username}</span>
                     </Link>
-                    <Badge type={post.author.verificationBadge} />
-                    <span className="post-username">@{post.author.username}</span>
-                    <span className="post-dot">·</span>
-                    <span className="post-time">{formatDate(post.createdAt)}</span>
+                    <span className="post-time">· {formatDate(post.createdAt)}</span>
                 </div>
 
                 <div className="post-content-text">
-                    <p>{post.content}</p>
+                    <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                        {(() => {
+                            const content = post.content || '';
+                            const shouldTruncate = content.length > 280 && !isExpanded;
+                            const displayContent = shouldTruncate ? content.substring(0, 280) + '...' : content;
+
+                            // Simple URL regex
+                            const urlRegex = /(https?:\/\/[^\s]+)/g;
+                            const parts = displayContent.split(urlRegex);
+
+                            return (
+                                <>
+                                    {parts.map((part, i) => (
+                                        part.match(urlRegex) ? (
+                                            <a key={i} href={part} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="post-link">{part}</a>
+                                        ) : part
+                                    ))}
+                                    {shouldTruncate && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }}
+                                            className="show-more-btn"
+                                        >
+                                            Devamını göster
+                                        </button>
+                                    )}
+                                </>
+                            );
+                        })()}
+                    </p>
                 </div>
 
                 {/* Media */}

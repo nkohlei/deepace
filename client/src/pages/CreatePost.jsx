@@ -6,6 +6,7 @@ import './CreatePost.css';
 
 const CreatePost = () => {
     const [content, setContent] = useState('');
+    const [externalUrl, setExternalUrl] = useState('');
     const [mediaFile, setMediaFile] = useState(null);
     const [mediaPreview, setMediaPreview] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,7 +39,11 @@ const CreatePost = () => {
 
         try {
             const formData = new FormData();
-            formData.append('content', content);
+            let finalContent = content;
+            if (externalUrl) {
+                finalContent = content ? content + '\n\n' + externalUrl : externalUrl;
+            }
+            formData.append('content', finalContent);
             if (mediaFile) {
                 formData.append('media', mediaFile);
             }
@@ -89,6 +94,15 @@ const CreatePost = () => {
                             onChange={(e) => setContent(e.target.value)}
                             rows="4"
                         />
+                        <div className="url-input-container">
+                            <input
+                                type="text"
+                                placeholder="Bağlantı ekle (URL)"
+                                value={externalUrl}
+                                onChange={(e) => setExternalUrl(e.target.value)}
+                                className="url-input"
+                            />
+                        </div>
 
                         {mediaPreview && (
                             <div className="media-preview">

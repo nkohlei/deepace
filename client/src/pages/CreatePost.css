@@ -90,6 +90,27 @@
     color: var(--text-tertiary);
 }
 
+.url-input-container {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.url-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--primary-cyan);
+    font-size: 0.95rem;
+}
+
+.url-input:focus {
+    outline: none;
+}
+
+.url-input::placeholder {
+    color: var(--text-tertiary);
+}
+
 .media-preview {
     position: relative;
     border-radius: 16px;
