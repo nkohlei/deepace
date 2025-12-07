@@ -39,18 +39,29 @@ const Profile = () => {
 
     useEffect(() => {
         if (isOwnProfile) {
-            setProfileUser(currentUser);
-            if (currentUser) {
-                setFormData({
-                    displayName: currentUser.profile?.displayName || '',
-                    bio: currentUser.profile?.bio || '',
-                });
-                fetchUserPosts(currentUser._id);
-            }
+            fetchMyProfile();
         } else {
             fetchUserProfile(username);
         }
-    }, [username, currentUser, isOwnProfile]);
+    }, [username, isOwnProfile]); // Removed currentUser from dep to avoid loops, explicit fetch handles freshness
+
+    // Fetch fresh data for own profile (fixes stale stats issue)
+    const fetchMyProfile = async () => {
+        try {
+            const response = await axios.get('/api/users/me');
+            setProfileUser(response.data);
+
+            // Initialize form data with fetched data
+            setFormData({
+                displayName: response.data.profile?.displayName || '',
+                bio: response.data.profile?.bio || '',
+            });
+
+            fetchUserPosts(response.data._id);
+        } catch (err) {
+            console.error('Failed to fetch my profile:', err);
+        }
+    };
 
     useEffect(() => {
         if (activeTab === 'comments' && profileUser?._id && userComments.length === 0) {
