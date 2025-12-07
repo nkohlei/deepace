@@ -44,20 +44,16 @@ const Profile = () => {
         } else {
             fetchUserProfile(username);
         }
-    }, [username, isOwnProfile]); // Removed currentUser from dep to avoid loops, explicit fetch handles freshness
+    }, [username, isOwnProfile]);
 
-    // Fetch fresh data for own profile (fixes stale stats issue)
     const fetchMyProfile = async () => {
         try {
             const response = await axios.get('/api/users/me');
             setProfileUser(response.data);
-
-            // Initialize form data with fetched data
             setFormData({
                 displayName: response.data.profile?.displayName || '',
                 bio: response.data.profile?.bio || '',
             });
-
             fetchUserPosts(response.data._id);
         } catch (err) {
             console.error('Failed to fetch my profile:', err);
@@ -139,7 +135,6 @@ const Profile = () => {
             const response = await axios.post('/api/users/me/avatar', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-
             const updatedUser = { ...currentUser };
             updatedUser.profile.avatar = response.data.avatar;
             updateUser(updatedUser);
@@ -156,16 +151,13 @@ const Profile = () => {
     const handleCoverChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const formData = new FormData();
         formData.append('cover', file);
-
         try {
             setLoading(true);
             const response = await axios.post('/api/users/me/cover', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-
             const updatedUser = { ...currentUser };
             updatedUser.profile.coverImage = response.data.coverImage;
             updateUser(updatedUser);
@@ -184,7 +176,6 @@ const Profile = () => {
         setError('');
         setSuccess('');
         setLoading(true);
-
         try {
             const response = await axios.put('/api/users/me', formData);
             updateUser(response.data.user);
@@ -199,11 +190,7 @@ const Profile = () => {
 
     const handleDeletePost = (postId) => {
         setUserPosts(userPosts.filter(p => p._id !== postId));
-        // Update post count locally
-        setProfileUser(prev => ({
-            ...prev,
-            postCount: prev.postCount - 1
-        }));
+        setProfileUser(prev => ({ ...prev, postCount: prev.postCount - 1 }));
     };
 
     const handleMessageClick = () => {
@@ -212,12 +199,8 @@ const Profile = () => {
 
     const formatCount = (count) => {
         if (!count) return '0';
-        if (count >= 1000000) {
-            return (count / 1000000).toFixed(1) + 'M';
-        }
-        if (count >= 1000) {
-            return (count / 1000).toFixed(1) + 'K';
-        }
+        if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+        if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
         return count.toString();
     };
 
@@ -253,83 +236,95 @@ const Profile = () => {
                         ) : (
                             <div className="cover-placeholder"></div>
                         )}
-
-                        {/* Avatar Moved to Profile Card */}
                     </div>
 
-                    <div className="profile-card-info">
-                        {/* Top Row: Name/User & Stats */}
-                        <div className="profile-header-row">
-                            <div className="profile-avatar-container">
-                                <div className="avatar-wrapper">
-                                    {profileUser?.profile?.avatar ? (
-                                        <img
-                                            src={getImageUrl(profileUser.profile.avatar)}
-                                            alt={profileUser.username}
-                                            className="profile-avatar"
-                                        />
-                                    ) : (
-                                        <div className="profile-avatar-placeholder">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                                <circle cx="12" cy="7" r="4" />
-                                            </svg>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="profile-text-info">
-                                <h1 className="profile-name">
-                                    {profileUser?.profile?.displayName || profileUser?.username}
-                                    <Badge type={profileUser?.verificationBadge} />
-                                </h1>
-                                <p className="profile-username">@{profileUser?.username}</p>
-                            </div>
-
-                            <div className="profile-stats">
-                                <div className="stat-item box-stat">
-                                    <span className="stat-label">Gönderi</span>
-                                    <span className="stat-value">{formatCount(profileUser?.postCount)}</span>
-                                </div>
-                                <button className="stat-item clickable box-stat" onClick={() => openFollowModal('followers')}>
-                                    <span className="stat-label">Takipçi</span>
-                                    <span className="stat-value">{formatCount(profileUser?.followerCount)}</span>
-                                </button>
-                                <button className="stat-item clickable box-stat" onClick={() => openFollowModal('following')}>
-                                    <span className="stat-label">Takip</span>
-                                    <span className="stat-value">{formatCount(profileUser?.followingCount)}</span>
-                                </button>
+                    {/* Profile Header Actions Row (Avatar overlaps) */}
+                    <div className="profile-action-bar">
+                        <div className="profile-avatar-container">
+                            <div className="avatar-wrapper">
+                                {profileUser?.profile?.avatar ? (
+                                    <img
+                                        src={getImageUrl(profileUser.profile.avatar)}
+                                        alt={profileUser.username}
+                                        className="profile-avatar"
+                                    />
+                                ) : (
+                                    <div className="profile-avatar-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="40" height="40">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                            <circle cx="12" cy="7" r="4" />
+                                        </svg>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* Middle: Bio Box */}
-                        {profileUser?.profile?.bio && (
-                            <div className="profile-bio-box">
-                                <p>{profileUser.profile.bio}</p>
-                            </div>
-                        )}
-
-                        {/* Bottom: Action Button */}
-                        <div className="profile-actions-bottom">
+                        {/* Right Side Actions */}
+                        <div className="profile-actions-top-right">
                             {isOwnProfile ? (
-                                <button
-                                    className="action-btn-full"
-                                    onClick={() => setEditing(true)}
-                                >
-                                    Profili Düzenle
+                                <button className="action-btn-pill" onClick={() => setEditing(true)}>
+                                    Profili düzenle
                                 </button>
                             ) : (
                                 <>
-                                    <button
-                                        className="action-btn-full"
-                                        onClick={handleMessageClick}
-                                    >
-                                        Mesaj
+                                    <button className="icon-btn-circle" onClick={handleMessageClick} title="Mesaj Gönder">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                            <polyline points="22,6 12,13 2,6"></polyline>
+                                        </svg>
                                     </button>
-                                    <FollowButton userId={profileUser?._id} className="action-btn-full" />
+                                    <FollowButton userId={profileUser._id} initialIsFollowing={profileUser.isFollowing} onFollowChange={(isFollowing) => {
+                                        setProfileUser(prev => ({ ...prev, isFollowing, followerCount: prev.followerCount + (isFollowing ? 1 : -1) }));
+                                    }} />
                                 </>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Profile Details (Name, Bio, Stats) */}
+                    <div className="profile-details-section">
+                        <div className="profile-names">
+                            <h1 className="profile-display-name">
+                                {profileUser?.profile?.displayName || profileUser?.username}
+                                <Badge type={profileUser?.verificationBadge} />
+                                {/* Custom "Get Verified" Badge/Button visual */}
+                                {isOwnProfile && (!profileUser?.verificationBadge || profileUser?.verificationBadge === 'none') && (
+                                    <div className="get-verified-badge">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className="verified-icon">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                        </svg>
+                                        <span>Onaylanmış hesap sahibi ol</span>
+                                    </div>
+                                )}
+                            </h1>
+                            <p className="profile-username-handle">@{profileUser?.username}</p>
+                        </div>
+
+                        {profileUser?.profile?.bio && (
+                            <div className="profile-bio-text">
+                                {profileUser.profile.bio}
+                            </div>
+                        )}
+
+                        <div className="profile-meta-row">
+                            <span className="meta-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                {profileUser.createdAt ? new Date(profileUser.createdAt).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'Ocak 2021'} tarihinde katıldı
+                            </span>
+                        </div>
+
+                        <div className="profile-stats-text-row">
+                            <button className="stat-text-btn" onClick={() => openFollowModal('following')}>
+                                <span className="stat-bold">{formatCount(profileUser?.followingCount || 0)}</span> Takip edilen
+                            </button>
+                            <button className="stat-text-btn" onClick={() => openFollowModal('followers')}>
+                                <span className="stat-bold">{formatCount(profileUser?.followerCount)}</span> Takipçi
+                            </button>
                         </div>
                     </div>
 
@@ -431,15 +426,7 @@ const Profile = () => {
                     {showFollowModal && (
                         <div className="edit-modal-overlay" onClick={() => setShowFollowModal(null)}>
                             <div className="edit-modal follow-modal" onClick={e => e.stopPropagation()}>
-                                <div className="modal-header">
-                                    <h3>{showFollowModal === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}</h3>
-                                    <button className="close-modal-btn" onClick={() => setShowFollowModal(null)}>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <line x1="18" y1="6" x2="6" y2="18" />
-                                            <line x1="6" y1="6" x2="18" y2="18" />
-                                        </svg>
-                                    </button>
-                                </div>
+                                <h3 className="edit-modal-title">{showFollowModal === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}</h3>
                                 <div className="follow-list-content">
                                     {loadingFollow ? (
                                         <div className="spinner-container text-center">
@@ -479,6 +466,9 @@ const Profile = () => {
                                     ) : (
                                         <p className="empty-text">Henüz kimse yok.</p>
                                     )}
+                                </div>
+                                <div className="form-actions">
+                                    <button className="btn-cancel" onClick={() => setShowFollowModal(null)}>Kapat</button>
                                 </div>
                             </div>
                         </div>
@@ -542,25 +532,21 @@ const Profile = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Hakkında</label>
+                                        <label>Biyografi</label>
                                         <textarea
                                             name="bio"
                                             value={formData.bio}
                                             onChange={handleChange}
-                                            placeholder="Kendinden bahset..."
-                                            rows="3"
+                                            placeholder="Kendinizden bahsedin"
                                             className="form-input"
+                                            rows="3"
                                         />
                                     </div>
-                                    {error && <div className="error-message">{error}</div>}
-                                    {success && <div className="success-message">{success}</div>}
 
-                                    <div className="edit-actions">
-                                        <button type="button" className="btn-cancel" onClick={() => setEditing(false)}>
-                                            İptal
-                                        </button>
-                                        <button type="submit" className="btn-save">
-                                            Kaydet
+                                    <div className="form-actions">
+                                        <button type="button" className="btn-cancel" onClick={() => setEditing(false)}>İptal</button>
+                                        <button type="submit" className="btn-save" disabled={loading}>
+                                            {loading ? 'Kaydediliyor...' : 'Kaydet'}
                                         </button>
                                     </div>
                                 </form>
