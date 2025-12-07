@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
+import Badge from './Badge';
 import './CommentSection.css';
 
 const CommentSection = ({ postId }) => {
@@ -262,6 +263,7 @@ const CommentSection = ({ postId }) => {
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         {comment.author?.profile?.displayName || comment.author?.username}
+                                        <Badge type={comment.author?.verificationBadge} />
                                     </Link>
                                     <span className="comment-author-username">@{comment.author?.username}</span>
                                     <span className="comment-time">· {formatDate(comment.createdAt)}</span>
@@ -338,6 +340,7 @@ const CommentSection = ({ postId }) => {
                                                     <div className="comment-header">
                                                         <span className="comment-author-name">
                                                             {reply.author?.profile?.displayName || reply.author?.username}
+                                                            <Badge type={reply.author?.verificationBadge} />
                                                         </span>
                                                         <span className="comment-author-username">@{reply.author?.username}</span>
                                                         <span className="comment-time">· {formatDate(reply.createdAt)}</span>

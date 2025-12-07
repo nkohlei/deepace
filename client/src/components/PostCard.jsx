@@ -2,14 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { getImageUrl } from '../utils/imageUtils';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
-import { getImageUrl } from '../utils/imageUtils';
+import Badge from './Badge';
 import './PostCard.css';
 
 const PostCard = ({ post, onDelete, onUnsave }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+
     const [liked, setLiked] = useState(post.likes?.includes(user?._id) || false);
     const [likeCount, setLikeCount] = useState(post.likeCount || 0);
     const [saved, setSaved] = useState(false);
@@ -171,148 +173,142 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
                         </div>
                     )}
                 </Link>
-            </div>
-
-            {/* Right Column: Content */}
-            <div className="post-right">
-                {/* Header: Name, Username, Time, Menu */}
-                <div className="post-header-row">
-                    <Link
-                        to={`/profile/${post.author.username}`}
-                        className="header-info-link"
-                        onClick={handleProfileClick}
-                    >
-                        <span className="author-name">
-                            {post.author.profile?.displayName || post.author.username}
-                        </span>
-                        <span className="author-username">@{post.author.username}</span>
-                        <span className="post-time">· {formatDate(post.createdAt)}</span>
-                    </Link>
-
-                    <div className="post-menu-container">
-                        <button
-                            className="post-menu-btn"
-                            onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
-                        >
+                {showMenu && (
+                    <div className="post-dropdown-menu">
+                        {isOwnPost && (
+                            <button
+                                className="menu-item delete"
+                                onClick={(e) => { e.stopPropagation(); handleDeleteClick(); }}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                Sil
+                            </button>
+                        )}
+                        {post.media && (
+                            <button className="menu-item" onClick={(e) => { e.stopPropagation(); handleDownload(); }}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                İndir
+                            </button>
+                        )}
+                        <button className="menu-item" onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="1" />
-                                <circle cx="19" cy="12" r="1" />
-                                <circle cx="5" cy="12" r="1" />
+                                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                <line x1="4" y1="22" x2="4" y2="15" />
                             </svg>
+                            Bildir
                         </button>
-                        {showMenu && (
-                            <div className="post-dropdown-menu">
-                                {isOwnPost && (
-                                    <button
-                                        className="menu-item delete"
-                                        onClick={(e) => { e.stopPropagation(); handleDeleteClick(); }}
-                                    >
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                        </svg>
-                                        Sil
-                                    </button>
-                                )}
-                                {post.media && (
-                                    <button className="menu-item" onClick={(e) => { e.stopPropagation(); handleDownload(); }}>
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                            <polyline points="7 10 12 15 17 10" />
-                                            <line x1="12" y1="15" x2="12" y2="3" />
-                                        </svg>
-                                        İndir
-                                    </button>
-                                )}
-                                <button className="menu-item" onClick={(e) => { e.stopPropagation(); setShowMenu(false); }}>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
-                                        <line x1="4" y1="22" x2="4" y2="15" />
-                                    </svg>
-                                    Bildir
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Text Content */}
-                <div className="post-content-text">
-                    <p>{post.content}</p>
-                </div>
-
-                {/* Media */}
-                {post.media && (
-                    <div className="post-media" onClick={(e) => e.stopPropagation()}>
-                        {post.mediaType === 'video' ? (
-                            <video controls><source src={getImageUrl(post.media)} /></video>
-                        ) : (
-                            <img src={getImageUrl(post.media)} alt="Post media" loading="lazy" />
-                        )}
-                    </div>
-                )}
-
-                {/* Actions */}
-                <div className="post-actions">
-                    <button
-                        className="action-btn"
-                        onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-                        </svg>
-                        <span className="action-count">{post.commentCount || 0}</span>
-                    </button>
-                    <button
-                        className={`action-btn ${liked ? 'liked' : ''}`}
-                        onClick={(e) => { e.stopPropagation(); handleLike(); }}
-                    >
-                        <svg viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                        <span className="action-count">{formatLikeCount(likeCount)}</span>
-                    </button>
-                    <div className="actions-right">
-                        <button className="action-btn" onClick={(e) => { e.stopPropagation(); handleShare(); }}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <line x1="22" y1="2" x2="11" y2="13" />
-                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-                            </svg>
-                        </button>
-                        <button className={`action-btn ${saved ? 'saved' : ''}`} onClick={(e) => { e.stopPropagation(); handleSave(); }}>
-                            <svg viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Comments */}
-                {showComments && (
-                    <div className="post-comments-wrapper" onClick={(e) => e.stopPropagation()}>
-                        <CommentSection postId={post._id} />
                     </div>
                 )}
             </div>
+        </div>
 
-            {/* Delete Modal */}
-            {showDeleteConfirm && (
-                <div className="delete-confirm-overlay" onClick={(e) => e.stopPropagation()}>
-                    <div className="delete-confirm-modal">
-                        <h3>Gönderin Silinecek!</h3>
-                        <p>Emin misin?</p>
-                        <div className="confirm-buttons">
-                            <button className="confirm-btn btn-cancel" onClick={() => setShowDeleteConfirm(false)}>İptal</button>
-                            <button className="confirm-btn btn-delete" onClick={handleDelete}>Sil</button>
-                        </div>
+        {/* Right Column: Content */ }
+    <div className="post-right">
+        <div className="post-header">
+            <Link
+                to={`/profile/${post.author.username}`}
+                className="post-author-name"
+                onClick={handleProfileClick}
+            >
+                {post.author.profile?.displayName || post.author.username}
+            </Link>
+            <Badge type={post.author.verificationBadge} />
+            <span className="post-username">@{post.author.username}</span>
+            <span className="post-dot">·</span>
+            <span className="post-time">{formatDate(post.createdAt)}</span>
+        </div>
+
+        <div className="post-content-text">
+            <p>{post.content}</p>
+        </div>
+
+        {/* Media */}
+        {
+            post.media && (
+                <div className="post-media" onClick={(e) => e.stopPropagation()}>
+                    {post.mediaType === 'video' ? (
+                        <video controls><source src={getImageUrl(post.media)} /></video>
+                    ) : (
+                        <img src={getImageUrl(post.media)} alt="Post media" loading="lazy" />
+                    )}
+                </div>
+            )
+        }
+
+        {/* Actions */}
+        <div className="post-actions">
+            <button
+                className="action-btn"
+                onClick={(e) => { e.stopPropagation(); setShowComments(!showComments); }}
+            >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                </svg>
+                <span className="action-count">{post.commentCount || 0}</span>
+            </button>
+            <button
+                className={`action-btn ${liked ? 'liked' : ''}`}
+                onClick={(e) => { e.stopPropagation(); handleLike(); }}
+            >
+                <svg viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+                <span className="action-count">{formatLikeCount(likeCount)}</span>
+            </button>
+            <div className="actions-right">
+                <button className="action-btn" onClick={(e) => { e.stopPropagation(); handleShare(); }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
+                </button>
+                <button className={`action-btn ${saved ? 'saved' : ''}`} onClick={(e) => { e.stopPropagation(); handleSave(); }}>
+                    <svg viewBox="0 0 24 24" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {/* Comments */}
+        {
+            showComments && (
+                <div className="post-comments-wrapper" onClick={(e) => e.stopPropagation()}>
+                    <CommentSection postId={post._id} />
+                </div>
+            )
+        }
+    </div >
+
+    {/* Delete Modal */ }
+    {
+        showDeleteConfirm && (
+            <div className="delete-confirm-overlay" onClick={(e) => e.stopPropagation()}>
+                <div className="delete-confirm-modal">
+                    <h3>Gönderin Silinecek!</h3>
+                    <p>Emin misin?</p>
+                    <div className="confirm-buttons">
+                        <button className="confirm-btn btn-cancel" onClick={() => setShowDeleteConfirm(false)}>İptal</button>
+                        <button className="confirm-btn btn-delete" onClick={handleDelete}>Sil</button>
                     </div>
                 </div>
-            )}
+            </div>
+        )
+    }
 
-            {showShareModal && (
-                <ShareModal postId={post._id} onClose={() => setShowShareModal(false)} />
-            )}
-        </article>
-    );
+    {
+        showShareModal && (
+            <ShareModal postId={post._id} onClose={() => setShowShareModal(false)} />
+        )
+    }
+    </article >
+);
 };
 
 export default PostCard;

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import FollowButton from '../components/FollowButton';
 import PostCard from '../components/PostCard';
+import Badge from '../components/Badge';
 import './Profile.css';
 
 const Profile = () => {
@@ -282,6 +283,7 @@ const Profile = () => {
                             <div className="profile-text-info">
                                 <h1 className="profile-name">
                                     {profileUser?.profile?.displayName || profileUser?.username}
+                                    <Badge type={profileUser?.verificationBadge} />
                                 </h1>
                                 <p className="profile-username">@{profileUser?.username}</p>
                             </div>
