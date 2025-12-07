@@ -34,48 +34,23 @@
     position: relative;
     margin: 0 !important;
     animation: slideIn 0.2s ease;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    /* Contains overlay */
 }
 
 /* Message Actions Container */
 .message-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 0px;
+    /* Closer spacing as requested */
     opacity: 1;
-    /* Force visible for debugging/usability */
+    /* Always visible */
     transition: opacity 0.2s ease;
-    padding: 0 8px;
-    z-index: 10;
-    /* Boost z-index */
-    background: rgba(0, 0, 0, 0.2);
-    /* Slight background to verify position */
-    border-radius: 12px;
-    margin: 0 4px;
-}
-
-/* Removed hover dependency for now to ensure they are usable */
-/* section deleted */
-
-/* On mobile, always show actions (or maybe show them subtly) 
-   User asked to undo "Long press" setting. 
-*/
-@media (max-width: 768px) {
-    .message-actions {
-        opacity: 1;
-        /* Always visible on mobile as per user feedback to revert long press hidden behavior */
-        padding: 0 4px;
-        gap: 4px;
-    }
-
-    .action-btn {
-        opacity: 0.6;
-        /* Slight fade so they don't distract too much */
-    }
-
-    .action-btn:hover,
-    .action-btn:active {
-        opacity: 1;
-    }
+    padding: 0 4px;
+    /* Spacing between bubble and actions */
+    z-index: 5;
 }
 
 .action-wrapper {
@@ -104,9 +79,72 @@
     background: rgba(255, 255, 255, 0.08);
 }
 
+.action-btn.delete-btn:hover {
+    color: #ff4d4d;
+    /* Red for delete */
+}
+
 .action-btn svg {
     width: 16px;
     height: 16px;
+}
+
+/* Delete Confirmation Mode */
+.message-bubble.confirm-delete-mode {
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 77, 77, 0.4);
+}
+
+.blurred-content {
+    filter: blur(4px) grayscale(0.5);
+    pointer-events: none;
+    transition: filter 0.2s ease;
+}
+
+.delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+    /* Tint */
+    backdrop-filter: blur(2px);
+    /* Foggy effect */
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    gap: 8px;
+    animation: fadeIn 0.2s ease;
+}
+
+.delete-text {
+    background: #ff4d4d;
+    padding: 4px 10px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-delete-btn {
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.cancel-delete-btn:hover {
+    background: rgba(0, 0, 0, 0.6);
 }
 
 /* Menu Dropdowns */

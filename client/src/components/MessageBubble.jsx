@@ -33,7 +33,8 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
     const [showLightbox, setShowLightbox] = React.useState(false);
     const [dynamicPost, setDynamicPost] = React.useState(null);
     const [loadingError, setLoadingError] = React.useState(false);
-    const [showMenu, setShowMenu] = React.useState(false);
+    const [showMenu, setShowMenu] = React.useState(false); // Can keep for compatibility or remote if unused
+    const [confirmDelete, setConfirmDelete] = React.useState(false);
     const [showEmojiMenu, setShowEmojiMenu] = React.useState(false);
     const [showActionsMobile, setShowActionsMobile] = React.useState(false);
     const longPressTimer = React.useRef(null);
@@ -113,21 +114,20 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
             >
                 {/* Actions Bar (Left of bubble for own messages, Right for others - configured via CSS order) */}
                 <div className="message-actions">
-                    <button className="action-btn dots-btn" onClick={handleMenuClick}>
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                    {/* Delete Button (Trash Icon) */}
+                    <button
+                        className="action-btn delete-btn"
+                        title="Sil"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDelete(true);
+                        }}
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
                     </button>
-                    {showMenu && (
-                        <div className="message-actions-menu">
-                            <button onClick={handleDeleteClick} className="menu-item delete">
-                                Sil
-                            </button>
-                            <button onClick={() => setShowMenu(false)} className="menu-item">
-                                İptal
-                            </button>
-                        </div>
-                    )}
 
                     <button className="action-btn reply-btn" title="Yanıtla" onClick={() => onReply && onReply(message)}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -164,78 +164,99 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
                     </div>
                 </div>
 
-                <div className={`message-bubble ${isOwn ? 'own' : 'other'} ${message.isOptimistic ? 'optimistic' : ''}`}>
-                    {message.media && (
-                        <div className="message-media" onClick={toggleLightbox}>
-                            <img
-                                src={message.isOptimistic ? message.media : getImageUrl(message.media)}
-                                alt="Attachment"
-                            />
-                            {!message.isOptimistic && (
-                                <button className="msg-download-btn" onClick={(e) => handleDownload(e, getImageUrl(message.media))}>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="7 10 12 15 17 10" />
-                                        <line x1="12" y1="15" x2="12" y2="3" />
-                                    </svg>
-                                </button>
-                            )}
+                <div
+                    className={`message-bubble ${isOwn ? 'own' : 'other'} ${message.isOptimistic ? 'optimistic' : ''} ${confirmDelete ? 'confirm-delete-mode' : ''}`}
+                    onClick={confirmDelete ? () => onDelete(message._id) : undefined}
+                    title={confirmDelete ? "Silmek için tıklayın" : ""}
+                >
+                    {confirmDelete && (
+                        <div className="delete-overlay">
+                            <span className="delete-text">Mesajı Sil</span>
+                            <button
+                                className="cancel-delete-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setConfirmDelete(false);
+                                }}
+                            >
+                                ✕
+                            </button>
                         </div>
                     )}
 
-                    {message.replyTo && (
-                        <div className="message-reply-preview">
-                            <div className="reply-bar-line"></div>
-                            <div className="reply-content-box">
-                                <p className="reply-sender">
-                                    {message.replyTo.sender?.username || 'Kullanıcı'}
-                                </p>
-                                <p className="reply-text">
-                                    {message.replyTo.content || (message.replyTo.media ? '📷 Medya' : 'Mesaj')}
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {displayPost ? (
-                        <Link to={`/post/${displayPost._id}`} className="shared-post-card">
-                            <div className="shared-post-header">
+                    <div className={`message-bubble-content ${confirmDelete ? 'blurred-content' : ''}`}>
+                        {message.media && (
+                            <div className="message-media" onClick={toggleLightbox}>
                                 <img
-                                    src={getImageUrl(displayPost.author?.profile?.avatar)}
-                                    alt={displayPost.author?.username}
-                                    className="shared-post-avatar"
+                                    src={message.isOptimistic ? message.media : getImageUrl(message.media)}
+                                    alt="Attachment"
                                 />
-                                <span className="shared-post-username">@{displayPost.author?.username}</span>
+                                {!message.isOptimistic && (
+                                    <button className="msg-download-btn" onClick={(e) => handleDownload(e, getImageUrl(message.media))}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="7 10 12 15 17 10" />
+                                            <line x1="12" y1="15" x2="12" y2="3" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
-                            {displayPost.content && <p className="shared-post-content">{displayPost.content.substring(0, 100)}...</p>}
-                            {displayPost.media && (
-                                <div className="shared-post-media-preview">
-                                    <img src={getImageUrl(Array.isArray(displayPost.media) ? displayPost.media[0] : displayPost.media)} alt="Shared Post" />
+                        )}
+
+                        {message.replyTo && (
+                            <div className="message-reply-preview">
+                                <div className="reply-bar-line"></div>
+                                <div className="reply-content-box">
+                                    <p className="reply-sender">
+                                        {message.replyTo.sender?.username || 'Kullanıcı'}
+                                    </p>
+                                    <p className="reply-text">
+                                        {message.replyTo.content || (message.replyTo.media ? '📷 Medya' : 'Mesaj')}
+                                    </p>
                                 </div>
-                            )}
-                        </Link>
-                    ) : message.sharedPost ? (
-                        <Link to={`/post/${message.sharedPost}`} className="shared-post-card fallback">
-                            <div className="shared-post-content" style={{ color: loadingError ? 'var(--error-color, #ff4d4d)' : 'inherit' }}>
-                                {loadingError ? 'Gönderi yüklenemedi (Silinmiş olabilir)' : 'Gönderi yükleniyor...'}
                             </div>
-                        </Link>
-                    ) : null}
+                        )}
 
-                    {message.content && <div className="message-content">{message.content}</div>}
-                    <div className="message-time">
-                        {formatTime(message.createdAt)}
-                        {message.isOptimistic && <span className="sending-indicator">...</span>}
-                    </div>
+                        {displayPost ? (
+                            <Link to={`/post/${displayPost._id}`} className="shared-post-card">
+                                <div className="shared-post-header">
+                                    <img
+                                        src={getImageUrl(displayPost.author?.profile?.avatar)}
+                                        alt={displayPost.author?.username}
+                                        className="shared-post-avatar"
+                                    />
+                                    <span className="shared-post-username">@{displayPost.author?.username}</span>
+                                </div>
+                                {displayPost.content && <p className="shared-post-content">{displayPost.content.substring(0, 100)}...</p>}
+                                {displayPost.media && (
+                                    <div className="shared-post-media-preview">
+                                        <img src={getImageUrl(Array.isArray(displayPost.media) ? displayPost.media[0] : displayPost.media)} alt="Shared Post" />
+                                    </div>
+                                )}
+                            </Link>
+                        ) : message.sharedPost ? (
+                            <Link to={`/post/${message.sharedPost}`} className="shared-post-card fallback">
+                                <div className="shared-post-content" style={{ color: loadingError ? 'var(--error-color, #ff4d4d)' : 'inherit' }}>
+                                    {loadingError ? 'Gönderi yüklenemedi (Silinmiş olabilir)' : 'Gönderi yükleniyor...'}
+                                </div>
+                            </Link>
+                        ) : null}
 
-                    {/* Reactions Display */}
-                    {message.reactions && message.reactions.length > 0 && (
-                        <div className="message-reactions">
-                            {message.reactions.map((reaction, index) => (
-                                <span key={index} className="reaction-emoji">{reaction.emoji}</span>
-                            ))}
+                        {message.content && <div className="message-content">{message.content}</div>}
+                        <div className="message-time">
+                            {formatTime(message.createdAt)}
+                            {message.isOptimistic && <span className="sending-indicator">...</span>}
                         </div>
-                    )}
+
+                        {/* Reactions Display */}
+                        {message.reactions && message.reactions.length > 0 && (
+                            <div className="message-reactions">
+                                {message.reactions.map((reaction, index) => (
+                                    <span key={index} className="reaction-emoji">{reaction.emoji}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
