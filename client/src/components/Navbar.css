@@ -58,6 +58,20 @@ html[data-theme='dark'] .bottom-nav,
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 32px;
+    width: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
 .logo-text {
     font-size: 1.6rem;
     font-weight: 800;

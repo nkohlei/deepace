@@ -90,6 +90,7 @@ const Navbar = () => {
             <header className="top-header">
                 <div className="header-container">
                     <Link to="/" className="logo">
+                        <img src="/logo.jpg" alt="Logo" className="logo-img" />
                         <span className="logo-text">deepace</span>
                     </Link>
 
