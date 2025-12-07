@@ -7,18 +7,9 @@ import Post from '../models/Post.js';
 
 const router = express.Router();
 
-// Configure multer for avatar uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Use process.cwd() for absolute path on Render
-        cb(null, path.join(process.cwd(), 'uploads'));
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+import { storage } from '../config/cloudinary.js';
 
+// Configure multer for avatar uploads with Cloudinary
 const upload = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
@@ -158,7 +149,7 @@ router.post('/me/avatar', protect, (req, res, next) => {
         const user = await User.findById(req.user._id);
 
         // Update avatar URL
-        user.profile.avatar = `/uploads/${req.file.filename}`;
+        user.profile.avatar = req.file.path;
         await user.save();
 
         res.json({
@@ -195,7 +186,7 @@ router.post('/me/cover', protect, (req, res, next) => {
         const user = await User.findById(req.user._id);
 
         // Update cover image URL
-        user.profile.coverImage = `/uploads/${req.file.filename}`;
+        user.profile.coverImage = req.file.path;
         await user.save();
 
         res.json({

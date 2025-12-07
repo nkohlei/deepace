@@ -11,19 +11,9 @@ const router = express.Router();
 import multer from 'multer';
 import path from 'path';
 
-// Configure multer for message attachments
-// Configure multer for message attachments
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Use process.cwd() to be safe and consistent with server.js
-        cb(null, path.join(process.cwd(), 'uploads'));
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'msg-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+import { storage } from '../config/cloudinary.js';
 
+// Configure multer for message attachments with Cloudinary
 const upload = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
@@ -57,7 +47,8 @@ router.post('/', protect, (req, res, next) => {
 }, async (req, res) => {
     try {
         const { recipientId, content, postId } = req.body;
-        const media = req.file ? `/uploads/${req.file.filename}` : undefined;
+        // Cloudinary returns the full URL in req.file.path
+        const media = req.file ? req.file.path : undefined;
 
         if (!recipientId || (!content && !media && !postId)) {
             return res.status(400).json({ message: 'Mesaj veya resim boş olamaz.' });

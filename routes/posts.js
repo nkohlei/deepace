@@ -8,34 +8,23 @@ import User from '../models/User.js';
 const router = express.Router();
 
 // Configure multer for file uploads
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Use process.cwd() for absolute path on Render
-        cb(null, path.join(process.cwd(), 'uploads'));
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    },
-});
+import { storage } from '../config/cloudinary.js';
 
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only images and GIFs are allowed'));
-    }
-};
-
+// Configure multer for file uploads with Cloudinary
 const upload = multer({
     storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
-    fileFilter,
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+
+        if (extname && mimetype) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only images and GIFs are allowed'));
+        }
+    },
 });
 
 // @route   POST /api/posts
@@ -64,7 +53,7 @@ router.post('/', protect, (req, res, next) => {
         };
 
         if (req.file) {
-            postData.media = `/uploads/${req.file.filename}`;
+            postData.media = req.file.path;
             postData.mediaType = req.file.mimetype.includes('gif') ? 'gif' : 'image';
         }
 
