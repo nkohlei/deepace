@@ -70,22 +70,25 @@ router.post('/', protect, (req, res, next) => {
 
         const message = await Message.create(messageData);
 
-        await message.populate('sender', 'username profile.displayName profile.avatar');
-        await message.populate('recipient', 'username profile.displayName profile.avatar');
-
-        if (postId) {
-            await message.populate({
+        // Re-fetch the message to ensure full population
+        const populatedMessage = await Message.findById(message._id)
+            .populate('sender', 'username profile.displayName profile.avatar')
+            .populate('recipient', 'username profile.displayName profile.avatar')
+            .populate({
                 path: 'sharedPost',
-                populate: { path: 'author', select: 'username profile.displayName profile.avatar' }
+                populate: {
+                    path: 'author',
+                    select: 'username profile.displayName profile.avatar'
+                }
             });
-        }
 
         // Emit socket event for real-time delivery
-        req.app.get('io').to(recipientId).emit('newMessage', message);
-        // Also emit to sender for optimistic/confirmation update (optional but good practice)
-        req.app.get('io').to(req.user._id.toString()).emit('messageSent', message);
+        // Emit socket event for real-time delivery
+        req.app.get('io').to(recipientId).emit('newMessage', populatedMessage);
+        // Also emit to sender for optimistic/confirmation update
+        req.app.get('io').to(req.user._id.toString()).emit('messageSent', populatedMessage);
 
-        res.status(201).json(message);
+        res.status(201).json(populatedMessage);
     } catch (error) {
         console.error('Send message error:', error);
         res.status(500).json({ message: 'Sunucu hatası: Mesaj gönderilemedi.' });

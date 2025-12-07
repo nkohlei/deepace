@@ -57,23 +57,31 @@ const MessageBubble = ({ message, isOwn }) => {
                     </div>
                 )}
 
-                {message.sharedPost && typeof message.sharedPost === 'object' && (
-                    <Link to={`/post/${message.sharedPost._id}`} className="shared-post-card">
-                        <div className="shared-post-header">
-                            <img
-                                src={getImageUrl(message.sharedPost.author?.profile?.avatar)}
-                                alt={message.sharedPost.author?.username}
-                                className="shared-post-avatar"
-                            />
-                            <span className="shared-post-username">@{message.sharedPost.author?.username}</span>
-                        </div>
-                        {message.sharedPost.content && <p className="shared-post-content">{message.sharedPost.content.substring(0, 100)}...</p>}
-                        {message.sharedPost.media && (
-                            <div className="shared-post-media-preview">
-                                <img src={getImageUrl(Array.isArray(message.sharedPost.media) ? message.sharedPost.media[0] : message.sharedPost.media)} alt="Shared Post" />
+                {message.sharedPost && (
+                    typeof message.sharedPost === 'object' ? (
+                        <Link to={`/post/${message.sharedPost._id}`} className="shared-post-card">
+                            <div className="shared-post-header">
+                                <img
+                                    src={getImageUrl(message.sharedPost.author?.profile?.avatar)}
+                                    alt={message.sharedPost.author?.username}
+                                    className="shared-post-avatar"
+                                />
+                                <span className="shared-post-username">@{message.sharedPost.author?.username}</span>
                             </div>
-                        )}
-                    </Link>
+                            {message.sharedPost.content && <p className="shared-post-content">{message.sharedPost.content.substring(0, 100)}...</p>}
+                            {message.sharedPost.media && (
+                                <div className="shared-post-media-preview">
+                                    <img src={getImageUrl(Array.isArray(message.sharedPost.media) ? message.sharedPost.media[0] : message.sharedPost.media)} alt="Shared Post" />
+                                </div>
+                            )}
+                        </Link>
+                    ) : (
+                        <Link to={`/post/${message.sharedPost}`} className="shared-post-card fallback">
+                            <div className="shared-post-content">
+                                Gönderiyi görüntüle (Yükleniyor...)
+                            </div>
+                        </Link>
+                    )
                 )}
 
                 {message.content && <div className="message-content">{message.content}</div>}
