@@ -1,5 +1,5 @@
 .inbox-container {
-    max-width: 900px;
+    max-width: 1000px;
     /* Wider for better layout */
     margin: 0 auto;
     height: calc(100vh - var(--nav-top-height) - var(--nav-bottom-height));
@@ -11,6 +11,16 @@
     border-radius: 0;
     /* Full height feel */
     overflow: hidden;
+}
+
+/* Force wider layout for Inbox page */
+.inbox-wrapper {
+    max-width: 1000px !important;
+}
+
+.inbox-wrapper .top-header,
+.inbox-wrapper .bottom-nav {
+    max-width: 1000px !important;
 }
 
 @media (min-width: 768px) {
