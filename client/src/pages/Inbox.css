@@ -1,23 +1,11 @@
-/* Safe Restore of Inbox.css */
-
 .inbox-container {
-    max-width: 1000px;
+    max-width: 100%;
     margin: 0 auto;
     height: calc(100vh - var(--nav-top-height) - var(--nav-bottom-height));
     display: flex;
     background: var(--bg-card);
     border: 1px solid var(--border-subtle);
     overflow: hidden;
-}
-
-/* Force wider layout for Inbox page */
-.inbox-wrapper {
-    max-width: 1000px !important;
-}
-
-.inbox-wrapper .top-header,
-.inbox-wrapper .bottom-nav {
-    max-width: 1000px !important;
 }
 
 @media (min-width: 768px) {

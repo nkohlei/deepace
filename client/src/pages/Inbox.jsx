@@ -237,7 +237,7 @@ const Inbox = () => {
     });
 
     return (
-        <div className="app-wrapper inbox-wrapper">
+        <div className="app-wrapper">
             <Navbar />
             <main className="app-content">
                 <div className="inbox-container">
