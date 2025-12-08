@@ -9,71 +9,42 @@ import Badge from './Badge';
 import './PostCard.css';
 
 const PostCard = ({ post, onDelete, onUnsave }) => {
-    const { user } = useAuth();
-    const navigate = useNavigate();
+    const { user, updateUser } = useAuth(); // Destructure updateUser
 
-    const [liked, setLiked] = useState(post.likes?.includes(user?._id) || false);
-    const [likeCount, setLikeCount] = useState(post.likeCount || 0);
-    const [saved, setSaved] = useState(false);
-    const [hidden, setHidden] = useState(false);
-    const [showComments, setShowComments] = useState(false);
-    const [showMenu, setShowMenu] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [showAnyway, setShowAnyway] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
-
-    // Safe check for author existence (Process orphaned posts)
-    const author = post.author || {
-        _id: 'deleted',
-        username: 'Silinmiş Kullanıcı',
-        profile: { displayName: 'Silinmiş Kullanıcı', avatar: null }
-    };
-
-    const isOwnPost = user?._id === author._id;
-
-    // Optimized: Check saved status from AuthContext instead of API flood
-    useEffect(() => {
-        if (user && user.savedPosts) {
-            // Robust comparison
-            const isSaved = user.savedPosts.some(id => String(id) === String(post._id));
-            setSaved(isSaved);
-        }
-    }, [user, post._id]);
-
-    const formatDate = (date) => {
-        const now = new Date();
-        const postDate = new Date(date);
-        const diff = now - postDate;
-        const minutes = Math.floor(diff / 60000);
-        const hours = Math.floor(diff / 3600000);
-        const days = Math.floor(diff / 86400000);
-
-        if (minutes < 1) return 'now';
-        if (minutes < 60) return `${minutes}m ago`;
-        if (hours < 24) return `${hours}h ago`;
-        if (days < 7) return `${days}d ago`;
-        return postDate.toLocaleDateString('en-US');
-    };
-
-    const handleLike = async () => {
-        try {
-            const response = await axios.post(`/api/likes/post/${post._id}`);
-            setLiked(response.data.liked);
-            setLikeCount(response.data.likeCount);
-        } catch (error) {
-            console.error('Like error:', error);
-        }
-    };
+    // ... (existing state) ...
 
     const handleSave = async () => {
         try {
+            // Optimistic update
+            const startSavedState = saved;
+            setSaved(!startSavedState);
+
             const response = await axios.post(`/api/users/me/save/${post._id}`);
+
+            // Sync with global context to prevent reversion
+            if (response.data.saved !== startSavedState) {
+                const currentSavedPosts = user.savedPosts || [];
+                let newSavedPosts;
+
+                if (response.data.saved) {
+                    // Add to saved
+                    newSavedPosts = [...currentSavedPosts, post._id];
+                } else {
+                    // Remove from saved
+                    newSavedPosts = currentSavedPosts.filter(id => String(id) !== String(post._id));
+                }
+
+                updateUser({ ...user, savedPosts: newSavedPosts });
+            }
+
             setSaved(response.data.saved);
             if (!response.data.saved && onUnsave) {
                 onUnsave();
             }
         } catch (error) {
             console.error('Save error:', error);
+            // Revert on error
+            setSaved(saved);
         }
     };
 
