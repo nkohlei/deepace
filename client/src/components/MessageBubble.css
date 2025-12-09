@@ -46,7 +46,6 @@
 /* Content Styling */
 .message-content {
     padding: 10px 14px;
-    /* Slightly more padding */
     border-radius: 18px;
     font-size: 0.95rem;
     line-height: 1.5;
@@ -151,10 +150,7 @@
     opacity: 0;
     transition: opacity 0.2s ease;
     z-index: 10;
-    /* Ensure it doesn't take up space when hidden to avoid layout jumps if possible, 
-       but opacity is better for maintaining layout stability. */
     visibility: hidden;
-    /* Or just opacity */
 }
 
 /* Show actions on hover */
@@ -171,44 +167,41 @@
     }
 }
 
-
-/* Action Buttons (Reply, React, Delete) */
-.action-btn {
-    background: none;
-    border: none;
-    color: var(--text-tertiary, #888);
+/* Delete Button Only */
+.action-btn.delete-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    /* Subtle red border */
+    color: #ff4d4d;
     cursor: pointer;
-    padding: 6px;
-    border-radius: 50%;
+    padding: 8px;
+    /* Larger hit area */
+    border-radius: 12px;
+    /* Rounded rect as per image */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    width: 36px;
+    height: 36px;
 }
 
-.action-btn svg {
-    width: 16px;
-    height: 16px;
+.action-btn.delete-btn svg {
+    width: 18px;
+    height: 18px;
     stroke-width: 2px;
 }
 
-.action-btn:hover {
-    color: var(--primary-cyan, #00d2ff);
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.1);
-}
-
-/* Specific colors */
 .action-btn.delete-btn:hover {
-    color: #ff4d4d;
-    /* Red for delete */
+    background: rgba(255, 77, 77, 0.1);
+    border-color: #ff4d4d;
+    transform: scale(1.05);
 }
 
-/* Reactions Display (Under the bubble) */
+/* Reactions Display (Under the bubble) - Kept if reactions exist in data */
 .message-reactions {
     position: absolute;
     bottom: -12px;
-    /* Slight overlap or just below */
     z-index: 2;
     background: #1a1a1a;
     border: 1px solid #333;
@@ -221,7 +214,6 @@
     white-space: nowrap;
 }
 
-/* Position reactions based on ownership */
 .message-bubble.own .message-reactions {
     right: 0;
 }
@@ -230,39 +222,7 @@
     left: 0;
 }
 
-/* Emoji Picker Menu */
-.emoji-menu {
-    position: absolute;
-    bottom: 100%;
-    /* Above the action bar */
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-card, #1e1e1e);
-    border: 1px solid var(--border-subtle, #333);
-    border-radius: 20px;
-    padding: 8px;
-    display: flex;
-    gap: 6px;
-    z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    margin-bottom: 8px;
-    /* Space from button */
-}
-
-.emoji-option {
-    background: none;
-    border: none;
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: transform 0.2s;
-    padding: 2px;
-}
-
-.emoji-option:hover {
-    transform: scale(1.3);
-}
-
-/* Reply Preview (Attached to message) */
+/* Reply Preview (Attached to message) - Kept for displaying replies */
 .message-reply-preview {
     font-size: 0.8rem;
     background: rgba(0, 0, 0, 0.2);
@@ -401,8 +361,6 @@
 }
 
 .delete-confirm-modal {
-    background: #1e1e1e;
-    /* Fallback */
     background: var(--bg-card, #1e1e1e);
     padding: 24px 32px;
     border-radius: 16px;
