@@ -102,6 +102,15 @@ app.use('/api/comments', commentsRoutes);
 app.use('/api/follow', followRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('Unhandled Error:', err);
+    res.status(500).json({
+        message: err.message || 'Global Server Error',
+        stack: process.env.NODE_ENV === 'production' ? null : err.stack
+    });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'GlobalMessage API is running' });
