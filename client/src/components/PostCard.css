@@ -110,16 +110,11 @@
 /* Media */
 .post-media {
     margin-bottom: 12px;
-    /* More breathing room */
     margin-top: 8px;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border-subtle);
     max-height: 600px;
-    background: var(--bg-darker);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    /* Align to the start (left) */
 }
 
 .post-media img,
@@ -130,6 +125,8 @@
     max-height: 600px;
     object-fit: contain;
     display: block;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
 }
 
 /* Actions */
