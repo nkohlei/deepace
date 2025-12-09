@@ -135,7 +135,7 @@ router.post('/post/:postId', protect, upload.single('media'), async (req, res) =
         res.status(201).json(comment);
     } catch (error) {
         console.error('Create comment error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: error.message || 'Server error' });
     }
 });
 
