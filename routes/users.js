@@ -218,11 +218,11 @@ router.post('/me/save/:postId', protect, async (req, res) => {
         // DEBUG: Log status for specific user debugging
         console.log(`[SavePost] User: ${user.username}, SavedPosts Type: ${typeof user.savedPosts}, IsArray: ${Array.isArray(user.savedPosts)}`);
 
-        // Repair corrupt data: Force to array if missing or not an array
-        if (!user.savedPosts || !Array.isArray(user.savedPosts)) {
-            console.log('[SavePost] Repairing corrupt savedPosts array');
-            user.savedPosts = [];
-        }
+        // Repair corrupt data: Force ALL arrays to be valid
+        if (!Array.isArray(user.savedPosts)) { console.log('Repairing savedPosts'); user.savedPosts = []; }
+        if (!Array.isArray(user.hiddenPosts)) { console.log('Repairing hiddenPosts'); user.hiddenPosts = []; }
+        if (!Array.isArray(user.following)) { console.log('Repairing following'); user.following = []; }
+        if (!Array.isArray(user.followers)) { console.log('Repairing followers'); user.followers = []; }
 
         const isSaved = user.savedPosts.includes(postId);
 

@@ -21,15 +21,17 @@ router.post('/:userId', protect, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Repair corrupt data
-        if (!Array.isArray(currentUser.following)) {
-            console.log(`[Follow] Repairing following for ${currentUser.username}`);
-            currentUser.following = [];
-        }
-        if (!Array.isArray(userToFollow.followers)) {
-            console.log(`[Follow] Repairing followers for ${userToFollow.username}`);
-            userToFollow.followers = [];
-        }
+        // Repair corrupt data (for Current User)
+        if (!Array.isArray(currentUser.following)) currentUser.following = [];
+        if (!Array.isArray(currentUser.followers)) currentUser.followers = [];
+        if (!Array.isArray(currentUser.savedPosts)) currentUser.savedPosts = [];
+        if (!Array.isArray(currentUser.hiddenPosts)) currentUser.hiddenPosts = [];
+
+        // Repair corrupt data (for Target User)
+        if (!Array.isArray(userToFollow.followers)) userToFollow.followers = [];
+        if (!Array.isArray(userToFollow.following)) userToFollow.following = [];
+        if (!Array.isArray(userToFollow.savedPosts)) userToFollow.savedPosts = [];
+        if (!Array.isArray(userToFollow.hiddenPosts)) userToFollow.hiddenPosts = [];
 
         const followingIndex = currentUser.following.indexOf(req.params.userId);
 
