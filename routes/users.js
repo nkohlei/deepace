@@ -215,7 +215,15 @@ router.post('/me/save/:postId', protect, async (req, res) => {
         const user = await User.findById(req.user._id);
         const postId = req.params.postId;
 
-        if (!user.savedPosts) user.savedPosts = [];
+        // DEBUG: Log status for specific user debugging
+        console.log(`[SavePost] User: ${user.username}, SavedPosts Type: ${typeof user.savedPosts}, IsArray: ${Array.isArray(user.savedPosts)}`);
+
+        // Repair corrupt data: Force to array if missing or not an array
+        if (!user.savedPosts || !Array.isArray(user.savedPosts)) {
+            console.log('[SavePost] Repairing corrupt savedPosts array');
+            user.savedPosts = [];
+        }
+
         const isSaved = user.savedPosts.includes(postId);
 
         if (isSaved) {
@@ -232,7 +240,7 @@ router.post('/me/save/:postId', protect, async (req, res) => {
         });
     } catch (error) {
         console.error('Save post error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error: ' + error.message }); // Expose error for debugging
     }
 });
 
