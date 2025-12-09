@@ -280,6 +280,20 @@
     outline: none;
 }
 
+/* Image Upload Button inside Input */
+.input-icon-btn {
+    width: 28px;
+    height: 28px;
+    color: var(--primary-cyan);
+    margin-left: 8px;
+    flex-shrink: 0;
+    /* Don't shrink */
+}
+
+.input-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
 .send-btn-small {
     background: none;
     border: none;
