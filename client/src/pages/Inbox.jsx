@@ -362,16 +362,7 @@ const Inbox = () => {
 
                             <form onSubmit={handleSendMessage} className="message-form">
                                 <div className="input-actions-left">
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        style={{ display: 'none' }}
-                                        accept="image/*"
-                                        onChange={handleFileSelect}
-                                    />
-                                    <button type="button" className="icon-btn" onClick={() => fileInputRef.current?.click()} title="Resim Ekle">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                    </button>
+
                                     <button type="button" className="icon-btn" title="GIF">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M9 10h-2v4h2"></path><path d="M12 10v4"></path><path d="M15 10h2"></path><path d="M15 12h1.5"></path><path d="M15 14h2"></path></svg>
                                     </button>
@@ -387,6 +378,17 @@ const Inbox = () => {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                     />
+                                    {/* Image Upload Button (Moved Inside Wrapper) */}
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        style={{ display: 'none' }}
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                    />
+                                    <button type="button" className="icon-btn input-icon-btn" onClick={() => fileInputRef.current?.click()} title="Resim Ekle" style={{ width: '28px', height: '28px', color: 'var(--primary-cyan)', marginLeft: '8px' }}>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                    </button>
                                 </div>
 
                                 <button type="submit" className="send-btn-small" disabled={!newMessage.trim() && !media}>

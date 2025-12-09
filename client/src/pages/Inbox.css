@@ -265,12 +265,15 @@
 }
 
 .message-input-wrapper input {
-    width: 100%;
+    flex: 1;
+    /* Allow sharing space with icon */
     background: transparent;
     border: none;
     color: var(--text-primary);
     font-size: 0.95rem;
     padding: 0;
+    min-width: 0;
+    /* Prevent overflow */
 }
 
 .message-input-wrapper input:focus {
