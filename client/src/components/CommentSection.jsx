@@ -113,9 +113,7 @@ const CommentSection = ({ postId }) => {
             let response;
             if (replyingTo) {
                 // Reply
-                response = await axios.post(`/api/comments/comment/${replyingTo.id}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                response = await axios.post(`/api/comments/comment/${replyingTo.id}`, formData);
 
                 const parentId = replyingTo.id;
                 setExpandedComments(prev => ({
@@ -130,9 +128,7 @@ const CommentSection = ({ postId }) => {
                 setReplyingTo(null);
             } else {
                 // Top-level comment
-                response = await axios.post(`/api/comments/post/${postId}`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                response = await axios.post(`/api/comments/post/${postId}`, formData);
                 setComments([{ ...response.data, isLiked: false }, ...comments]);
             }
 
@@ -140,7 +136,8 @@ const CommentSection = ({ postId }) => {
             clearFile();
         } catch (error) {
             console.error('Failed to post comment:', error);
-            alert('Yorum gönderilemedi.');
+            const errorMsg = error.response?.data?.message || 'Yorum gönderilemedi.';
+            alert(errorMsg);
         }
     };
 
