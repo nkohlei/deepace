@@ -353,6 +353,10 @@ router.put('/settings', protect, async (req, res) => {
         const { notifications, privacy } = req.body;
         const user = await User.findById(req.user._id);
 
+        if (!user.settings) user.settings = {};
+        if (!user.settings.notifications) user.settings.notifications = {};
+        if (!user.settings.privacy) user.settings.privacy = {};
+
         if (notifications) {
             user.settings.notifications = { ...user.settings.notifications, ...notifications };
         }

@@ -82,16 +82,31 @@ router.get('/', protect, async (req, res) => {
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
 
+        // Fetch slightly more to account for filtered private posts
+        // Ideally this should be done with aggregation for true pagination
         const posts = await Post.find()
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit)
-            .populate('author', 'username profile.displayName profile.avatar verificationBadge');
+            .limit(limit + 10) // buffer
+            .populate('author', 'username profile.displayName profile.avatar verificationBadge settings.privacy');
 
-        const total = await Post.countDocuments();
+        if (!req.user.following) req.user.following = []; // Safety
+
+        const visiblePosts = posts.filter(post => {
+            if (!post.author) return false;
+            // Public
+            if (!post.author.settings?.privacy?.isPrivate) return true;
+            // Own
+            if (post.author._id.toString() === req.user._id.toString()) return true;
+            // Following
+            return req.user.following.some(id => id.toString() === post.author._id.toString());
+        });
+
+        const paginatedPosts = visiblePosts.slice(0, limit);
+        const total = await Post.countDocuments(); // This is total raw posts, not visible. Fixing strict count would require complex query.
 
         res.json({
-            posts,
+            posts: paginatedPosts,
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalPosts: total,
@@ -108,10 +123,20 @@ router.get('/', protect, async (req, res) => {
 router.get('/:id', protect, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
-            .populate('author', 'username profile.displayName profile.avatar verificationBadge');
+            .populate('author', 'username profile.displayName profile.avatar verificationBadge settings.privacy');
 
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Privacy Check
+        if (post.author.settings?.privacy?.isPrivate) {
+            const isOwn = post.author._id.toString() === req.user._id.toString();
+            const isFollowing = req.user.following.some(id => id.toString() === post.author._id.toString());
+
+            if (!isOwn && !isFollowing) {
+                return res.status(403).json({ message: 'This account is private' });
+            }
         }
 
         res.json(post);
@@ -126,6 +151,19 @@ router.get('/:id', protect, async (req, res) => {
 // @access  Private
 router.get('/user/:userId', protect, async (req, res) => {
     try {
+        // Privacy Check First
+        const targetUser = await User.findById(req.params.userId);
+        if (!targetUser) return res.status(404).json({ message: 'User not found' });
+
+        if (targetUser.settings?.privacy?.isPrivate) {
+            const isOwn = req.params.userId === req.user._id.toString();
+            const isFollowing = req.user.following.some(id => id.toString() === req.params.userId);
+
+            if (!isOwn && !isFollowing) {
+                return res.status(403).json({ message: 'This account is private' });
+            }
+        }
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;

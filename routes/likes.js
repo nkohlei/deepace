@@ -1,6 +1,7 @@
 import express from 'express';
 import Post from '../models/Post.js';
 import Comment from '../models/Comment.js';
+import Notification from '../models/Notification.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -34,6 +35,33 @@ router.post('/post/:postId', protect, async (req, res) => {
             post.likes.push(req.user.id);
             post.likeCount += 1;
             await post.save();
+
+            // Create Notification (if not own post)
+            if (post.author.toString() !== req.user.id) {
+                // Check if notification already exists to avoid spamming touches
+                const existingNotif = await Notification.findOne({
+                    recipient: post.author,
+                    sender: req.user.id,
+                    type: 'like',
+                    post: post._id
+                });
+
+                if (!existingNotif) {
+                    const notification = await Notification.create({
+                        recipient: post.author,
+                        sender: req.user.id,
+                        type: 'like',
+                        post: post._id
+                    });
+
+                    // Real-time socket part
+                    const io = req.app.get('io');
+                    if (io) {
+                        const populatedNotif = await notification.populate('sender', 'username profile.displayName profile.avatar verificationBadge');
+                        io.to(post.author.toString()).emit('newNotification', populatedNotif);
+                    }
+                }
+            }
 
             res.json({
                 message: 'Post liked',
@@ -76,6 +104,32 @@ router.post('/comment/:commentId', protect, async (req, res) => {
             comment.likes.push(req.user.id);
             comment.likeCount += 1;
             await comment.save();
+
+            // Create Notification for Comment Like
+            if (comment.author.toString() !== req.user.id) {
+                const existingNotif = await Notification.findOne({
+                    recipient: comment.author,
+                    sender: req.user.id,
+                    type: 'like',
+                    comment: comment._id
+                });
+
+                if (!existingNotif) {
+                    const notification = await Notification.create({
+                        recipient: comment.author,
+                        sender: req.user.id,
+                        type: 'like',
+                        post: comment.post, // Link to the post
+                        comment: comment._id
+                    });
+
+                    const io = req.app.get('io');
+                    if (io) {
+                        const populatedNotif = await notification.populate('sender', 'username profile.displayName profile.avatar verificationBadge');
+                        io.to(comment.author.toString()).emit('newNotification', populatedNotif);
+                    }
+                }
+            }
 
             res.json({
                 message: 'Comment liked',
