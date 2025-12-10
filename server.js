@@ -59,7 +59,20 @@ const io = new Server(httpServer, {
 app.set('io', io);
 
 // Connect to MongoDB
-connectDB();
+// Middleware (Database Connection)
+app.use(async (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+        try {
+            await connectDB();
+        } catch (error) {
+            console.error('DB Connection Error in Middleware:', error);
+            return res.status(500).json({ message: 'Database Connection Error' });
+        }
+    }
+    next();
+});
+
+// Middleware
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, 'uploads');
