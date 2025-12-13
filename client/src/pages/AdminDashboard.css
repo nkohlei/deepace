@@ -134,3 +134,146 @@
 .admin-error {
     color: #f91880;
 }
+
+/* TABS */
+.admin-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    background: #1e1e1e;
+    padding: 5px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.admin-tab {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-tab.active {
+    background: #1d9bf0;
+    color: white;
+}
+
+.tab-badge {
+    background: #ff4d4d;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* USER LIST */
+.users-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.users-search input {
+    width: 100%;
+    padding: 12px 15px;
+    background: #151515;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: white;
+    font-size: 15px;
+}
+
+.users-search input:focus {
+    outline: none;
+    border-color: #1d9bf0;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #191919;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.user-item-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-list-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-item-info h4 {
+    margin: 0;
+    font-size: 16px;
+    color: white;
+}
+
+.user-item-info span {
+    color: #888;
+    font-size: 14px;
+}
+
+.badge-select {
+    background: #252525;
+    color: white;
+    border: 1px solid #444;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    outline: none;
+}
+
+.badge-select option {
+    background: #222;
+    color: white;
+}
+
+/* Colorize Select Border based on Badge */
+.badge-select.blue {
+    border-color: #1d9bf0;
+    color: #1d9bf0;
+}
+
+.badge-select.gold {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+.badge-select.platinum {
+    border-color: #e5e4e2;
+    color: #e5e4e2;
+}
+
+.badge-select.special {
+    border-color: #d600ad;
+    color: #d600ad;
+}
