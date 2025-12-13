@@ -382,170 +382,203 @@ const Profile = () => {
                     </div>
                 </div>
 
-                {/* Private Account Lock Screen with Blurred Feed */}
-                {
-                    isLocked ? (
-                        <div className="private-locked-wrapper">
-                            {/* Realistic Mock Post */}
-                            <div className="mock-post-card">
-                                <div className="post-left">
-                                    <div className="avatar-wrapper-small">
-                                        {profileUser.profile?.avatar ? (
-                                            <img src={getImageUrl(profileUser.profile.avatar)} alt="avatar" className="mock-avatar" />
-                                        ) : (
-                                            <div className="mock-avatar-placeholder">{profileUser.username ? profileUser.username[0].toUpperCase() : '?'}</div>
-                                        )}
-                                    </div>
+                {/* Tabs */}
+                <div className="profile-tabs">
+                    <button
+                        className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('posts')}
+                    >
+                        Gönderiler
+                    </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('comments')}
+                    >
+                        Yorumlar
+                    </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'media' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('media')}
+                    >
+                        Medya
+                    </button>
+                </div>
+
+                {/* Tab Content */}
+                <div className="profile-content">
+                    {/* Private Account Locked View */}
+                    {isLocked ? (
+                        <div className="private-locked-feed-container">
+                            <div className="watermark-lock-overlay">
+                                <div className="lock-icon-glow">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+                                        <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 10 0v2h1zm-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3z" />
+                                    </svg>
                                 </div>
-                                <div className="post-right">
-                                    <div className="post-header-row">
-                                        <div className="header-left">
-                                            <span className="author-name">{profileUser.profile?.displayName || profileUser.username}</span>
-                                            <span className="author-username">@{profileUser.username}</span>
-                                            <span className="post-time">· 2s</span>
-                                        </div>
-                                    </div>
+                                <h3>Bu Hesap Gizli</h3>
+                                <p>Fotoğrafları ve içerikleri görmek için takip et</p>
+                            </div>
 
-                                    {/* Blurred Content Area */}
-                                    <div className="mock-content-area">
-                                        <div className="blurred-content">
-                                            <p className="mock-text-line" style={{ width: '90%' }}></p>
-                                            <p className="mock-text-line" style={{ width: '60%' }}></p>
-                                            <div className="mock-media-box"></div>
-                                        </div>
-
-                                        {/* Lock Overlay Centered on Content */}
-                                        <div className="lock-overlay">
-                                            <div className="lock-icon-glow">
-                                                <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-                                                    <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 10 0v2h1zm-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3z" />
-                                                </svg>
+                            {/* Scrollable Mock Content based on Active Tab */}
+                            <div className="blurred-scroll-feed">
+                                {activeTab === 'posts' && [1, 2, 3, 4, 5].map(i => (
+                                    <div key={i} className="mock-post-card">
+                                        <div className="post-left">
+                                            <div className="avatar-wrapper-small">
+                                                {profileUser.profile?.avatar ? (
+                                                    <img src={getImageUrl(profileUser.profile.avatar)} alt="avatar" className="mock-avatar" />
+                                                ) : (
+                                                    <div className="mock-avatar-placeholder">{profileUser.username ? profileUser.username[0].toUpperCase() : '?'}</div>
+                                                )}
                                             </div>
-                                            <h3>Bu Hesap Gizli</h3>
-                                            <p>Fotoğrafları görmek için takip et</p>
+                                        </div>
+                                        <div className="post-right">
+                                            <div className="post-header-row">
+                                                <div className="header-left">
+                                                    <span className="author-name">{profileUser.profile?.displayName || profileUser.username}</span>
+                                                    <span className="author-username">@{profileUser.username}</span>
+                                                    <span className="post-time">· {i}g</span>
+                                                </div>
+                                            </div>
+                                            <div className="mock-content-area">
+                                                <div className="blurred-content">
+                                                    <p className="mock-text-line" style={{ width: '90%' }}></p>
+                                                    <p className="mock-text-line" style={{ width: '60%' }}></p>
+                                                    {i % 2 !== 0 && <div className="mock-media-box"></div>}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
+
+                                {activeTab === 'comments' && [1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="mock-post-card comment-variant">
+                                        <div className="post-left">
+                                            <div className="avatar-wrapper-small" style={{ width: '32px', height: '32px' }}>
+                                                <div className="mock-avatar-placeholder"></div>
+                                            </div>
+                                        </div>
+                                        <div className="post-right">
+                                            <div className="post-header-row">
+                                                <div className="header-left">
+                                                    <span className="author-name" style={{ width: '100px', height: '14px', background: 'var(--text-tertiary)', borderRadius: '4px', opacity: 0.3 }}></span>
+                                                </div>
+                                            </div>
+                                            <div className="mock-content-area">
+                                                <div className="blurred-content">
+                                                    <p className="mock-text-line" style={{ width: '100%', marginBottom: 0 }}></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {activeTab === 'media' && (
+                                    <div className="media-grid-container" style={{ padding: '4px' }}>
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+                                            <div key={i} className="media-grid-item" style={{ background: 'var(--bg-darker)', borderRadius: '4px' }}>
+                                                <div className="mock-media-box" style={{ height: '100%', marginTop: 0, borderRadius: 0 }}></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ) : (
+                        /* Normal Content */
                         <>
-                            {/* Tabs */}
-                            <div className="profile-tabs">
-                                <button
-                                    className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('posts')}
-                                >
-                                    Gönderiler
-                                </button>
-                                <button
-                                    className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('comments')}
-                                >
-                                    Yorumlar
-                                </button>
-                                <button
-                                    className={`tab-btn ${activeTab === 'media' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('media')}
-                                >
-                                    Medya
-                                </button>
-                            </div>
-
-                            {/* Tab Content */}
-                            <div className="profile-content">
-                                {loadingPosts ? (
+                            {loadingPosts ? (
+                                <div className="spinner-container">
+                                    <div className="spinner"></div>
+                                </div>
+                            ) : activeTab === 'posts' ? (
+                                userPosts.length > 0 ? (
+                                    <div className="posts-feed">
+                                        {userPosts.map(post => (
+                                            <PostCard
+                                                key={post._id}
+                                                post={post}
+                                                onDelete={handleDeletePost}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-tab">
+                                        <p>Henüz gönderi yok</p>
+                                    </div>
+                                )
+                            ) : activeTab === 'comments' ? (
+                                loadingComments ? (
                                     <div className="spinner-container">
                                         <div className="spinner"></div>
                                     </div>
-                                ) : activeTab === 'posts' ? (
-                                    userPosts.length > 0 ? (
-                                        <div className="posts-feed">
-                                            {userPosts.map(post => (
-                                                <PostCard
-                                                    key={post._id}
-                                                    post={post}
-                                                    onDelete={handleDeletePost}
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="empty-tab">
-                                            <p>Henüz gönderi yok</p>
-                                        </div>
-                                    )
-                                ) : activeTab === 'comments' ? (
-                                    loadingComments ? (
-                                        <div className="spinner-container">
-                                            <div className="spinner"></div>
-                                        </div>
-                                    ) : userComments.length > 0 ? (
-                                        <div className="comments-feed-modern">
-                                            {userComments.map(comment => (
-                                                <Link
-                                                    to={`/post/${comment.post?._id}`}
-                                                    key={comment._id}
-                                                    className="comment-card"
-                                                >
-                                                    <div className="comment-header">
-                                                        <div className="comment-user-info">
-                                                            {profileUser.profile?.avatar ? (
-                                                                <img src={getImageUrl(profileUser.profile.avatar)} alt="" className="comment-avatar-small" />
-                                                            ) : (
-                                                                <div className="comment-avatar-placeholder-small">{profileUser.username[0].toUpperCase()}</div>
-                                                            )}
-                                                            <span className="comment-wroted-text">
-                                                                <span className="comment-author-name">{profileUser.profile?.displayName || profileUser.username}</span>
-                                                                <span className="comment-action-verb"> yanıtladı</span>
-                                                            </span>
-                                                            <span className="comment-dot">·</span>
-                                                            <span className="comment-time">{new Date(comment.createdAt).toLocaleDateString('tr-TR')}</span>
-                                                        </div>
+                                ) : userComments.length > 0 ? (
+                                    <div className="comments-feed-modern">
+                                        {userComments.map(comment => (
+                                            <Link
+                                                to={`/post/${comment.post?._id}`}
+                                                key={comment._id}
+                                                className="comment-card"
+                                            >
+                                                <div className="comment-header">
+                                                    <div className="comment-user-info">
+                                                        {profileUser.profile?.avatar ? (
+                                                            <img src={getImageUrl(profileUser.profile.avatar)} alt="" className="comment-avatar-small" />
+                                                        ) : (
+                                                            <div className="comment-avatar-placeholder-small">{profileUser.username[0].toUpperCase()}</div>
+                                                        )}
+                                                        <span className="comment-wroted-text">
+                                                            <span className="comment-author-name">{profileUser.profile?.displayName || profileUser.username}</span>
+                                                            <span className="comment-action-verb"> yanıtladı</span>
+                                                        </span>
+                                                        <span className="comment-dot">·</span>
+                                                        <span className="comment-time">{new Date(comment.createdAt).toLocaleDateString('tr-TR')}</span>
                                                     </div>
-
-                                                    <div className="comment-body">
-                                                        <p className="comment-text">{comment.content}</p>
-                                                    </div>
-
-                                                    <div className="comment-replying-to">
-                                                        <span className="replying-label">Şuna yanıt olarak:</span>
-                                                        <p className="original-post-snippet">
-                                                            {comment.post?.content?.substring(0, 60) || 'bir gönderi'}...
-                                                        </p>
-                                                    </div>
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="empty-tab">
-                                            <p>Henüz yorum yok</p>
-                                        </div>
-                                    )
-                                ) : activeTab === 'media' ? (
-                                    mediaPosts.length > 0 ? (
-                                        <div className="media-grid-container">
-                                            {mediaPosts.map(post => (
-                                                <div key={post._id} className="media-grid-item" onClick={() => setSelectedMedia(post)}>
-                                                    {post.mediaType === 'video' ? (
-                                                        <div className="video-thumbnail-wrapper">
-                                                            <video src={getImageUrl(post.media)} className="media-thumbnail" />
-                                                            <div className="video-icon-overlay">▶</div>
-                                                        </div>
-                                                    ) : (
-                                                        <img src={getImageUrl(post.media)} alt="" className="media-thumbnail" />
-                                                    )}
                                                 </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="empty-tab">
-                                            <p>Henüz medya yok</p>
-                                        </div>
-                                    )
-                                ) : null}
-                            </div>
-                        </>
-                    )
+
+                                                <div className="comment-body">
+                                                    <p className="comment-text">{comment.content}</p>
+                                                </div>
+
+                                                <div className="comment-replying-to">
+                                                    <span className="replying-label">Şuna yanıt olarak:</span>
+                                                    <p className="original-post-snippet">
+                                                        {comment.post?.content?.substring(0, 60) || 'bir gönderi'}...
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-tab">
+                                        <p>Henüz yorum yok</p>
+                                    </div>
+                                )
+                            ) : activeTab === 'media' ? (
+                                mediaPosts.length > 0 ? (
+                                    <div className="media-grid-container">
+                                        {mediaPosts.map(post => (
+                                            <div key={post._id} className="media-grid-item" onClick={() => setSelectedMedia(post)}>
+                                                {post.mediaType === 'video' ? (
+                                                    <div className="video-thumbnail-wrapper">
+                                                        <video src={getImageUrl(post.media)} className="media-thumbnail" />
+                                                        <div className="video-icon-overlay">▶</div>
+                                                    </div>
+                                                ) : (
+                                                    <img src={getImageUrl(post.media)} alt="" className="media-thumbnail" />
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="empty-tab">
+                                        <p>Henüz medya yok</p>
+                                    </div>
+                                )
+                            ) : null}
+                        </div>
+                </>
+                )
                 }
 
                 {/* Follow/Followers Modal */}
