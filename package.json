@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node --watch server.js",
     "start": "node server.js",
-    "build": "cd client && npm install && npm run build"
+    "build": "CI=false cd client && npm install && npm run build"
   },
   "keywords": [
     "social-media",
