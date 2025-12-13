@@ -92,6 +92,36 @@
     gap: 12px;
 }
 
+.edit-profile-btn,
+.get-verified-btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.9rem;
+}
+
+.get-verified-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-color: rgba(255, 215, 0, 0.5);
+    color: #ffd700;
+}
+
+.edit-profile-btn:hover,
+.get-verified-btn:hover {
+    background: var(--bg-hover);
+}
+
+.get-verified-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
 /* Pill Button */
 .action-btn-pill {
     background: transparent;

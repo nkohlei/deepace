@@ -303,9 +303,21 @@ const Profile = () => {
                             </div>
                         </div>
                         {isOwnProfile ? (
-                            <button className="action-btn-pill" onClick={() => setEditing(true)}>
-                                Profili düzenle
-                            </button>
+                            <>
+                                <button className="edit-profile-btn" onClick={() => setEditing(true)}>
+                                    Profili Düzenle
+                                </button>
+
+                                {/* Verification Button if not verified */}
+                                {(profileUser.verificationBadge === 'none' && (!profileUser.verificationRequest || profileUser.verificationRequest.status === 'none')) && (
+                                    <button className="get-verified-btn" onClick={() => navigate('/settings')}>
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                                        </svg>
+                                        Onaylanmış Hesap Ol
+                                    </button>
+                                )}
+                            </>
                         ) : (
                             <>
                                 <div className="profile-action-buttons">

@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema({
             enum: ['blue', 'gold', 'platinum', 'special'],
             default: 'blue'
         },
+        category: {
+            type: String,
+            enum: ['creator', 'business', 'government', 'partner'],
+            default: 'creator'
+        },
         requestedAt: {
             type: Date
         }

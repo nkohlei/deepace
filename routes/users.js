@@ -575,7 +575,7 @@ router.put('/settings', protect, async (req, res) => {
         await user.save();
         res.json({ message: 'Settings updated', settings: user.settings });
     } catch (error) {
-        console.error('Update settings error:', error);
+        ```
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -603,6 +603,52 @@ router.put('/password', protect, async (req, res) => {
         res.json({ message: 'Password updated successfully' });
     } catch (error) {
         console.error('Change password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/request-verification
+// @desc    Request verification badge
+// @access  Private
+router.post('/request-verification', protect, async (req, res) => {
+    try {
+        const { category } = req.body;
+        
+        // Define Categories and their Badges
+        const categoryMap = {
+            'creator': 'blue',     // Sanatçı, Fenomen, Gazeteci
+            'business': 'gold',    // Şirket, Marka, STK
+            'government': 'platinum', // Devlet Yetkilisi, Temsilci
+            'partner': 'special'   // Platform Ortağı
+        };
+
+        if (!category || !categoryMap[category]) {
+            return res.status(400).json({ message: 'Geçersiz kategori.' });
+        }
+
+        const badgeType = categoryMap[category];
+        const user = await User.findById(req.user._id);
+
+        if (user.verificationRequest && user.verificationRequest.status === 'pending') {
+            return res.status(400).json({ message: 'Zaten bekleyen bir başvurunuz var.' });
+        }
+
+        if (user.verificationBadge !== 'none' && user.verificationBadge !== 'staff') {
+             return res.status(400).json({ message: 'Zaten doğrulanmış bir rozetiniz var.' });
+        }
+
+        user.verificationRequest = {
+            status: 'pending',
+            badgeType,
+            category,
+            requestedAt: new Date()
+        };
+
+        await user.save();
+
+        res.json({ message: 'Başvurunuz alındı.', verificationRequest: user.verificationRequest });
+    } catch (error) {
+        console.error('Verification request error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });

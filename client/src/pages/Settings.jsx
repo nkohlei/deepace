@@ -30,7 +30,7 @@ const Settings = () => {
         currentPassword: '',
         newPassword: '',
         confirmPassword: '',
-        selectedBadge: 'blue'
+        selectedCategory: ''
     });
     const [passwordError, setPasswordError] = useState('');
     const [passwordSuccess, setPasswordSuccess] = useState('');
@@ -239,25 +239,68 @@ const Settings = () => {
                                 </div>
                             ) : (
                                 <div className="verification-apply">
-                                    <p className="verification-desc">Profilinize resmiyet kazandırmak için bir rozet seçin.</p>
-                                    <div className="badge-selection">
-                                        {['blue', 'gold', 'platinum', 'special'].map(badge => (
-                                            <div
-                                                key={badge}
-                                                className={`badge-option ${passwordForm.selectedBadge === badge ? 'selected' : ''}`}
-                                                onClick={() => setPasswordForm(prev => ({ ...prev, selectedBadge: badge }))}
-                                            >
-                                                <div className={`badge-preview badge-${badge}`}></div>
-                                                <span>{badge === 'blue' ? 'Mavi' : badge === 'gold' ? 'Altın' : badge === 'platinum' ? 'Platin' : 'Özel'}</span>
+                                    <p className="verification-desc">
+                                        Doğrulanmış hesap rozeti, topluluğumuzda güvenilirliği temsil eder.
+                                        Hesabınızın türünü en iyi anlatan kategoriyi seçerek başvurun.
+                                    </p>
+
+                                    <div className="category-selection-grid">
+                                        <div
+                                            className={`category-card ${passwordForm.selectedCategory === 'creator' ? 'selected' : ''}`}
+                                            onClick={() => setPasswordForm(prev => ({ ...prev, selectedCategory: 'creator' }))}
+                                        >
+                                            <div className="cat-icon blue-glow">⭐</div>
+                                            <div className="cat-info">
+                                                <h4>Tanınmış Kişi / Üretici</h4>
+                                                <p>Sanatçı, Fenomen, Gazeteci veya İçerik Üreticileri için.</p>
+                                                <span className="badge-preview-tag blue">Mavi Tik Alırsınız</span>
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        <div
+                                            className={`category-card ${passwordForm.selectedCategory === 'business' ? 'selected' : ''}`}
+                                            onClick={() => setPasswordForm(prev => ({ ...prev, selectedCategory: 'business' }))}
+                                        >
+                                            <div className="cat-icon gold-glow">🏢</div>
+                                            <div className="cat-info">
+                                                <h4>İşletme / Kurum</h4>
+                                                <p>Şirketler, Resmi Kurumlar veya Kar Amacı Gütmeyen Kuruluşlar.</p>
+                                                <span className="badge-preview-tag gold">Altın Tik Alırsınız</span>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            className={`category-card ${passwordForm.selectedCategory === 'government' ? 'selected' : ''}`}
+                                            onClick={() => setPasswordForm(prev => ({ ...prev, selectedCategory: 'government' }))}
+                                        >
+                                            <div className="cat-icon platinum-glow">🏛️</div>
+                                            <div className="cat-info">
+                                                <h4>Devlet Yetkilisi</h4>
+                                                <p>Hükümet Yetkilileri, Büyükelçiler veya Resmi Temsilciler.</p>
+                                                <span className="badge-preview-tag platinum">Platin Tik Alırsınız</span>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            className={`category-card ${passwordForm.selectedCategory === 'partner' ? 'selected' : ''}`}
+                                            onClick={() => setPasswordForm(prev => ({ ...prev, selectedCategory: 'partner' }))}
+                                        >
+                                            <div className="cat-icon special-glow">🤝</div>
+                                            <div className="cat-info">
+                                                <h4>Platform Ortağı</h4>
+                                                <p>Geliştiriciler veya DeepAce ile işbirliği yapan özel partnerler.</p>
+                                                <span className="badge-preview-tag special">Özel Tik Alırsınız</span>
+                                            </div>
+                                        </div>
                                     </div>
+
                                     <button
                                         className="apply-btn"
+                                        disabled={!passwordForm.selectedCategory}
                                         onClick={async () => {
-                                            if (!passwordForm.selectedBadge) return;
+                                            if (!passwordForm.selectedCategory) return;
                                             try {
-                                                await axios.post('/api/users/request-verification', { badgeType: passwordForm.selectedBadge });
+                                                await axios.post('/api/users/request-verification', { category: passwordForm.selectedCategory });
                                                 // Refresh page or user to show pending
                                                 window.location.reload();
                                             } catch (err) {
@@ -265,7 +308,7 @@ const Settings = () => {
                                             }
                                         }}
                                     >
-                                        Başvuruyu Tamamla
+                                        {passwordForm.selectedCategory ? 'Başvuruyu Gönder' : 'Bir Kategori Seçin'}
                                     </button>
                                 </div>
                             )}
