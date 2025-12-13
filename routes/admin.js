@@ -121,7 +121,7 @@ router.put('/users/:id/badge', protect, admin, async (req, res) => {
         }
 
         user.verificationBadge = badge;
-        user.isVerified = badge !== 'none';
+        // user.isVerified = badge !== 'none'; // REMOVED to prevent locking out users (isVerified = email verified)
 
         // If removing badge, maybe reset request status? Optional.
         // If giving badge manually, maybe approve pending request if exists?
