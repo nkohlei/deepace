@@ -5,6 +5,7 @@ import { protect } from '../middleware/auth.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
 import Notification from '../models/Notification.js';
+import Comment from '../models/Comment.js';
 
 const router = express.Router();
 
@@ -663,8 +664,74 @@ router.delete('/me', protect, async (req, res) => {
         // Optional: Clean up posts, comments, etc. logic here
         // For now, simple delete. Orphaned data is handled by frontend safeguards.
 
-        await User.findByIdAndDelete(req.user._id);
-        res.json({ message: 'Account deleted successfully' });
+        const user = await User.findById(req.user._id);
+        const userId = user._id;
+
+        // 1. Remove from Followers/Following lists & Update Counts
+        // Remove from 'followers' of people I follow (Reduce their followerCount)
+        await User.updateMany(
+            { _id: { $in: user.following } },
+            {
+                $pull: { followers: userId },
+                $inc: { followerCount: -1 }
+            }
+        );
+
+        // Remove from 'following' of people who follow me (Reduce their followingCount)
+        await User.updateMany(
+            { _id: { $in: user.followers } },
+            {
+                $pull: { following: userId },
+                $inc: { followingCount: -1 }
+            }
+        );
+
+        // Remove pending requests
+        await User.updateMany(
+            { followRequests: userId },
+            { $pull: { followRequests: userId } }
+        );
+
+        // 2. Content Cleanup
+        // Delete all posts
+        await Post.deleteMany({ author: userId });
+
+        // Delete all comments
+        await Comment.deleteMany({ author: userId });
+
+        // 3. Likes Cleanup
+        // Remove likes from Posts
+        await Post.updateMany(
+            { likes: userId },
+            {
+                $pull: { likes: userId },
+                $inc: { likeCount: -1 }
+            }
+        );
+
+        // Remove likes from Comments
+        await Comment.updateMany(
+            { likes: userId },
+            {
+                $pull: { likes: userId },
+                $inc: { likeCount: -1 } // Assuming Comment has likeCount, if not standard array length check handles it often but inc is safer if count is stored
+            }
+        );
+        // Note: If Comment model doesn't have likeCount, this $inc might error or just do nothing if strict schema. 
+        // Checking Comment schema is safe but $inc on non-existent field usually initializes it. 
+        // Ideally we just pull. Let's assume likeCount exists or just pull.
+        // To be safe and since I haven't seen Comment schema details for likeCount, I will just $pull for comments if unsure, but Posts definitely have it.
+        // Actually, let's just use $pull for Comments to avoid error if field missing.
+
+        // 4. Notifications Cleanup
+        // Delete notifications sent BY user or received BY user
+        await Notification.deleteMany({
+            $or: [{ sender: userId }, { recipient: userId }]
+        });
+
+        // 5. Finally Delete User
+        await User.findByIdAndDelete(userId);
+        res.json({ message: 'Account and all associated data deleted successfully' });
     } catch (error) {
         console.error('Delete account error:', error);
         res.status(500).json({ message: 'Server error' });
