@@ -84,4 +84,60 @@ router.post('/reject-verification/:id', protect, admin, async (req, res) => {
     }
 });
 
+// @route   GET /api/admin/users
+// @desc    Get all users (with search)
+// @access  Private/Admin
+router.get('/users', protect, admin, async (req, res) => {
+    try {
+        const { q } = req.query;
+        let query = {};
+
+        if (q) {
+            query = { username: { $regex: q, $options: 'i' } };
+        }
+
+        const users = await User.find(query)
+            .select('username email profile verificationBadge isVerified createdAt')
+            .sort({ createdAt: -1 })
+            .limit(50); // Limit to avoid massive payloads
+
+        res.json(users);
+    } catch (error) {
+        console.error('Fetch users error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   PUT /api/admin/users/:id/badge
+// @desc    Update user verification badge
+// @access  Private/Admin
+router.put('/users/:id/badge', protect, admin, async (req, res) => {
+    try {
+        const { badge } = req.body;
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.verificationBadge = badge;
+        user.isVerified = badge !== 'none';
+
+        // If removing badge, maybe reset request status? Optional.
+        // If giving badge manually, maybe approve pending request if exists?
+        if (badge !== 'none' && user.verificationRequest?.status === 'pending') {
+            user.verificationRequest.status = 'approved';
+            user.verificationRequest.badgeType = badge;
+            user.verificationRequest.processedAt = new Date();
+        }
+
+        await user.save();
+
+        res.json({ message: 'Badge updated', user });
+    } catch (error) {
+        console.error('Update badge error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 export default router;
