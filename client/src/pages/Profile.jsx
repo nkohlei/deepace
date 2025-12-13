@@ -386,23 +386,46 @@ const Profile = () => {
                 {
                     isLocked ? (
                         <div className="private-locked-wrapper">
-                            {/* Blurred Background Layer */}
-                            <div className="blurred-feed-overlay">
-                                {[1, 2, 3, 4, 5, 6].map(i => (
-                                    <div key={i} className="mock-post-item"></div>
-                                ))}
-                            </div>
-
-                            {/* Lock Content */}
-                            <div className="private-account-lock">
-                                <div className="lock-icon-container">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="60" height="60">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                    </svg>
+                            {/* Realistic Mock Post */}
+                            <div className="mock-post-card">
+                                <div className="post-left">
+                                    <div className="avatar-wrapper-small">
+                                        {profileUser.profile?.avatar ? (
+                                            <img src={getImageUrl(profileUser.profile.avatar)} alt="avatar" className="mock-avatar" />
+                                        ) : (
+                                            <div className="mock-avatar-placeholder">{profileUser.username ? profileUser.username[0].toUpperCase() : '?'}</div>
+                                        )}
+                                    </div>
                                 </div>
-                                <h2>Bu Hesap Gizli</h2>
-                                <p>Fotoğraflarını ve videolarını görmek için bu hesabı takip et.</p>
+                                <div className="post-right">
+                                    <div className="post-header-row">
+                                        <div className="header-left">
+                                            <span className="author-name">{profileUser.profile?.displayName || profileUser.username}</span>
+                                            <span className="author-username">@{profileUser.username}</span>
+                                            <span className="post-time">· 2s</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Blurred Content Area */}
+                                    <div className="mock-content-area">
+                                        <div className="blurred-content">
+                                            <p className="mock-text-line" style={{ width: '90%' }}></p>
+                                            <p className="mock-text-line" style={{ width: '60%' }}></p>
+                                            <div className="mock-media-box"></div>
+                                        </div>
+
+                                        {/* Lock Overlay Centered on Content */}
+                                        <div className="lock-overlay">
+                                            <div className="lock-icon-glow">
+                                                <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+                                                    <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm6-9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2h1V6a5 5 0 0 1 10 0v2h1zm-6-5a3 3 0 0 0-3 3v2h6V6a3 3 0 0 0-3-3z" />
+                                                </svg>
+                                            </div>
+                                            <h3>Bu Hesap Gizli</h3>
+                                            <p>Fotoğrafları görmek için takip et</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : (
