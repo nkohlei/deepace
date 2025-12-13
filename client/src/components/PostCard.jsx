@@ -21,7 +21,41 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
     const [showMenu, setShowMenu] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showAnyway, setShowAnyway] = useState(false);
+    const [showAnyway, setShowAnyway] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // Translation State
+    const [isTranslated, setIsTranslated] = useState(false);
+    const [translatedText, setTranslatedText] = useState('');
+    const [isTranslating, setIsTranslating] = useState(false);
+
+    const handleTranslate = async () => {
+        if (isTranslated) {
+            setIsTranslated(false);
+            return;
+        }
+
+        if (translatedText) {
+            setIsTranslated(true);
+            return;
+        }
+
+        setIsTranslating(true);
+        try {
+            const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(post.content)}&langpair=AUTODETECT|tr`);
+            const data = await response.json();
+
+            if (data.responseData) {
+                setTranslatedText(data.responseData.translatedText);
+                setIsTranslated(true);
+            }
+        } catch (error) {
+            console.error('Translation failed:', error);
+            alert('Çeviri yapılamadı.');
+        } finally {
+            setIsTranslating(false);
+        }
+    };
 
     // Safe check for author existence (Process orphaned posts)
     const author = post.author || {
@@ -261,7 +295,7 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
                 <div className="post-content-text">
                     <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                         {(() => {
-                            const content = post.content || '';
+                            const content = isTranslated ? translatedText : (post.content || '');
                             const shouldTruncate = content.length > 280 && !isExpanded;
                             const displayContent = shouldTruncate ? content.substring(0, 280) + '...' : content;
 
@@ -288,6 +322,14 @@ const PostCard = ({ post, onDelete, onUnsave }) => {
                             );
                         })()}
                     </p>
+                    {post.content && (
+                        <button
+                            className="translation-toggle"
+                            onClick={(e) => { e.stopPropagation(); handleTranslate(); }}
+                        >
+                            {isTranslating ? 'Çevriliyor...' : (isTranslated ? 'Orijinalini gör' : 'Çevirisini gör')}
+                        </button>
+                    )}
                 </div>
 
                 {/* Media */}
