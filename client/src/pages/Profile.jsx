@@ -11,6 +11,7 @@ import './Profile.css';
 
 const Profile = () => {
     const { username } = useParams();
+    // Force rebuild 2
     const navigate = useNavigate();
     const { user: currentUser, updateUser } = useAuth();
     const [profileUser, setProfileUser] = useState(null);
