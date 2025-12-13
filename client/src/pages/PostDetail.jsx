@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { shouldShowTranslation } from '../utils/languageUtils';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +18,39 @@ const PostDetail = () => {
     const [liked, setLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [saved, setSaved] = useState(false);
+
+    // Translation State
+    const [isTranslated, setIsTranslated] = useState(false);
+    const [translatedText, setTranslatedText] = useState('');
+    const [isTranslating, setIsTranslating] = useState(false);
+
+    const handleTranslate = async () => {
+        if (isTranslated) {
+            setIsTranslated(false);
+            return;
+        }
+
+        if (translatedText) {
+            setIsTranslated(true);
+            return;
+        }
+
+        setIsTranslating(true);
+        try {
+            const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(post.content)}&langpair=AUTODETECT|tr`);
+            const data = await response.json();
+
+            if (data.responseData) {
+                setTranslatedText(data.responseData.translatedText);
+                setIsTranslated(true);
+            }
+        } catch (error) {
+            console.error('Translation failed:', error);
+            alert('Çeviri yapılamadı.');
+        } finally {
+            setIsTranslating(false);
+        }
+    };
 
     useEffect(() => {
         fetchPost();
@@ -140,7 +174,23 @@ const PostDetail = () => {
                         {/* Post Text */}
                         {post.content && (
                             <div className="post-detail-text">
-                                <p>{post.content}</p>
+                                <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                    {isTranslated ? translatedText : post.content}
+                                </p>
+                                {shouldShowTranslation(post.content) && (
+                                    <button
+                                        className="translation-toggle"
+                                        onClick={(e) => { e.stopPropagation(); handleTranslate(); }}
+                                        style={{ marginTop: '12px' }}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                        </svg>
+                                        {isTranslating ? 'Çevriliyor...' : (isTranslated ? 'Orijinalini gör' : 'Çevirisini gör')}
+                                    </button>
+                                )}
                             </div>
                         )}
 
