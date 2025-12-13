@@ -660,11 +660,6 @@ router.post('/request-verification', protect, async (req, res) => {
 router.delete('/me', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
-
-        // Optional: Clean up posts, comments, etc. logic here
-        // For now, simple delete. Orphaned data is handled by frontend safeguards.
-
-        const user = await User.findById(req.user._id);
         const userId = user._id;
 
         // 1. Remove from Followers/Following lists & Update Counts
