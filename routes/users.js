@@ -4,8 +4,180 @@ import path from 'path';
 import { protect } from '../middleware/auth.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
+import Notification from '../models/Notification.js';
 
 const router = express.Router();
+
+// @route   POST /api/users/follow/:id
+// @desc    Follow/Unfollow user or cancel request
+// @access  Private
+router.post('/follow/:id', protect, async (req, res) => {
+    try {
+        if (req.params.id === req.user._id.toString()) {
+            return res.status(400).json({ message: 'You cannot follow yourself' });
+        }
+
+        const targetUser = await User.findById(req.params.id);
+        const currentUser = await User.findById(req.user._id);
+
+        if (!targetUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Initialize arrays if missing
+        if (!targetUser.followers) targetUser.followers = [];
+        if (!targetUser.followRequests) targetUser.followRequests = [];
+        if (!currentUser.following) currentUser.following = [];
+
+        const isFollowing = targetUser.followers.includes(req.user._id);
+        const hasRequested = targetUser.followRequests.includes(req.user._id);
+
+        if (isFollowing) {
+            // Unfollow
+            targetUser.followers = targetUser.followers.filter(id => id.toString() !== req.user._id.toString());
+            targetUser.followerCount = Math.max(0, targetUser.followerCount - 1);
+
+            currentUser.following = currentUser.following.filter(id => id.toString() !== req.params.id);
+            currentUser.followingCount = Math.max(0, currentUser.followingCount - 1);
+
+            await targetUser.save();
+            await currentUser.save();
+
+            return res.json({ message: 'Unfollowed', isFollowing: false, hasRequested: false });
+        }
+
+        if (hasRequested) {
+            // Cancel Request
+            targetUser.followRequests = targetUser.followRequests.filter(id => id.toString() !== req.user._id.toString());
+            await targetUser.save();
+            return res.json({ message: 'Request cancelled', isFollowing: false, hasRequested: false });
+        }
+
+        // START FOLLOW PROCESS
+        if (targetUser.settings?.privacy?.isPrivate) {
+            // Send Request
+            targetUser.followRequests.push(req.user._id);
+            await targetUser.save();
+
+            // Notify
+            const notification = await Notification.create({
+                recipient: targetUser._id,
+                sender: currentUser._id,
+                type: 'follow_request'
+            });
+
+            const io = req.app.get('io');
+            if (io) {
+                const populated = await notification.populate('sender', 'username profile.displayName profile.avatar verificationBadge');
+                io.to(targetUser._id.toString()).emit('newNotification', populated);
+            }
+
+            return res.json({ message: 'Follow request sent', isFollowing: false, hasRequested: true });
+
+        } else {
+            // Direct Follow
+            targetUser.followers.push(req.user._id);
+            targetUser.followerCount += 1;
+            currentUser.following.push(targetUser._id);
+            currentUser.followingCount += 1;
+
+            await targetUser.save();
+            await currentUser.save();
+
+            // Notify
+            const notification = await Notification.create({
+                recipient: targetUser._id,
+                sender: currentUser._id,
+                type: 'follow'
+            });
+
+            const io = req.app.get('io');
+            if (io) {
+                const populated = await notification.populate('sender', 'username profile.displayName profile.avatar verificationBadge');
+                io.to(targetUser._id.toString()).emit('newNotification', populated);
+            }
+
+            return res.json({ message: 'Followed', isFollowing: true, hasRequested: false });
+        }
+
+    } catch (error) {
+        console.error('Follow error:', error);
+        res.status(500).json({ message: 'Server error: ' + error.message });
+    }
+});
+
+// @route   POST /api/users/follow/accept/:id
+// @desc    Accept follow request
+// @access  Private
+router.post('/follow/accept/:id', protect, async (req, res) => {
+    try {
+        const requesterId = req.params.id;
+        const currentUser = await User.findById(req.user._id);
+        const requester = await User.findById(requesterId);
+
+        if (!requester) return res.status(404).json({ message: 'User not found' });
+
+        if (!currentUser.followRequests.includes(requesterId)) {
+            return res.status(400).json({ message: 'No request found from this user' });
+        }
+
+        // Move from requests to followers
+        currentUser.followRequests = currentUser.followRequests.filter(id => id.toString() !== requesterId);
+        currentUser.followers.push(requesterId);
+        currentUser.followerCount += 1;
+
+        // Add to requester's following
+        requester.following.push(currentUser._id);
+        requester.followingCount += 1;
+
+        await currentUser.save();
+        await requester.save();
+
+        // Notify Requester
+        const notification = await Notification.create({
+            recipient: requester._id,
+            sender: currentUser._id,
+            type: 'follow' // Or 'request_accepted' generic
+        });
+        // We reuse 'follow' type to say "XYZ followed you" (technically they are now following you)
+        // Or we could trigger a "XYZ accepted your follow request" if we had that type. 
+        // For now, let's just let them know they are following. 
+        // Actually, Instagram sends "XYZ accepted your follow request". 
+        // But since we don't have that enum, we create a 'follow' notification from the requester perspective? 
+        // No, let's keep it simple.
+
+        const io = req.app.get('io');
+        if (io) {
+            // Maybe emit an event to update their UI
+            io.to(requesterId.toString()).emit('requestAccepted', { userId: currentUser._id });
+        }
+
+        res.json({ message: 'Request accepted' });
+
+    } catch (error) {
+        console.error('Accept follow error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/users/follow/decline/:id
+// @desc    Decline follow request
+// @access  Private
+router.post('/follow/decline/:id', protect, async (req, res) => {
+    try {
+        const requesterId = req.params.id;
+        const currentUser = await User.findById(req.user._id);
+
+        currentUser.followRequests = currentUser.followRequests.filter(id => id.toString() !== requesterId);
+        await currentUser.save();
+
+        res.json({ message: 'Request declined' });
+
+    } catch (error) {
+        console.error('Decline follow error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 import { storage } from '../config/cloudinary.js';
 
@@ -122,8 +294,11 @@ router.get('/:username', protect, async (req, res) => {
         if (req.user) {
             const currentUser = await User.findById(req.user._id);
             userObj.isFollowing = currentUser.following.includes(user._id);
+            // Check if request is pending
+            userObj.hasRequested = user.followRequests && user.followRequests.includes(req.user._id);
         } else {
             userObj.isFollowing = false;
+            userObj.hasRequested = false;
         }
 
         res.json(userObj);
@@ -322,6 +497,18 @@ router.get('/:id/followers', protect, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Privacy Check
+        if (user.settings && user.settings.privacy && user.settings.privacy.isPrivate) {
+            const isOwner = req.user._id.toString() === user._id.toString();
+            // Check if follower (since followers are populated, check safely)
+            const isFollower = user.followers.some(follower => follower._id.toString() === req.user._id.toString());
+
+            if (!isOwner && !isFollower) {
+                return res.status(403).json({ message: 'Bu hesap gizli.' });
+            }
+        }
+
         res.json(user.followers);
     } catch (error) {
         console.error('Get followers error:', error);
@@ -338,6 +525,25 @@ router.get('/:id/following', protect, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Privacy Check
+        if (user.settings && user.settings.privacy && user.settings.privacy.isPrivate) {
+            const isOwner = req.user._id.toString() === user._id.toString();
+            const isFollower = user.followers.includes(req.user._id); // Check raw followers ID for efficiency? 
+            // Wait, existing query populates 'following', NOT 'followers'. 
+            // So user.followers is likely just IDs (if not selected/populated)? 
+            // Default select includes all fields? No, referencing other schemas.
+            // If I verify followership, I should use the User document properly.
+            // The `user` object here is fetched with just `findById`, so ALL fields are returned.
+            // `followers` field is an array of IDs by default.
+            // BUT, I did not populate `followers` in this query! I populated `following`.
+            // So `user.followers` IS an array of IDs.
+
+            if (!isOwner && !user.followers.includes(req.user._id)) {
+                return res.status(403).json({ message: 'Bu hesap gizli.' });
+            }
+        }
+
         res.json(user.following);
     } catch (error) {
         console.error('Get following error:', error);

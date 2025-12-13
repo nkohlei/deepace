@@ -141,3 +141,39 @@
     background: var(--primary-color);
     border-radius: 50%;
 }
+
+.notif-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.notif-btn-primary,
+.notif-btn-secondary {
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.notif-btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.notif-btn-primary:hover {
+    filter: brightness(1.1);
+}
+
+.notif-btn-secondary {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.notif-btn-secondary:hover {
+    background-color: var(--bg-hover-dark);
+}

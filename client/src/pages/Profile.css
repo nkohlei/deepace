@@ -1186,3 +1186,42 @@
 .floating-label-group:focus-within .floating-label {
     color: var(--primary-cyan);
 }
+
+/* Private Account Lock Screen */
+.private-account-lock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-subtle);
+    margin-top: 20px;
+    border-radius: 12px;
+}
+
+.lock-icon-container {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.private-account-lock h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.private-account-lock p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 300px;
+}

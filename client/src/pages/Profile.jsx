@@ -37,6 +37,7 @@ const Profile = () => {
     const coverInputRef = useRef(null);
 
     const isOwnProfile = !username || (currentUser && currentUser.username === username);
+    const isLocked = !isOwnProfile && profileUser?.settings?.privacy?.isPrivate && !profileUser.isFollowing;
 
     useEffect(() => {
         if (isOwnProfile) {
@@ -300,193 +301,220 @@ const Profile = () => {
                                 )}
                             </div>
                         </div>
-
-                        {/* Right Side Actions */}
-                        <div className="profile-actions-top-right">
-                            {isOwnProfile ? (
-                                <button className="action-btn-pill" onClick={() => setEditing(true)}>
-                                    Profili düzenle
+                        {isOwnProfile ? (
+                            <button className="action-btn-pill" onClick={() => setEditing(true)}>
+                                Profili düzenle
+                            </button>
+                        ) : (
+                            <>
+                                <button className="icon-btn-circle" onClick={handleMessageClick} title="Mesaj Gönder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
                                 </button>
-                            ) : (
-                                <>
-                                    <button className="icon-btn-circle" onClick={handleMessageClick} title="Mesaj Gönder">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                            <polyline points="22,6 12,13 2,6"></polyline>
-                                        </svg>
-                                    </button>
-                                    <FollowButton userId={profileUser._id} initialIsFollowing={profileUser.isFollowing} onFollowChange={(isFollowing) => {
-                                        setProfileUser(prev => ({ ...prev, isFollowing, followerCount: prev.followerCount + (isFollowing ? 1 : -1) }));
-                                    }} />
-                                </>
+                                <FollowButton
+                                    userId={profileUser._id}
+                                    initialIsFollowing={profileUser.isFollowing}
+                                    initialHasRequested={profileUser.hasRequested}
+                                    onFollowChange={(isFollowing) => {
+                                        setProfileUser(prev => {
+                                            const countDiff = isFollowing === prev.isFollowing ? 0 : (isFollowing ? 1 : -1);
+                                            return { ...prev, isFollowing, followerCount: prev.followerCount + countDiff };
+                                        });
+                                    }}
+                                />
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Profile Details (Name, Bio, Stats) */}
+                <div className="profile-details-section">
+                    <div className="profile-names">
+                        <h1 className="profile-display-name">
+                            {profileUser?.profile?.displayName || profileUser?.username}
+                            <Badge type={profileUser?.verificationBadge} />
+                            {/* Custom "Get Verified" Badge/Button visual */}
+                            {isOwnProfile && (!profileUser?.verificationBadge || profileUser?.verificationBadge === 'none') && (
+                                <div className="get-verified-badge">
+                                    <svg viewBox="0 0 24 24" fill="currentColor" className="verified-icon">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                    </svg>
+                                    <span>Onaylanmış hesap sahibi ol</span>
+                                </div>
                             )}
-                        </div>
+                        </h1>
+                        <p className="profile-username-handle">@{profileUser?.username}</p>
                     </div>
 
-                    {/* Profile Details (Name, Bio, Stats) */}
-                    <div className="profile-details-section">
-                        <div className="profile-names">
-                            <h1 className="profile-display-name">
-                                {profileUser?.profile?.displayName || profileUser?.username}
-                                <Badge type={profileUser?.verificationBadge} />
-                                {/* Custom "Get Verified" Badge/Button visual */}
-                                {isOwnProfile && (!profileUser?.verificationBadge || profileUser?.verificationBadge === 'none') && (
-                                    <div className="get-verified-badge">
-                                        <svg viewBox="0 0 24 24" fill="currentColor" className="verified-icon">
-                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                                        </svg>
-                                        <span>Onaylanmış hesap sahibi ol</span>
-                                    </div>
-                                )}
-                            </h1>
-                            <p className="profile-username-handle">@{profileUser?.username}</p>
-                        </div>
-
-                        {profileUser?.profile?.bio && (
+                    {
+                        profileUser?.profile?.bio && (
                             <div className="profile-bio-text">
                                 {profileUser.profile.bio}
                             </div>
-                        )}
+                        )
+                    }
 
-                        <div className="profile-meta-row">
-                            <span className="meta-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <div className="profile-meta-row">
+                        <span className="meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            {profileUser?.createdAt ? new Date(profileUser.createdAt).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'Ocak 2021'} tarihinde katıldı
+                        </span>
+                    </div>
+
+                    {/* Profile Stats Row */}
+                    <div className="profile-stats-text-row">
+                        <button className="stat-text-btn" onClick={() => !isLocked && openFollowModal('following')} style={{ cursor: isLocked ? 'default' : 'pointer' }}>
+                            <span className="stat-bold">{isLocked ? 'Gizli' : formatCount(profileUser?.followingCount || 0)}</span> Takip edilen
+                        </button>
+                        <button className="stat-text-btn" onClick={() => !isLocked && openFollowModal('followers')} style={{ cursor: isLocked ? 'default' : 'pointer' }}>
+                            <span className="stat-bold">{isLocked ? 'Gizli' : formatCount(profileUser?.followerCount)}</span> Takipçi
+                        </button>
+                    </div>
+                </div>
+
+                {/* Private Account Lock Screen */}
+                {
+                    isLocked ? (
+                        <div className="private-account-lock">
+                            <div className="lock-icon-container">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="60" height="60">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
-                                {profileUser?.createdAt ? new Date(profileUser.createdAt).toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) : 'Ocak 2021'} tarihinde katıldı
-                            </span>
-                        </div>
-
-                        <div className="profile-stats-text-row">
-                            <button className="stat-text-btn" onClick={() => openFollowModal('following')}>
-                                <span className="stat-bold">{formatCount(profileUser?.followingCount || 0)}</span> Takip edilen
-                            </button>
-                            <button className="stat-text-btn" onClick={() => openFollowModal('followers')}>
-                                <span className="stat-bold">{formatCount(profileUser?.followerCount)}</span> Takipçi
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Tabs */}
-                    <div className="profile-tabs">
-                        <button
-                            className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('posts')}
-                        >
-                            Gönderiler
-                        </button>
-                        <button
-                            className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('comments')}
-                        >
-                            Yorumlar
-                        </button>
-                        <button
-                            className={`tab-btn ${activeTab === 'media' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('media')}
-                        >
-                            Medya
-                        </button>
-                    </div>
-
-                    {/* Tab Content */}
-                    <div className="profile-content">
-                        {loadingPosts ? (
-                            <div className="spinner-container">
-                                <div className="spinner"></div>
                             </div>
-                        ) : activeTab === 'posts' ? (
-                            userPosts.length > 0 ? (
-                                <div className="posts-feed">
-                                    {userPosts.map(post => (
-                                        <PostCard
-                                            key={post._id}
-                                            post={post}
-                                            onDelete={handleDeletePost}
-                                        />
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-tab">
-                                    <p>Henüz gönderi yok</p>
-                                </div>
-                            )
-                        ) : activeTab === 'comments' ? (
-                            loadingComments ? (
-                                <div className="spinner-container">
-                                    <div className="spinner"></div>
-                                </div>
-                            ) : userComments.length > 0 ? (
-                                <div className="comments-feed-modern">
-                                    {userComments.map(comment => (
-                                        <Link
-                                            to={`/post/${comment.post?._id}`}
-                                            key={comment._id}
-                                            className="comment-card"
-                                        >
-                                            <div className="comment-header">
-                                                <div className="comment-user-info">
-                                                    {profileUser.profile?.avatar ? (
-                                                        <img src={getImageUrl(profileUser.profile.avatar)} alt="" className="comment-avatar-small" />
-                                                    ) : (
-                                                        <div className="comment-avatar-placeholder-small">{profileUser.username[0].toUpperCase()}</div>
-                                                    )}
-                                                    <span className="comment-wroted-text">
-                                                        <span className="comment-author-name">{profileUser.profile?.displayName || profileUser.username}</span>
-                                                        <span className="comment-action-verb"> yanıtladı</span>
-                                                    </span>
-                                                    <span className="comment-dot">·</span>
-                                                    <span className="comment-time">{new Date(comment.createdAt).toLocaleDateString('tr-TR')}</span>
-                                                </div>
-                                            </div>
+                            <h2>Bu Hesap Gizli</h2>
+                            <p>Fotoğraflarını ve videolarını görmek için bu hesabı takip et.</p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Tabs */}
+                            <div className="profile-tabs">
+                                <button
+                                    className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('posts')}
+                                >
+                                    Gönderiler
+                                </button>
+                                <button
+                                    className={`tab-btn ${activeTab === 'comments' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('comments')}
+                                >
+                                    Yorumlar
+                                </button>
+                                <button
+                                    className={`tab-btn ${activeTab === 'media' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('media')}
+                                >
+                                    Medya
+                                </button>
+                            </div>
 
-                                            <div className="comment-body">
-                                                <p className="comment-text">{comment.content}</p>
-                                            </div>
-
-                                            <div className="comment-replying-to">
-                                                <span className="replying-label">Şuna yanıt olarak:</span>
-                                                <p className="original-post-snippet">
-                                                    {comment.post?.content?.substring(0, 60) || 'bir gönderi'}...
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-tab">
-                                    <p>Henüz yorum yok</p>
-                                </div>
-                            )
-                        ) : activeTab === 'media' ? (
-                            mediaPosts.length > 0 ? (
-                                <div className="media-grid-container">
-                                    {mediaPosts.map(post => (
-                                        <div key={post._id} className="media-grid-item" onClick={() => setSelectedMedia(post)}>
-                                            {post.mediaType === 'video' ? (
-                                                <div className="video-thumbnail-wrapper">
-                                                    <video src={getImageUrl(post.media)} className="media-thumbnail" />
-                                                    <div className="video-icon-overlay">▶</div>
-                                                </div>
-                                            ) : (
-                                                <img src={getImageUrl(post.media)} alt="" className="media-thumbnail" />
-                                            )}
+                            {/* Tab Content */}
+                            <div className="profile-content">
+                                {loadingPosts ? (
+                                    <div className="spinner-container">
+                                        <div className="spinner"></div>
+                                    </div>
+                                ) : activeTab === 'posts' ? (
+                                    userPosts.length > 0 ? (
+                                        <div className="posts-feed">
+                                            {userPosts.map(post => (
+                                                <PostCard
+                                                    key={post._id}
+                                                    post={post}
+                                                    onDelete={handleDeletePost}
+                                                />
+                                            ))}
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-tab">
-                                    <p>Henüz medya yok</p>
-                                </div>
-                            )
-                        ) : null}
-                    </div>
+                                    ) : (
+                                        <div className="empty-tab">
+                                            <p>Henüz gönderi yok</p>
+                                        </div>
+                                    )
+                                ) : activeTab === 'comments' ? (
+                                    loadingComments ? (
+                                        <div className="spinner-container">
+                                            <div className="spinner"></div>
+                                        </div>
+                                    ) : userComments.length > 0 ? (
+                                        <div className="comments-feed-modern">
+                                            {userComments.map(comment => (
+                                                <Link
+                                                    to={`/post/${comment.post?._id}`}
+                                                    key={comment._id}
+                                                    className="comment-card"
+                                                >
+                                                    <div className="comment-header">
+                                                        <div className="comment-user-info">
+                                                            {profileUser.profile?.avatar ? (
+                                                                <img src={getImageUrl(profileUser.profile.avatar)} alt="" className="comment-avatar-small" />
+                                                            ) : (
+                                                                <div className="comment-avatar-placeholder-small">{profileUser.username[0].toUpperCase()}</div>
+                                                            )}
+                                                            <span className="comment-wroted-text">
+                                                                <span className="comment-author-name">{profileUser.profile?.displayName || profileUser.username}</span>
+                                                                <span className="comment-action-verb"> yanıtladı</span>
+                                                            </span>
+                                                            <span className="comment-dot">·</span>
+                                                            <span className="comment-time">{new Date(comment.createdAt).toLocaleDateString('tr-TR')}</span>
+                                                        </div>
+                                                    </div>
 
-                    {/* Follow/Followers Modal */}
-                    {showFollowModal && (
+                                                    <div className="comment-body">
+                                                        <p className="comment-text">{comment.content}</p>
+                                                    </div>
+
+                                                    <div className="comment-replying-to">
+                                                        <span className="replying-label">Şuna yanıt olarak:</span>
+                                                        <p className="original-post-snippet">
+                                                            {comment.post?.content?.substring(0, 60) || 'bir gönderi'}...
+                                                        </p>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="empty-tab">
+                                            <p>Henüz yorum yok</p>
+                                        </div>
+                                    )
+                                ) : activeTab === 'media' ? (
+                                    mediaPosts.length > 0 ? (
+                                        <div className="media-grid-container">
+                                            {mediaPosts.map(post => (
+                                                <div key={post._id} className="media-grid-item" onClick={() => setSelectedMedia(post)}>
+                                                    {post.mediaType === 'video' ? (
+                                                        <div className="video-thumbnail-wrapper">
+                                                            <video src={getImageUrl(post.media)} className="media-thumbnail" />
+                                                            <div className="video-icon-overlay">▶</div>
+                                                        </div>
+                                                    ) : (
+                                                        <img src={getImageUrl(post.media)} alt="" className="media-thumbnail" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="empty-tab">
+                                            <p>Henüz medya yok</p>
+                                        </div>
+                                    )
+                                ) : null}
+                            </div>
+                        </>
+                    )
+                }
+
+                {/* Follow/Followers Modal */}
+                {
+                    showFollowModal && (
                         <div className="edit-modal-overlay" onClick={() => setShowFollowModal(null)}>
                             <div className="edit-modal follow-modal-modern" onClick={e => e.stopPropagation()}>
                                 <div className="follow-modal-header">
@@ -554,10 +582,12 @@ const Profile = () => {
                                 </div>
                             </div>
                         </div>
-                    )}
+                    )
+                }
 
-                    {/* Media Viewer Modal */}
-                    {selectedMedia && (
+                {/* Media Viewer Modal */}
+                {
+                    selectedMedia && (
                         <div className="media-viewer-overlay" onClick={() => setSelectedMedia(null)}>
                             <button className="close-viewer-btn" onClick={() => setSelectedMedia(null)}>✕</button>
 
@@ -581,10 +611,12 @@ const Profile = () => {
                                 </button>
                             </div>
                         </div>
-                    )}
+                    )
+                }
 
-                    {/* Edit Form Modal (Modern Redesign) */}
-                    {editing && (
+                {/* Edit Form Modal (Modern Redesign) */}
+                {
+                    editing && (
                         <div className="edit-modal-overlay" onClick={() => setEditing(false)}>
                             <div className="edit-modal-modern" onClick={e => e.stopPropagation()}>
                                 {/* Header */}
@@ -691,10 +723,11 @@ const Profile = () => {
                                 </div>
                             </div>
                         </div>
-                    )}
-                </div>
-            </main>
+                    )
+                }
         </div>
+            </main >
+        </div >
     );
 };
 

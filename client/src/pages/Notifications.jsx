@@ -3,14 +3,56 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { useSocket } from '../context/SocketContext';
+import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
 import './Notifications.css';
 
 const Notifications = () => {
+    const { user: currentUser, updateUser } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { socket } = useSocket();
+
+    const handleAccept = async (e, senderId, notifId) => {
+        e.preventDefault();
+        try {
+            await axios.post(`/api/users/follow/accept/${senderId}`);
+            // Update local user state
+            const updatedRequests = currentUser.followRequests.filter(id => id !== senderId);
+            // Increment follower count as well
+            const updatedUser = {
+                ...currentUser,
+                followRequests: updatedRequests,
+                followerCount: (currentUser.followerCount || 0) + 1
+            };
+            // Also add the new follower to the followers list if we had it loaded, but simple stat update is safer
+            updateUser(updatedUser);
+
+            // Mark notification as read or update UI locally to remove buttons
+            setNotifications(prev => prev.map(n => {
+                if (n._id === notifId) {
+                    // Update the type or remove the request ability
+                    // Or just filter out the request from the currentUser which triggers re-render of buttons
+                    return n;
+                }
+                return n;
+            }));
+        } catch (error) {
+            console.error('Accept error:', error);
+        }
+    };
+
+    const handleDecline = async (e, senderId, notifId) => {
+        e.preventDefault();
+        try {
+            await axios.post(`/api/users/follow/decline/${senderId}`);
+            const updatedRequests = currentUser.followRequests.filter(id => id !== senderId);
+            updateUser({ ...currentUser, followRequests: updatedRequests });
+        } catch (error) {
+            console.error('Decline error:', error);
+        }
+    };
 
     useEffect(() => {
         fetchNotifications();
@@ -94,53 +136,69 @@ const Notifications = () => {
 
                     <div className="notifications-list">
                         {notifications.length > 0 ? (
-                            notifications.map(notif => (
-                                <Link
-                                    to={notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`}
-                                    key={notif._id}
-                                    className={`notification-item ${!notif.read ? 'unread' : ''}`}
-                                >
-                                    <div className="notif-avatar">
-                                        {notif.sender.profile?.avatar ? (
-                                            <img src={getImageUrl(notif.sender.profile.avatar)} alt={notif.sender.username} />
-                                        ) : (
-                                            <div className="notif-avatar-placeholder">
-                                                {notif.sender.username[0].toUpperCase()}
+                            notifications.map(notif => {
+                                // Guard clause: if no sender, skip rendering to prevent crash
+                                if (!notif.sender) return null;
+
+                                return (
+                                    <Link
+                                        to={notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`}
+                                        key={notif._id}
+                                        className={`notification-item ${!notif.read ? 'unread' : ''}`}
+                                    >
+                                        <div className="notif-avatar">
+                                            {notif.sender.profile?.avatar ? (
+                                                <img src={getImageUrl(notif.sender.profile.avatar)} alt={notif.sender.username} />
+                                            ) : (
+                                                <div className="notif-avatar-placeholder">
+                                                    {notif.sender.username ? notif.sender.username[0].toUpperCase() : '?'}
+                                                </div>
+                                            )}
+                                            <div className={`notif-icon-badge ${notif.type}`}>
+                                                {notif.type === 'like' && '❤️'}
+                                                {notif.type === 'comment' && '💬'}
+                                                {notif.type === 'reply' && '↩️'}
+                                                {notif.type === 'follow' && '👤'}
+                                                {notif.type === 'follow_request' && '👤'}
+                                            </div>
+                                        </div>
+
+                                        <div className="notif-content">
+                                            <p>
+                                                <span className="notif-user">{notif.sender.username}</span>
+                                                {notif.type === 'like' && ' gönderini beğendi.'}
+                                                {notif.type === 'comment' && ' gönderine yorum yaptı: '}
+                                                {notif.type === 'reply' && ' yorumuna yanıt verdi: '}
+                                                {notif.type === 'follow' && ' seni takip etmeye başladı.'}
+                                                {notif.type === 'follow_request' && ' seni takip etmek istiyor.'}
+                                            </p>
+                                            {(notif.type === 'comment' || notif.type === 'reply') && notif.comment && (
+                                                <p className="notif-text-preview">"{notif.comment.content}"</p>
+                                            )}
+
+                                            {/* Follow Request Actions */}
+                                            {notif.type === 'follow_request' && currentUser?.followRequests && currentUser.followRequests.includes(notif.sender._id) && (
+                                                <div className="notif-actions">
+                                                    <button className="notif-btn-primary" onClick={(e) => handleAccept(e, notif.sender._id, notif._id)}>Onayla</button>
+                                                    <button className="notif-btn-secondary" onClick={(e) => handleDecline(e, notif.sender._id, notif._id)}>Reddet</button>
+                                                </div>
+                                            )}
+
+                                            <span className="notif-time">{formatDate(notif.createdAt)}</span>
+                                        </div>
+
+                                        {notif.post && notif.post.media && (
+                                            <div className="notif-post-preview">
+                                                {notif.post.mediaType === 'video' ? (
+                                                    <video src={getImageUrl(notif.post.media)} />
+                                                ) : (
+                                                    <img src={getImageUrl(notif.post.media)} alt="Post" />
+                                                )}
                                             </div>
                                         )}
-                                        <div className={`notif-icon-badge ${notif.type}`}>
-                                            {notif.type === 'like' && '❤️'}
-                                            {notif.type === 'comment' && '💬'}
-                                            {notif.type === 'reply' && '↩️'}
-                                            {notif.type === 'follow' && '👤'}
-                                        </div>
-                                    </div>
-
-                                    <div className="notif-content">
-                                        <p>
-                                            <span className="notif-user">{notif.sender.username}</span>
-                                            {notif.type === 'like' && ' gönderini beğendi.'}
-                                            {notif.type === 'comment' && ' gönderine yorum yaptı: '}
-                                            {notif.type === 'reply' && ' yorumuna yanıt verdi: '}
-                                            {notif.type === 'follow' && ' seni takip etmeye başladı.'}
-                                        </p>
-                                        {(notif.type === 'comment' || notif.type === 'reply') && notif.comment && (
-                                            <p className="notif-text-preview">"{notif.comment.content}"</p>
-                                        )}
-                                        <span className="notif-time">{formatDate(notif.createdAt)}</span>
-                                    </div>
-
-                                    {notif.post && notif.post.media && (
-                                        <div className="notif-post-preview">
-                                            {notif.post.mediaType === 'video' ? (
-                                                <video src={getImageUrl(notif.post.media)} />
-                                            ) : (
-                                                <img src={getImageUrl(notif.post.media)} alt="Post" />
-                                            )}
-                                        </div>
-                                    )}
-                                </Link>
-                            ))
+                                    </Link>
+                                )
+                            })
                         ) : (
                             <div className="empty-state">
                                 <div className="empty-icon">🔔</div>
