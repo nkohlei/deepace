@@ -575,7 +575,7 @@ router.put('/settings', protect, async (req, res) => {
         await user.save();
         res.json({ message: 'Settings updated', settings: user.settings });
     } catch (error) {
-        ```
+        console.error('Update settings error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
@@ -613,7 +613,7 @@ router.put('/password', protect, async (req, res) => {
 router.post('/request-verification', protect, async (req, res) => {
     try {
         const { category } = req.body;
-        
+
         // Define Categories and their Badges
         const categoryMap = {
             'creator': 'blue',     // Sanatçı, Fenomen, Gazeteci
@@ -634,7 +634,7 @@ router.post('/request-verification', protect, async (req, res) => {
         }
 
         if (user.verificationBadge !== 'none' && user.verificationBadge !== 'staff') {
-             return res.status(400).json({ message: 'Zaten doğrulanmış bir rozetiniz var.' });
+            return res.status(400).json({ message: 'Zaten doğrulanmış bir rozetiniz var.' });
         }
 
         user.verificationRequest = {
