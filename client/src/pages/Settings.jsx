@@ -36,7 +36,6 @@ const Settings = () => {
         selectedCategory: ''
     });
     const [passwordError, setPasswordError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
     const [passwordSuccess, setPasswordSuccess] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false); // For custom verification dropdown
 
