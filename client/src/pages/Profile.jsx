@@ -308,15 +308,7 @@ const Profile = () => {
                                     Profili Düzenle
                                 </button>
 
-                                {/* Verification Button if not verified */}
-                                {(profileUser.verificationBadge === 'none' && (!profileUser.verificationRequest || profileUser.verificationRequest.status === 'none')) && (
-                                    <button className="get-verified-btn" onClick={() => navigate('/settings')}>
-                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                        </svg>
-                                        Onaylanmış Hesap Ol
-                                    </button>
-                                )}
+
                             </>
                         ) : (
                             <>
@@ -350,11 +342,15 @@ const Profile = () => {
                         <h1 className="profile-display-name">
                             {profileUser?.profile?.displayName || profileUser?.username}
                             <Badge type={profileUser?.verificationBadge} />
-                            {/* Custom "Get Verified" Badge/Button visual */}
+                            {/* Custom "Get Verified" Badge/Button visual - Now Clickable */}
                             {isOwnProfile && (!profileUser?.verificationBadge || profileUser?.verificationBadge === 'none') && (
-                                <div className="get-verified-badge">
+                                <div
+                                    className="get-verified-badge clickable"
+                                    onClick={() => navigate('/settings?section=verification')}
+                                    title="Onaylanmış Hesap Başvurusu"
+                                >
                                     <svg viewBox="0 0 24 24" fill="currentColor" className="verified-icon">
-                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                     </svg>
                                     <span>Onaylanmış hesap sahibi ol</span>
                                 </div>

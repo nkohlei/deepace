@@ -185,6 +185,16 @@
 }
 
 /* Info Badges */
+.get-verified-badge.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.get-verified-badge.clickable:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: translateY(-1px);
+}
+
 .get-verified-badge {
     display: inline-flex;
     align-items: center;
