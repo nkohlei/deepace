@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
         sparse: true,
         unique: true
     },
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     isVerified: {
         type: Boolean,
         default: false
