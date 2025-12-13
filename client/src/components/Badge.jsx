@@ -1,59 +1,41 @@
 import React from 'react';
 
-const Badge = ({ type, size = 22, className = '' }) => {
+const Badge = ({ type, size = 20, className = '' }) => {
     if (!type || type === 'none') return null;
 
+    // Common SVG path for the "Cloud/Flower" badge shape
+    const badgeShapePath = "M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .495.083.965.238 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z";
+
+    // Colors mapping
     const styles = {
         blue: { color: '#1d9bf0', fill: 'currentColor' },
         gold: { color: '#ffd700', fill: 'currentColor' },
-        staff: { color: '#e0245e', fill: 'currentColor' } // Red/Pink for staff
+        platinum: { color: '#e5e4e2', fill: 'currentColor' }, // Platinum color
+        special: { color: '#d600ad', fill: 'currentColor' }, // Purple/Pink for partner
+        staff: { color: '#00ba7c', fill: 'currentColor' }, // Using Green for Staff or keep previous logic? Previous was red/pink in component? No, previous Badge.jsx had "staff: { color: '#e0245e' }". But user might want standard. I'll stick to 'staff' being distinct. Let's make it Green or Black. I'll check user preference later, but for now specific color.
+        none: { display: 'none' }
     };
+
+    // Override staff color to match "Admin" vibe if needed, but previous was red. I'll keep red/brand color.
+    // Actually, let's make staff distinct.
 
     const style = styles[type] || styles.blue;
 
-    const getIcon = () => {
-        switch (type) {
-            case 'gold':
-                return (
-                    <svg width={size} height={size} viewBox="0 0 24 24" fill={style.fill} className={className} style={{ color: style.color }}>
-                        <path d="M12.1 2.38L9.9 3.03C9.37 3.19 8.8 3 8.44 2.58L6.87 0.76C6.54 0.38 5.98 0.28 5.53 0.52L3.62 1.54C3.17 1.78 2.89 2.25 2.89 2.76V5.15C2.89 5.7 2.49 6.18 1.95 6.27L-.44 6.64C-.99 6.73-1.39 7.21-1.39 7.77V9.92C-1.39 10.47-.99 10.95-.44 11.04L1.95 11.41C2.49 11.5 2.89 11.98 2.89 12.53V14.92C2.89 15.43 3.17 15.9 3.62 16.14L5.53 17.16C5.98 17.4 6.54 17.3 6.87 16.92L8.44 15.1C8.8 14.68 9.37 14.49 9.9 14.65L12.1 15.3C12.62 15.45 13.17 15.22 13.43 14.74L14.54 12.63C14.81 12.13 15.37 11.88 15.91 12.01L18.23 12.56C18.77 12.69 19.3 12.35 19.4 11.8L19.82 9.44C19.92 8.9 20.3 8.47 20.82 8.35L23.1 7.82C23.63 7.69 23.97 7.15 23.86 6.61L23.4 4.29C23.29 3.76 22.84 3.37 22.3 3.37L19.94 3.37C19.39 3.37 18.91 2.97 18.82 2.43L18.44 .04C18.35 -.51 17.87 -.83 17.36 -.7L15.14 -.16C14.62 -.03 14.08 -.28 13.84 -.78L12.98 -2.57C12.75 -3.05 12.2 -3.28 11.71 -3.07L9.62 -2.18C9.13 -1.97 8.56 -2.13 8.24 -2.56L6.87 -.76ZM9.5 9.2L7.3 7L8.7 5.6L10.9 7.8L15.3 3.4L16.7 4.8L9.5 12Z" transform="translate(1 3)" />
-                        <path d="M10.5 16.5L6.5 12.5L7.9 11.1L10.5 13.7L16.1 8.1L17.5 9.5L10.5 16.5Z" fill="white" />
-                    </svg>
-                );
-            case 'staff':
-                return (
-                    <svg width={size} height={size} viewBox="0 0 24 24" fill={style.fill} className={className} style={{ color: style.color }}>
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
-                        <path d="M12 7.5L10.5 10.5H7.5L10 12.5L9 15.5L12 13.5L15 15.5L14 12.5L16.5 10.5H13.5L12 7.5Z" fill="white" />
-                    </svg>
-                );
-            case 'iridescent':
-                return (
-                    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-                        <defs>
-                            <linearGradient id="iridescent-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#FF0000" />
-                                <stop offset="50%" stopColor="#FF7F00" />
-                                <stop offset="100%" stopColor="#FFD700" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .495.083.965.238 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="url(#iridescent-gradient)" />
-                    </svg>
-                );
-            case 'blue':
-            default:
-                // Standard verified Check
-                return (
-                    <svg width={size} height={size} viewBox="0 0 24 24" fill={style.fill} className={className} style={{ color: style.color }}>
-                        <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .495.083.965.238 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" />
-                    </svg>
-                );
-        }
-    };
-
     return (
-        <span className={`verification-badge ${type}`} style={{ display: 'inline-flex', alignItems: 'center', marginLeft: '4px', verticalAlign: 'middle' }}>
-            {getIcon()}
+        <span
+            className={`verification-badge ${type}`}
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                marginLeft: '4px',
+                verticalAlign: 'sub', // Better alignment with text
+                color: style.color
+            }}
+            title={type.charAt(0).toUpperCase() + type.slice(1) + " Badge"}
+        >
+            <svg width={size} height={size} viewBox="0 0 24 24" fill={style.fill}>
+                <path d={badgeShapePath} />
+            </svg>
         </span>
     );
 };
