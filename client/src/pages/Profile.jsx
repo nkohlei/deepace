@@ -726,9 +726,8 @@ const Profile = () => {
                         </div>
                     )
                 }
+            </main>
         </div>
-            </main >
-        </div >
     );
 };
 
