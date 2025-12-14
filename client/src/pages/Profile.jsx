@@ -8,7 +8,7 @@ import FollowButton from '../components/FollowButton';
 import PostCard from '../components/PostCard';
 import Badge from '../components/Badge';
 import Footer from '../components/Footer';
-// ... imports
+import './Profile.css';
 
 const Profile = () => {
     const { username } = useParams();
@@ -230,8 +230,10 @@ const Profile = () => {
     const [searchFollowTerm, setSearchFollowTerm] = useState('');
 
     const filteredFollowList = followList.filter(user =>
-        user.username.toLowerCase().includes(searchFollowTerm.toLowerCase()) ||
-        (user.profile?.displayName && user.profile.displayName.toLowerCase().includes(searchFollowTerm.toLowerCase()))
+        user && (
+            user.username?.toLowerCase().includes(searchFollowTerm.toLowerCase()) ||
+            (user.profile?.displayName && user.profile.displayName.toLowerCase().includes(searchFollowTerm.toLowerCase()))
+        )
     );
 
     const handleDownloadMedia = async (mediaUrl, filename) => {
