@@ -8,14 +8,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
+    /* Higher than Navbar (1000) */
     backdrop-filter: blur(8px);
     animation: fadeIn 0.2s ease-out;
 }
 
 .share-modal {
-    background: var(--bg-primary);
-    /* Use theme background */
+    background: var(--bg-glass);
+    /* Works in both Light/Dark */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-color);

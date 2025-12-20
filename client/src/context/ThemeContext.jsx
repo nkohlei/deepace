@@ -28,6 +28,7 @@ export const ThemeProvider = ({ children }) => {
             root.style.setProperty('--shadow-card', '0 4px 24px rgba(0, 0, 0, 0.4)');
             root.style.setProperty('--primary-cyan', 'rgb(0, 150, 200)');
             root.style.setProperty('--gradient-space', 'linear-gradient(180deg, #0a1520 0%, #0d1a28 50%, #081318 100%)'); // Dark Gradient
+            root.style.setProperty('--bg-glass', 'rgba(30, 41, 59, 0.75)'); // Dark Glass
         } else {
             root.setAttribute('data-theme', 'light');
             // Pure White Theme (User Request)
@@ -45,6 +46,7 @@ export const ThemeProvider = ({ children }) => {
             root.style.setProperty('--shadow-card', '0 4px 20px rgba(0, 0, 0, 0.05)');
             root.style.setProperty('--primary-cyan', 'rgb(0, 120, 160)');
             root.style.setProperty('--gradient-space', 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)'); // Light/White Gradient
+            root.style.setProperty('--bg-glass', 'rgba(255, 255, 255, 0.85)'); // Light White Glass
         }
 
         // Save to localStorage
