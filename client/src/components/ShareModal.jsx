@@ -15,6 +15,14 @@ const ShareModal = ({ postId, onClose }) => {
     const [showCopyAlert, setShowCopyAlert] = useState(false);
 
     useEffect(() => {
+        // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
+    useEffect(() => {
         // Fetch following/followers to suggest (Using 'following' mostly makes sense for share, but user said followers)
         // Actually, you usually share to people you follow or who follow you (Mutuals).
         // Let's fetch followers as requested by the user prompt "mevcut takipçilerden oluşacak"
