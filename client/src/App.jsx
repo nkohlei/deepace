@@ -23,8 +23,11 @@ import TermsOfService from './pages/TermsOfService';
 import Contact from './pages/Contact';
 import Portal from './pages/Portal';
 import PortalSidebar from './components/PortalSidebar';
+import Maintenance from './pages/Maintenance';
 import './AppLayout.css';
 
+// 🔧 MAINTENANCE MODE - Set to true to show maintenance page
+const MAINTENANCE_MODE = true;
 
 import { useUI, UIProvider } from './context/UIContext';
 
@@ -162,6 +165,11 @@ const AppLayout = () => {
 };
 
 function App() {
+    // If maintenance mode is on, show maintenance page
+    if (MAINTENANCE_MODE) {
+        return <Maintenance />;
+    }
+
     return (
         <ThemeProvider>
             <Router>
@@ -178,4 +186,5 @@ function App() {
 }
 
 export default App;
+
 
