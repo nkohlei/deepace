@@ -3,12 +3,10 @@
     display: flex;
     margin: 0 auto;
     width: 100%;
-    /* Remove width: fit-content which causes mobile issues */
-    max-width: 1400px;
-    /* Wider desktop layout */
+    /* Revert to moderate width to fix "upside down" feel */
+    max-width: 1050px;
     min-height: 100vh;
     position: relative;
-    /* For absolute positioning context if needed */
 }
 
 /* Sidebar Wrapper */
