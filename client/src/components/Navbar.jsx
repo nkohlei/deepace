@@ -215,12 +215,7 @@ const Navbar = () => {
                             </svg>
                         </Link>
 
-                        <Link to="/search" className={`nav-item ${isActive('/search') ? 'active' : ''}`}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <circle cx="11" cy="11" r="8" />
-                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                            </svg>
-                        </Link>
+                        {/* Search Removed from Bottom Nav as per request */}
 
                         <Link to="/create" className="nav-item create-btn">
                             <div className="create-icon">

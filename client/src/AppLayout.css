@@ -26,13 +26,32 @@
 .main-content-wrapper {
     /* Content wrapper */
     flex-grow: 1;
-    /* Ensure a decent base width for pages like Home */
+    /* Ensure a decent base width for pages like Home on Desktop */
     min-width: 650px;
     /* Max width limit for readability? */
     /* max-width: 900px; */
     position: relative;
     background-color: var(--bg-primary);
     /* Ensure bg covers gaps */
+}
+
+@media (max-width: 768px) {
+    .main-content-wrapper {
+        min-width: 0;
+        width: 100%;
+        /* Fix mobile overflow */
+        overflow-x: hidden;
+    }
+
+    .app-container {
+        width: 100%;
+        display: block;
+        /* Stack sidebar (if we hide it or handle differently) OR keep flex */
+        /* If specific mobile layout needed, adjust here. Current flex sidebar+content works if content shrinks */
+    }
+
+    /* On mobile, usually Sidebar is hidden or a drawer. User wants 'Discord like' sidebar?
+       Discord mobile has drawer. But for now let's just ensure content fits. */
 }
 
 /* Override existing PortalSidebar fixed positioning */
