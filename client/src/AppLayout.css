@@ -1,9 +1,13 @@
 /* Main App Layout */
 .app-container {
     display: flex;
-    justify-content: center;
-    max-width: 1280px;
+    /* Center the container itself using margin */
     margin: 0 auto;
+    /* Allow width to fit content (Sidebar + Main), so they stay attached */
+    width: fit-content;
+    min-width: min-content;
+    /* Ensure it doesn't crush */
+    max-width: 100%;
     min-height: 100vh;
 }
 
@@ -20,10 +24,15 @@
 }
 
 .main-content-wrapper {
-    flex: 1;
-    min-width: 0;
-    /* Prevent overflow */
+    /* Content wrapper */
+    flex-grow: 1;
+    /* Ensure a decent base width for pages like Home */
+    min-width: 650px;
+    /* Max width limit for readability? */
+    /* max-width: 900px; */
     position: relative;
+    background-color: var(--bg-primary);
+    /* Ensure bg covers gaps */
 }
 
 /* Override existing PortalSidebar fixed positioning */
