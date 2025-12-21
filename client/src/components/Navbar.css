@@ -327,7 +327,7 @@ html[data-theme='dark'] .bottom-nav,
 /* Hide bottom nav on desktop */
 @media (min-width: 769px) {
     .bottom-nav {
-        display: none;
+        /* display: none; */
         /* Keep it visible for now since we are mobile first */
     }
 }
