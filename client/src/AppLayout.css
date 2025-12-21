@@ -4,9 +4,10 @@
     margin: 0 auto;
     width: 100%;
     /* Revert to moderate width to fix "upside down" feel */
-    max-width: 1050px;
+    max-width: 900px;
     min-height: 100vh;
     position: relative;
+    /* For absolute positioning context if needed */
 }
 
 /* Sidebar Wrapper */

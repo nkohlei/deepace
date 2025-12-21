@@ -18,8 +18,8 @@
     padding: 0 24px;
     margin: 0 auto;
     width: 100%;
-    max-width: 1050px;
-    /* Match Layout max-width */
+    max-width: 750px;
+    /* Match Content max-width */
 }
 
 .nav-left {
