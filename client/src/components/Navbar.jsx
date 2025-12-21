@@ -105,7 +105,7 @@ const Navbar = () => {
                         </button>
 
                         <Link to="/" className="brand-logo">
-                            <span className="logo-icon">🖇</span>
+                            <img src="/logo.png" alt="Deepace Logo" className="logo-image" />
                             <span className="logo-text">deepace</span>
                         </Link>
                     </div>

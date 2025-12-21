@@ -1,19 +1,15 @@
-/* Main App Layout */
+/* Main App Layout - Full width, no gap */
 .app-container {
     display: flex;
-    margin: 0 auto;
     width: 100%;
-    /* Keep content width conservative */
-    max-width: 850px;
     min-height: 100vh;
     position: relative;
-    justify-content: center;
+    /* No max-width, no centering - fills viewport */
 }
 
-/* Sidebar Wrapper - Hidden by default on Desktop now */
+/* Sidebar Wrapper - Hidden by default */
 .portal-sidebar-wrapper {
     position: fixed;
-    /* Fixed to sit on top/side */
     top: 0;
     left: 0;
     height: 100vh;
@@ -22,22 +18,21 @@
     background-color: var(--card-bg);
     border-right: 1px solid var(--border-color);
     transform: translateX(-100%);
-    /* Hidden by default */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Open State (Desktop & Mobile) */
+/* Open State */
 .portal-sidebar-wrapper.sidebar-open {
     transform: translateX(0);
 }
 
-/* Sidebar Toggle Arrow */
+/* Sidebar Toggle Arrow - On the left edge of CONTENT, not viewport */
 .sidebar-toggle-arrow {
     position: fixed;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 24px;
+    width: 20px;
     height: 48px;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -50,7 +45,7 @@
     z-index: 900;
     color: var(--text-secondary);
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-    transition: left 0.3s ease;
+    transition: left 0.3s ease, background 0.2s ease;
 }
 
 .sidebar-toggle-arrow:hover {
@@ -58,26 +53,24 @@
     color: var(--primary-color);
 }
 
-/* When sidebar is open, move arrow */
+/* When sidebar is open, move arrow with it */
 .sidebar-toggle-arrow.open {
     left: 72px;
 }
 
-/* Main Content Wrapper */
+/* Main Content Wrapper - Full width */
 .main-content-wrapper {
     flex-grow: 1;
     min-width: 0;
     position: relative;
     background-color: var(--bg-primary);
     width: 100%;
-    /* No left margin needed since sidebar is overlay/fixed now */
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .app-container {
         display: block;
-        max-width: 100%;
         overflow-x: hidden;
     }
 

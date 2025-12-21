@@ -18,8 +18,7 @@
     padding: 0 24px;
     margin: 0 auto;
     width: 100%;
-    max-width: 850px;
-    /* Match Layout max-width */
+    /* Full width to match content */
 }
 
 .nav-left {
@@ -58,8 +57,11 @@
     font-size: 1.25rem;
 }
 
-.logo-icon {
-    font-size: 1.5rem;
+.logo-image {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
 .nav-right {
