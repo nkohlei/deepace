@@ -221,10 +221,9 @@ html[data-theme='dark'] .bottom-nav,
 .bottom-nav {
     position: fixed;
     bottom: 0;
-    left: 50%;
-    /* Center horizontally */
+    /* Center relative to Content Column (Viewport Center + Half Sidebar) */
+    left: calc(50% + 36px);
     transform: translateX(-50%);
-    /* Align center */
     width: 100%;
     max-width: 600px;
     /* Constrain to phone width */
