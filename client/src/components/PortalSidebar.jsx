@@ -32,6 +32,13 @@ const PortalSidebar = () => {
     return (
         <>
             <div className="portal-sidebar">
+                {/* Close/Back Button at top */}
+                <button className="sidebar-close-btn" onClick={closeSidebar} title="Kapat">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+
                 {/* Global Home / Dashboard */}
                 <div
                     className={`sidebar-item ${isActive('/') ? 'active' : ''}`}
