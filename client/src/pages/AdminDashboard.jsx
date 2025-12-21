@@ -185,7 +185,7 @@ const AdminDashboard = () => {
                                             <option value="gold">Altın Tik</option>
                                             <option value="platinum">Platin Tik</option>
                                             <option value="special">Özel Tik</option>
-                                            <option value="staff">Yetkili</option>
+
                                         </select>
                                     </div>
                                 </div>
