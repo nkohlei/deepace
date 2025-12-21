@@ -30,7 +30,7 @@ import { useUI, UIProvider } from './context/UIContext';
 
 // Separate layout component to use useUI hook
 const AppLayout = () => {
-    const { isSidebarOpen, closeSidebar } = useUI();
+    const { isSidebarOpen, toggleSidebar, closeSidebar } = useUI();
 
     return (
         <div className="app-container">
@@ -40,7 +40,24 @@ const AppLayout = () => {
                 onClick={closeSidebar}
             />
 
-            <div className={`portal-sidebar-wrapper ${isSidebarOpen ? 'mobile-open' : ''}`}>
+            {/* Sidebar Toggle Arrow - Visible on Desktop */}
+            <button
+                className={`sidebar-toggle-arrow ${isSidebarOpen ? 'open' : ''}`}
+                onClick={toggleSidebar}
+                title={isSidebarOpen ? "Menüyü Kapat" : "Menüyü Aç"}
+            >
+                {isSidebarOpen ? (
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                ) : (
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                )}
+            </button>
+
+            <div className={`portal-sidebar-wrapper ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <PortalSidebar />
             </div>
 

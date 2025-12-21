@@ -3,25 +3,64 @@
     display: flex;
     margin: 0 auto;
     width: 100%;
-    /* Sidebar (72px) + Content (~750px) + Gap = ~850px */
+    /* Keep content width conservative */
     max-width: 850px;
     min-height: 100vh;
     position: relative;
-    /* Ensure sidebar and content are centered together */
     justify-content: center;
 }
 
-/* Sidebar Wrapper */
+/* Sidebar Wrapper - Hidden by default on Desktop now */
 .portal-sidebar-wrapper {
-    flex-shrink: 0;
-    width: 72px;
-    height: 100vh;
-    position: sticky;
+    position: fixed;
+    /* Fixed to sit on top/side */
     top: 0;
-    z-index: 100;
+    left: 0;
+    height: 100vh;
+    width: 72px;
+    z-index: 1000;
     background-color: var(--card-bg);
     border-right: 1px solid var(--border-color);
+    transform: translateX(-100%);
+    /* Hidden by default */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Open State (Desktop & Mobile) */
+.portal-sidebar-wrapper.sidebar-open {
+    transform: translateX(0);
+}
+
+/* Sidebar Toggle Arrow */
+.sidebar-toggle-arrow {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 48px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 900;
+    color: var(--text-secondary);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+}
+
+.sidebar-toggle-arrow:hover {
+    background: var(--bg-hover);
+    color: var(--primary-color);
+}
+
+/* When sidebar is open, move arrow */
+.sidebar-toggle-arrow.open {
+    left: 72px;
 }
 
 /* Main Content Wrapper */
@@ -31,6 +70,7 @@
     position: relative;
     background-color: var(--bg-primary);
     width: 100%;
+    /* No left margin needed since sidebar is overlay/fixed now */
 }
 
 /* Mobile Responsiveness */
@@ -41,41 +81,16 @@
         overflow-x: hidden;
     }
 
+    .sidebar-toggle-arrow {
+        display: none;
+        /* Mobile uses Navbar Hamburger */
+    }
+
     .portal-sidebar-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        transform: translateX(-100%);
         width: 80px;
-        z-index: 1000;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
-        border-right: none;
-    }
-
-    .portal-sidebar-wrapper.mobile-open {
-        transform: translateX(0);
-    }
-
-    .mobile-sidebar-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(2px);
-        z-index: 999;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-    }
-
-    .mobile-sidebar-overlay.active {
-        opacity: 1;
-        pointer-events: auto;
     }
 
     .main-content-wrapper {
-        width: 100%;
-        min-width: 0;
         padding-bottom: 80px;
     }
 
