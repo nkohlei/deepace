@@ -1,72 +1,58 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useSocket } from '../context/SocketContext';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import PostCard from '../components/PostCard';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext';
 import './Home.css';
 
 const Home = () => {
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const { socket } = useSocket();
+    const { user, loading } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchPosts();
-    }, []);
+        if (!loading && user) {
+            if (user.joinedPortals && user.joinedPortals.length > 0) {
+                // Redirect to the first joined portal
+                // Handle both populated object and ID string cases
+                const firstPortalId = typeof user.joinedPortals[0] === 'string'
+                    ? user.joinedPortals[0]
+                    : user.joinedPortals[0]._id;
 
-    useEffect(() => {
-        if (socket) {
-            socket.on('newPost', (post) => {
-                setPosts((prevPosts) => [post, ...prevPosts]);
-            });
-
-            return () => {
-                socket.off('newPost');
-            };
+                navigate(`/portal/${firstPortalId}`);
+            }
         }
-    }, [socket]);
+    }, [user, loading, navigate]);
 
-    const fetchPosts = async () => {
-        try {
-            const response = await axios.get('/api/posts');
-            setPosts(response.data.posts);
-        } catch (err) {
-            setError('Gönderiler yüklenemedi');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    if (loading) {
+        return (
+            <div className="app-wrapper">
+                <Navbar />
+                <div className="spinner-container">
+                    <div className="spinner"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="app-wrapper">
             <Navbar />
             <main className="app-content">
-                <div className="home-feed">
-                    {loading && (
-                        <div className="spinner-container">
-                            <div className="spinner"></div>
-                        </div>
-                    )}
+                <div className="welcome-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <div style={{ fontSize: '64px', marginBottom: '20px' }}>🌍</div>
+                    <h1>Global Message'a Hoş Geldiniz</h1>
+                    <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 40px' }}>
+                        Artık topluluk odaklıyız! Sol menüden bir portala katılın veya arama sayfasından yeni topluluklar keşfedin.
+                    </p>
 
-                    {error && (
-                        <div className="error-message">{error}</div>
-                    )}
-
-                    {!loading && !error && posts.length === 0 && (
-                        <div className="empty-state">
-                            <div className="empty-icon">📭</div>
-                            <h3>Henüz gönderi yok</h3>
-                            <p className="text-secondary">İlk gönderiyi paylaşan sen ol!</p>
-                        </div>
-                    )}
-
-                    <div className="posts-feed">
-                        {posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
-                        ))}
+                    <div className="action-buttons" style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                        <button
+                            className="btn-primary"
+                            onClick={() => navigate('/search')}
+                            style={{ padding: '12px 30px', borderRadius: '25px', border: 'none', background: 'var(--primary-color)', color: 'white', fontSize: '1rem', cursor: 'pointer' }}
+                        >
+                            Topluluk Keşfet
+                        </button>
                     </div>
                 </div>
                 <Footer />

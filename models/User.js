@@ -97,6 +97,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
+    joinedPortals: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Portal'
+    }],
     followerCount: {
         type: Number,
         default: 0

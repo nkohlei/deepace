@@ -117,6 +117,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/likes', likesRoutes);
+app.use('/api/portals', portalRoutes);
 app.use('/api/comments', commentsRoutes);
 app.use('/api/follow', followRoutes);
 app.use('/api/notifications', notificationRoutes);

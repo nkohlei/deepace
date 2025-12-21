@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { getImageUrl } from '../utils/imageUtils';
@@ -8,14 +8,37 @@ import './Search.css';
 
 const Search = () => {
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState([]);
+    const [userResults, setUserResults] = useState([]);
+    const [portalResults, setPortalResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searched, setSearched] = useState(false);
+    const [activeTab, setActiveTab] = useState('portals'); // 'portals' or 'users'
+    const navigate = useNavigate();
+
+    // Initial load: fetch popular portals
+    useEffect(() => {
+        if (!query) {
+            fetchPortals();
+        }
+    }, [query]);
+
+    const fetchPortals = async (keyword = '') => {
+        setLoading(true);
+        try {
+            const res = await axios.get(`/api/portals?keyword=${keyword}`);
+            setPortalResults(res.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSearch = async (searchQuery) => {
         if (!searchQuery.trim()) {
-            setResults([]);
             setSearched(false);
+            setUserResults([]);
+            fetchPortals(); // reset to popular
             return;
         }
 
@@ -23,8 +46,14 @@ const Search = () => {
         setSearched(true);
 
         try {
-            const response = await axios.get(`/api/users/search?q=${searchQuery}`);
-            setResults(response.data);
+            // Parallel search
+            const [usersRes, portalsRes] = await Promise.all([
+                axios.get(`/api/users/search?q=${searchQuery}`),
+                axios.get(`/api/portals?keyword=${searchQuery}`)
+            ]);
+
+            setUserResults(usersRes.data);
+            setPortalResults(portalsRes.data);
         } catch (err) {
             console.error('Search failed:', err);
         } finally {
@@ -54,7 +83,7 @@ const Search = () => {
                             </svg>
                             <input
                                 type="text"
-                                placeholder="Ara..."
+                                placeholder="Portal veya kişi ara..."
                                 value={query}
                                 onChange={handleInputChange}
                             />
@@ -63,8 +92,8 @@ const Search = () => {
                                     className="clear-btn"
                                     onClick={() => {
                                         setQuery('');
-                                        setResults([]);
                                         setSearched(false);
+                                        fetchPortals();
                                     }}
                                 >
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -76,6 +105,22 @@ const Search = () => {
                         </div>
                     </div>
 
+                    {/* Tabs */}
+                    <div className="search-tabs">
+                        <button
+                            className={`tab-btn ${activeTab === 'portals' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('portals')}
+                        >
+                            Portallar
+                        </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('users')}
+                        >
+                            Kişiler
+                        </button>
+                    </div>
+
                     {/* Loading */}
                     {loading && (
                         <div className="spinner-container">
@@ -83,70 +128,81 @@ const Search = () => {
                         </div>
                     )}
 
-                    {/* No Results */}
-                    {!loading && searched && results.length === 0 && (
-                        <div className="empty-search">
-                            <p>Kullanıcı bulunamadı</p>
-                        </div>
-                    )}
-
-                    {/* Results */}
-                    {!loading && results.length > 0 && (
-                        <div className="search-results">
-                            {results.map((user) => {
-                                const sharePostId = new URLSearchParams(window.location.search).get('sharePostId');
-                                const targetLink = sharePostId
-                                    ? `/inbox?user=${user.username}&sharePostId=${sharePostId}`
-                                    : `/profile/${user.username}`;
-
-                                return (
-                                    <Link
-                                        key={user._id}
-                                        to={targetLink}
-                                        className="user-result"
-                                    >
-                                        {user.profile?.avatar ? (
-                                            <img
-                                                src={getImageUrl(user.profile.avatar)}
-                                                alt={user.username}
-                                                className="result-avatar"
-                                            />
-                                        ) : (
-                                            <div className="result-avatar-placeholder">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                                    <circle cx="12" cy="7" r="4" />
-                                                </svg>
+                    {/* Content */}
+                    {!loading && (
+                        <div className="search-content">
+                            {/* PORTALS TAB */}
+                            {activeTab === 'portals' && (
+                                <div className="portals-grid">
+                                    {portalResults.length === 0 ? (
+                                        <div className="empty-search"><p>Portal bulunamadı.</p></div>
+                                    ) : (
+                                        portalResults.map(portal => (
+                                            <div
+                                                key={portal._id}
+                                                className="portal-card-grid"
+                                                onClick={() => navigate(`/portal/${portal._id}`)}
+                                            >
+                                                <div className="portal-grid-header">
+                                                    {portal.avatar ? (
+                                                        <img src={getImageUrl(portal.avatar)} alt={portal.name} />
+                                                    ) : (
+                                                        <div className="portal-grid-placeholder">
+                                                            {portal.name.substring(0, 2).toUpperCase()}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="portal-grid-body">
+                                                    <h3>{portal.name}</h3>
+                                                    <p>{portal.description && portal.description.substring(0, 60)}...</p>
+                                                    <span className="portal-members-count">
+                                                        {portal.members?.length || 0} Üye
+                                                    </span>
+                                                </div>
                                             </div>
-                                        )}
-                                        <div className="result-info">
-                                            <span className="result-name">
-                                                {user.profile?.displayName || user.username}
-                                                <Badge type={user.verificationBadge} />
-                                            </span>
-                                            <span className="result-username">@{user.username}</span>
-                                        </div>
-                                    </Link>
-                                )
-                            })}
-                        </div>
-                    )}
+                                        ))
+                                    )}
+                                </div>
+                            )}
 
-                    {/* Initial State */}
-                    {!loading && !searched && (
-                        <div className="search-suggestions">
-                            <p className="suggestion-title">Popüler Aramalar</p>
-                            <div className="suggestions-list">
-                                <button onClick={() => { setQuery('photo'); handleSearch('photo'); }}>
-                                    #photography
-                                </button>
-                                <button onClick={() => { setQuery('space'); handleSearch('space'); }}>
-                                    #space
-                                </button>
-                                <button onClick={() => { setQuery('nature'); handleSearch('nature'); }}>
-                                    #nature
-                                </button>
-                            </div>
+                            {/* USERS TAB */}
+                            {activeTab === 'users' && (
+                                <div className="users-list">
+                                    {userResults.length === 0 ? (
+                                        <div className="empty-search"><p>Kullanıcı bulunamadı.</p></div>
+                                    ) : (
+                                        userResults.map((user) => (
+                                            <Link
+                                                key={user._id}
+                                                to={`/profile/${user.username}`}
+                                                className="user-result"
+                                            >
+                                                {user.profile?.avatar ? (
+                                                    <img
+                                                        src={getImageUrl(user.profile.avatar)}
+                                                        alt={user.username}
+                                                        className="result-avatar"
+                                                    />
+                                                ) : (
+                                                    <div className="result-avatar-placeholder">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                            <circle cx="12" cy="7" r="4" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                                <div className="result-info">
+                                                    <span className="result-name">
+                                                        {user.profile?.displayName || user.username}
+                                                        <Badge type={user.verificationBadge} />
+                                                    </span>
+                                                    <span className="result-username">@{user.username}</span>
+                                                </div>
+                                            </Link>
+                                        ))
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

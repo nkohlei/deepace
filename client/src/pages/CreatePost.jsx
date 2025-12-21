@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import './CreatePost.css';
@@ -12,6 +12,8 @@ const CreatePost = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation(); // Add hook
+    const portalId = location.state?.portalId; // Get portalId if exists
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -47,6 +49,9 @@ const CreatePost = () => {
             if (mediaFile) {
                 formData.append('media', mediaFile);
             }
+            if (portalId) {
+                formData.append('portalId', portalId);
+            }
 
             await axios.post('/api/posts', formData, {
                 headers: {
@@ -54,7 +59,12 @@ const CreatePost = () => {
                 },
             });
 
-            navigate('/');
+            // Redirect back to portal if from portal, else home
+            if (portalId) {
+                navigate(`/portal/${portalId}`);
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'Gönderi oluşturulamadı');
         } finally {

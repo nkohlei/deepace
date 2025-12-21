@@ -6,6 +6,10 @@ const postSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    portal: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Portal'
+    },
     content: {
         type: String,
         maxlength: 5000

@@ -41,7 +41,7 @@ router.post('/', protect, (req, res, next) => {
     });
 }, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, portalId } = req.body;
 
         if (!content && !req.file) {
             return res.status(400).json({ message: 'Post must have content or media' });
@@ -51,6 +51,10 @@ router.post('/', protect, (req, res, next) => {
             author: req.user._id,
             content: content || '',
         };
+
+        if (portalId) {
+            postData.portal = portalId;
+        }
 
         if (req.file) {
             postData.media = req.file.path;

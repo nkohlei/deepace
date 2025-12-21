@@ -205,7 +205,9 @@ const upload = multer({
 // @access  Private
 router.get('/me', protect, async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).select('-password -verificationToken');
+        const user = await User.findById(req.user._id)
+            .select('-password -verificationToken')
+            .populate('joinedPortals', 'name avatar');
 
         // Calculate post count
         const postCount = await Post.countDocuments({ author: req.user._id });
