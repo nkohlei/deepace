@@ -19,7 +19,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
             display: 'flex',
             flexDirection: 'column',
             flexShrink: 0,
-            borderRight: '1px solid rgba(255,255,255,0.05)'
+            borderRight: '1px solid rgba(255,255,255,0.06)'
         }}>
             {/* Header / Portal Name Dropdown */}
             <div style={{
@@ -28,7 +28,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(0,0,0,0.2)',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
                 cursor: 'pointer',
                 transition: 'background 0.2s'

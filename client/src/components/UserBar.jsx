@@ -18,7 +18,7 @@ const UserBar = () => {
             alignItems: 'center',
             justifyContent: 'space-between',
             flexShrink: 0,
-            borderTop: '1px solid rgba(255,255,255,0.05)'
+            borderTop: '1px solid rgba(255,255,255,0.06)'
         }}>
             {/* User Info */}
             <div
