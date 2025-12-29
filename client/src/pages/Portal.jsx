@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Navbar from '../components/Navbar';
 import PostCard from '../components/PostCard';
-import Footer from '../components/Footer';
+import ChannelSidebar from '../components/ChannelSidebar';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
 import './Portal.css';
@@ -18,6 +17,9 @@ const Portal = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isMember, setIsMember] = useState(false);
+
+    // Channel State
+    const [currentChannel, setCurrentChannel] = useState('general');
 
     // Edit State
     const [editing, setEditing] = useState(false);
@@ -164,93 +166,107 @@ const Portal = () => {
     };
 
     if (loading) return (
-        <div className="app-wrapper">
-            <Navbar />
+        <div className="app-wrapper full-height">
             <div className="spinner-container"><div className="spinner"></div></div>
         </div>
     );
 
     if (error || !portal) return (
-        <div className="app-wrapper">
-            <Navbar />
+        <div className="app-wrapper full-height">
             <div className="error-message">{error || 'Portal bulunamadı'}</div>
         </div>
     );
 
     return (
-        <div className="app-wrapper">
-            <Navbar />
-            <main className="app-content">
+        <div className="app-wrapper full-height discord-layout">
+            {/* Channel Sidebar */}
+            <ChannelSidebar
+                portal={portal}
+                isMember={isMember}
+                onEdit={() => isOwner && setEditing(true)}
+                currentChannel={currentChannel}
+                onChangeChannel={setCurrentChannel}
+            />
 
-                {/* Portal Header Container */}
-                <div className="portal-header-container">
-                    {/* Banner Section */}
-                    <div className="portal-banner-section">
-                        {portal.banner ? (
-                            <img src={getImageUrl(portal.banner)} alt="Banner" className="portal-banner-image" />
-                        ) : (
-                            <div className="portal-banner-placeholder"></div>
-                        )}
+            {/* Main Content Area */}
+            <main className="discord-main-content">
+
+                {/* Channel Header */}
+                <header className="channel-top-bar">
+                    <div className="channel-title-wrapper">
+                        <span className="hashtag">#</span>
+                        <h3 className="channel-name">{currentChannel === 'general' ? 'genel' : currentChannel}</h3>
                     </div>
 
-                    <div className="portal-header-content">
-                        <div className="portal-avatar-large">
-                            {portal.avatar ? (
-                                <img src={getImageUrl(portal.avatar)} alt={portal.name} />
-                            ) : (
-                                <span>{portal.name.substring(0, 2).toUpperCase()}</span>
-                            )}
-                        </div>
+                    {currentChannel === 'general' && (
+                        <span className="channel-topic">
+                            {portal.description ? `- ${portal.description}` : ''}
+                        </span>
+                    )}
 
-                        <div className="portal-info">
-                            <h1>{portal.name}</h1>
-                            <p className="portal-description">{portal.description}</p>
-                            <div className="portal-meta">
-                                <span>{portal.members?.length || 0} Üye</span>
-                                <span>•</span>
-                                <span>{portal.privacy === 'public' ? 'Herkese Açık' : 'Gizli'}</span>
+                    <div className="channel-header-actions">
+                        {/* Example Actions */}
+                        <div className="icon-btn" title="Bildirimler">🔔</div>
+                        <div className="icon-btn" title="Sabitlenmiş Mesajlar">📌</div>
+                        <div className="icon-btn" title="Üye Listesi">👥</div>
+
+                        <div className="search-bar-mini">
+                            <input type="text" placeholder="Ara" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Channel Content (Feed) */}
+                <div className="channel-messages-area">
+                    {currentChannel === 'general' && (
+                        <>
+                            <div className="portal-feed-container discord-feed">
+                                {/* Only show create post if member */}
+                                {isMember && (
+                                    <div className="create-post-trigger" onClick={() => navigate('/create', { state: { portalId: id } })}>
+                                        {/* Create Post trigger (could be styled better, standardizing for now) */}
+                                    </div>
+                                )}
+
+                                {posts.length === 0 ? (
+                                    <div className="empty-portal">
+                                        <div className="empty-portal-icon">👋</div>
+                                        <h3>#genel kanalına hoş geldin!</h3>
+                                        <p>Burası {portal.name} sunucusunun başlangıcı.</p>
+                                    </div>
+                                ) : (
+                                    posts.map((post) => (
+                                        <PostCard key={post._id} post={post} />
+                                    ))
+                                )}
+                            </div>
+                        </>
+                    )}
+
+                    {currentChannel === 'members' && (
+                        <div style={{ padding: '20px', color: '#dcddde' }}>
+                            <h3>Üyeler ({portal.members?.length || 0})</h3>
+                            <div style={{ marginTop: '20px' }}>
+                                {/* Placeholder for member list */}
+                                {portal.members?.map((memberId, idx) => (
+                                    <div key={idx} style={{ padding: '10px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                        Üye ID: {memberId}
+                                    </div>
+                                ))}
                             </div>
                         </div>
-
-                        <div className="portal-actions">
-                            {isOwner && (
-                                <button className="portal-edit-btn" onClick={() => setEditing(true)}>
-                                    Ayarlar
-                                </button>
-                            )}
-
-                            {isMember ? (
-                                <button className="join-btn outline" onClick={handleLeave}>Ayrıl</button>
-                            ) : (
-                                <button className="join-btn primary" onClick={handleJoin}>Katıl</button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Feed */}
-                <div className="portal-feed-container">
-                    {/* Only show create post if member */}
-                    {isMember && (
-                        <div className="create-post-trigger" onClick={() => navigate('/create', { state: { portalId: id } })}>
-                            {/* Create Post trigger (could be styled better, standardizing for now) */}
-                        </div>
                     )}
 
-                    {posts.length === 0 ? (
-                        <div className="empty-portal">
-                            <div className="empty-portal-icon">📝</div>
-                            <h3>Henüz gönderi yok</h3>
-                            <p>Bu portalda ilk paylaşımı sen yap!</p>
+                    {currentChannel !== 'general' && currentChannel !== 'members' && (
+                        <div style={{ padding: '40px', textAlign: 'center', color: '#72767d' }}>
+                            <h3>#{currentChannel}</h3>
+                            <p>Bu kanalda henüz mesaj yok.</p>
                         </div>
-                    ) : (
-                        posts.map((post) => (
-                            <PostCard key={post._id} post={post} />
-                        ))
                     )}
                 </div>
 
-                {/* Edit Modal */}
+                {/* Edit Modal (Preserved) */}
                 {editing && (
                     <div className="edit-modal-overlay" onClick={() => setEditing(false)}>
                         <div className="edit-modal-modern" onClick={e => e.stopPropagation()}>
@@ -347,8 +363,6 @@ const Portal = () => {
                         </div>
                     </div>
                 )}
-
-                <Footer />
             </main>
         </div>
     );
