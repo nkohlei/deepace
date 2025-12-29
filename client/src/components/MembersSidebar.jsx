@@ -21,43 +21,59 @@ const MembersSidebar = ({ members = [] }) => {
         <div className="members-sidebar custom-scrollbar">
             {/* Online Category */}
             <div className="members-category">Çevrim içi — {online.length}</div>
-            {online.map(user => (
-                <div key={user.id} className="member-item">
-                    <div className="member-avatar-wrapper">
-                        {user.avatar ?
-                            <img src={getImageUrl(user.avatar)} alt="" className="member-avatar" /> :
-                            <div className="member-avatar-placeholder">{user.username[0].toUpperCase()}</div>
-                        }
-                        <div className="status-indicator online"></div>
-                    </div>
-                    <div className="member-info">
-                        <span className="member-name active-role" style={{ color: '#2ecc71' }}>
-                            {user.username}
-                            {user.role === 'owner' && <span style={{ marginLeft: '4px' }}>👑</span>}
-                        </span>
-                        {/* Status Message if any */}
-                        <div className="member-custom-status">
-                            <span role="img" aria-label="activity">🎮</span>
+            {online.map(user => {
+                // Safeguard against malformed data
+                if (!user) return null;
+                const username = user.username || 'Unknown';
+                const avatar = user.avatar || user.profile?.avatar;
+
+                return (
+                    <div key={user._id || user.id || Math.random()} className="member-item">
+                        <div className="member-avatar-wrapper">
+                            {avatar ?
+                                <img src={getImageUrl(avatar)} alt="" className="member-avatar" /> :
+                                <div className="member-avatar-placeholder">{username[0]?.toUpperCase() || '?'}</div>
+                            }
+                            <div className="status-indicator online"></div>
+                        </div>
+                        <div className="member-info">
+                            <span className="member-name active-role" style={{ color: '#2ecc71' }}>
+                                {username}
+                                {(user.role === 'owner' || user.isAdmin) && <span style={{ marginLeft: '4px' }}>👑</span>}
+                            </span>
+                            {/* Status Message if any */}
+                            <div className="member-custom-status">
+                                <span role="img" aria-label="activity">🎮</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                );
+            })}
 
             {/* Offline Category */}
             <div className="members-category">Çevrim dışı — {offline.length}</div>
-            {offline.map(user => (
-                <div key={user.id} className="member-item offline">
-                    <div className="member-avatar-wrapper">
-                        {user.avatar ?
-                            <img src={getImageUrl(user.avatar)} alt="" className="member-avatar" /> :
-                            <div className="member-avatar-placeholder" style={{ backgroundColor: '#1e1f22' }}>{user.username[0].toUpperCase()}</div>
-                        }
+            {offline.map(user => {
+                if (!user) return null;
+                // Handle if user is just an ID (fallback if populate failed)
+                if (typeof user === 'string') return null;
+
+                const username = user.username || 'Unknown';
+                const avatar = user.avatar || user.profile?.avatar;
+
+                return (
+                    <div key={user._id || user.id || Math.random()} className="member-item offline">
+                        <div className="member-avatar-wrapper">
+                            {avatar ?
+                                <img src={getImageUrl(avatar)} alt="" className="member-avatar" /> :
+                                <div className="member-avatar-placeholder" style={{ backgroundColor: '#1e1f22' }}>{username[0]?.toUpperCase() || '?'}</div>
+                            }
+                        </div>
+                        <div className="member-info">
+                            <span className="member-name" style={{ color: '#23a559' }}>{username}</span>
+                        </div>
                     </div>
-                    <div className="member-info">
-                        <span className="member-name" style={{ color: '#23a559' }}>{user.username}</span>
-                    </div>
-                </div>
-            ))}
+                );
+            })}
 
             <style>{`
                 .members-sidebar {

@@ -87,7 +87,8 @@ router.get('/:id', async (req, res) => {
     try {
         const portal = await Portal.findById(req.params.id)
             .populate('owner', 'username profile.avatar')
-            .populate('admins', 'username profile.avatar');
+            .populate('admins', 'username profile.avatar')
+            .populate('members', 'username profile.avatar');
 
         if (!portal) {
             return res.status(404).json({ message: 'Portal not found' });
