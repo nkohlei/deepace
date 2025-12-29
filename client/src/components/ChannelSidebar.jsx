@@ -1,157 +1,245 @@
-import React from 'react';
+import { useRef } from 'react';
 import UserBar from './UserBar';
+import { getImageUrl } from '../utils/imageUtils';
 
 const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel }) => {
     if (!portal) return null;
 
+    // Hardcoded demo channels to match visual requested, assuming integration later
     const channels = [
+        { id: 'welcome', name: 'welcome', type: 'text' },
+        { id: 'verify-support', name: 'verify-support', type: 'text' },
+        { id: 'announcements', name: 'wsb-announcements', type: 'announcement' },
+        // keeping mapped channels if needed, but primary focus on visual replica
         { id: 'general', name: 'genel', type: 'text' },
-        { id: 'announcements', name: 'duyurular', type: 'text' },
-        { id: 'members', name: 'üyeler', type: 'text' },
         { id: 'voice-lounge', name: 'Canlı Sohbet', type: 'voice' }
     ];
 
+    const isSelected = (id) => currentChannel === id;
+
     return (
         <div className="channel-sidebar" style={{
-            width: '320px', /* Upscaled width "thicker" */
+            width: '300px',
             height: '100%',
-            backgroundColor: '#111827',
+            backgroundColor: '#2b2d31',
             display: 'flex',
             flexDirection: 'column',
             flexShrink: 0,
+            overflow: 'hidden',
             borderRight: '1px solid rgba(255,255,255,0.06)'
         }}>
-            {/* Header / Portal Name Dropdown */}
-            {/* Split Header: Banner Area + Text Area for "Text down" effect */}
+            {/* 1. Header with Full Image Banner */}
             <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                height: '135px',
+                position: 'relative',
                 cursor: 'pointer',
-                transition: 'background 0.2s'
-            }}
-                className="channel-header-hover"
-                onClick={onEdit}
-            >
-                {/* Visual Header Top Strip (Simulating Banner/Color Block) */}
-                <div style={{ height: '12px', width: '100%', background: 'linear-gradient(90deg, #5865F2, #4752C4)' }}></div>
-
+                boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+            }} onClick={onEdit}>
+                {/* Banner Image */}
                 <div style={{
-                    height: '64px',
-                    padding: '0 20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundImage: portal.coverImage ? `url(${getImageUrl(portal.coverImage)})` : 'url("https://wallpapers.com/images/hd/wallstreetbets-neon-art-7f30v11f1j7g0h8d.jpg")',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
                 }}>
-                    <h2 style={{
-                        marginTop: '4px', /* Shift text down slightly */
-                        fontSize: '19px', /* Larger Font */
-                        fontWeight: '800',
-                        color: 'white',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                    }}>
-                        {portal.name}
-                    </h2>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" color="#b9bbbe">
-                        <path d="M6 9l6 6 6-6" />
-                    </svg>
+                    {/* Gradient Overlay */}
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%)'
+                    }}></div>
+                </div>
+
+                {/* Header Content Overlay */}
+                <div style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    padding: '12px 16px',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                }}>
+                    {/* Top Row: Name + Icons */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', maxWidth: '85%' }}>
+                            {/* Flower/Boost Icon (Pink) */}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff73fa" style={{ flexShrink: 0 }}>
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                            </svg>
+                            <h2 style={{
+                                fontSize: '16px',
+                                fontWeight: '900',
+                                color: 'white',
+                                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                margin: 0
+                            }}>{portal.name}</h2>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.8))' }}>
+                                <path d="M7 10l5 5 5-5H7z" />
+                            </svg>
+                        </div>
+                        {/* Invite/People Icon */}
+                        <div style={{ color: 'white', cursor: 'pointer', filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.8))' }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <line x1="20" y1="8" x2="20" y2="14"></line>
+                                <line x1="23" y1="11" x2="17" y2="11"></line>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Channels List */}
-            <div style={{ flex: 1, padding: '24px 10px', overflowY: 'auto' }} className="custom-scrollbar">
+            {/* Scrollable Area */}
+            <div className="custom-scrollbar" style={{ flex: 1, padding: '0 8px 8px 8px', overflowY: 'auto' }}>
 
-                {/* Text Channels Category */}
-                <div style={{ marginBottom: '24px' }}>
-                    <div style={{
-                        padding: '0 8px 6px 8px',
-                        fontSize: '13px', /* Larger category text */
-                        fontWeight: '800',
-                        color: '#949ba4',
-                        textTransform: 'uppercase',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        letterSpacing: '0.5px'
-                    }}
-                        className="category-header"
-                    >
-                        <span>Metin Kanalları</span>
-                        <span style={{ cursor: 'pointer', fontSize: '20px' }}>+</span>
+                {/* 2. Boost Goal Bar (Takviye Hedefi) */}
+                <div style={{
+                    marginTop: '16px',
+                    marginBottom: '16px',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(90deg, #48304c 0%, #38253a 100%)', // Dark purple style
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    userSelect: 'none'
+                }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ fontSize: '12px', color: '#dbdee1', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            Takviye Hedefi
+                            <span style={{ fontSize: '14px' }}>🎉</span>
+                        </div>
                     </div>
+                    <div style={{ fontSize: '12px', color: '#dbdee1', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
+                        159 Takviye
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ marginLeft: '4px' }}>
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </div>
+                </div>
 
-                    {channels.filter(c => c.type === 'text').map(channel => (
+                {/* 3. Browse Channels (Kanallara Göz At) */}
+                <div style={{
+                    padding: '6px 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    color: '#949ba4',
+                    cursor: 'pointer',
+                    borderRadius: '4px',
+                    marginBottom: '16px',
+                    transition: 'background 0.1s'
+                }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M4 6h16M4 12h16M4 18h8" />
+                        <circle cx="18" cy="18" r="3" />
+                        <line x1="20.2" y1="20.2" x2="22" y2="22" />
+                    </svg>
+                    <span style={{ fontSize: '15px', fontWeight: '600' }}>Kanallara Göz At</span>
+                </div>
+
+                {/* Separator */}
+                <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.06)', margin: '0 4px 16px 4px' }}></div>
+
+                {/* 4. Channel List */}
+                {channels.map(channel => {
+                    const isActive = isSelected(channel.id);
+                    const isAnnouncement = channel.type === 'announcement' || channel.name.includes('announcements');
+                    const isVoice = channel.type === 'voice';
+
+                    return (
                         <div
                             key={channel.id}
-                            className={`channel-item ${currentChannel === channel.id ? 'active' : ''}`}
+                            className={`channel-item ${isActive ? 'active' : ''}`}
                             onClick={() => onChangeChannel(channel.id)}
                             style={{
-                                padding: '8px 12px', /* Larger padding */
+                                padding: '6px 8px',
                                 margin: '2px 0',
-                                borderRadius: '6px',
+                                borderRadius: '4px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '10px',
+                                gap: '8px',
                                 cursor: 'pointer',
-                                color: currentChannel === channel.id ? 'white' : '#949ba4',
-                                backgroundColor: currentChannel === channel.id ? 'rgba(255,255,255,0.06)' : 'transparent',
+                                color: isActive ? 'white' : '#949ba4',
+                                backgroundColor: isActive ? '#3f4147' : 'transparent',
                                 transition: 'all 0.1s'
                             }}
                         >
-                            <span style={{ fontSize: '22px', color: '#72767d', fontWeight: 300 }}>#</span>
-                            <span style={{ fontWeight: 600, fontSize: '16px' }}>{channel.name}</span>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Voice Channels Category */}
-                <div>
-                    <div style={{
-                        padding: '0 8px 6px 8px',
-                        fontSize: '13px',
-                        fontWeight: '800',
-                        color: '#949ba4',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
-                    }}>
-                        Ses Kanalları
-                    </div>
-                    {channels.filter(c => c.type === 'voice').map(channel => (
-                        <div
-                            key={channel.id}
-                            className="channel-item"
-                            style={{
-                                padding: '8px 12px',
-                                margin: '2px 0',
-                                borderRadius: '6px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                cursor: 'pointer',
-                                color: '#949ba4'
-                            }}
-                        >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V5a3 3 0 0 1 3-3z" />
-                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                                <line x1="12" y1="19" x2="12" y2="23" />
-                            </svg>
-                            <span style={{ fontWeight: 600, fontSize: '16px' }}>{channel.name}</span>
-                            <div style={{ marginLeft: 'auto', fontSize: '11px', background: '#3ba55d', padding: '2px 6px', borderRadius: '4px', color: 'white', fontWeight: 'bold' }}>
-                                LIVE
+                            {/* Icon */}
+                            <div style={{ color: isActive ? 'white' : '#72767d', display: 'flex', alignItems: 'center', minWidth: '20px', justifyContent: 'center' }}>
+                                {isVoice ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    </svg>
+                                ) : isAnnouncement ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                    </svg>
+                                ) : (
+                                    <span style={{ fontSize: '24px', fontWeight: 300, lineHeight: 1 }}>#</span>
+                                )}
                             </div>
+
+                            {/* Name */}
+                            <span style={{
+                                fontWeight: isActive ? 600 : 500,
+                                fontSize: '16px',
+                                flex: 1,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>
+                                {channel.name}
+                            </span>
+
+                            {/* Active Icon (Person+) */}
+                            {isActive && (
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="8.5" cy="7" r="4"></circle>
+                                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                                </svg>
+                            )}
+
+                            {/* Notification Badge (For announcements) */}
+                            {isAnnouncement && !isActive && (
+                                <div style={{
+                                    backgroundColor: '#f23f43',
+                                    color: 'white',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold',
+                                    padding: '0 6px',
+                                    borderRadius: '8px',
+                                    minWidth: '16px',
+                                    height: '16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    1
+                                </div>
+                            )}
+
                         </div>
-                    ))}
-                    {/* Fake User in Voice */}
-                    <div style={{ marginLeft: '34px', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#5865F2', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', border: '2px solid #111827' }}>
-                            U
-                        </div>
-                        <span style={{ fontSize: '14px', color: 'white', fontWeight: 500 }}>ufuk.gls</span>
-                    </div>
-                </div>
+                    );
+                })}
 
             </div>
 
@@ -159,15 +247,12 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
             <UserBar />
 
             <style>{`
-                .channel-header-hover:hover {
-                    background-color: rgba(255,255,255,0.04);
-                }
                 .channel-item:hover {
-                    background-color: rgba(255,255,255,0.04);
+                    background-color: rgba(79, 84, 92, 0.32) !important;
                     color: #dcddde !important;
                 }
                 .channel-item.active {
-                    background-color: rgba(79, 84, 92, 0.48) !important;
+                    background-color: rgba(79, 84, 92, 0.6) !important;
                     color: white !important;
                 }
                 .custom-scrollbar::-webkit-scrollbar {
@@ -176,6 +261,9 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                 .custom-scrollbar::-webkit-scrollbar-thumb {
                     background: #202225;
                     border-radius: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background-color: #2b2d31;
                 }
             `}</style>
         </div>
