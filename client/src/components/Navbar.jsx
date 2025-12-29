@@ -128,8 +128,7 @@ const Navbar = () => {
                             )}
                         </button>
 
-                        {/* User Actions */}
-                        {user && user._id ? (
+                        {user ? (
                             <>
                                 {/* Notification Button */}
                                 <Link to="/notifications" className="header-icon notification-btn">
@@ -224,7 +223,7 @@ const Navbar = () => {
             </header>
 
             {/* Bottom Navigation */}
-            {user && user._id && (
+            {user && (
                 <nav className="bottom-nav">
                     <div className="nav-container">
                         <Link to="/" className={`nav-item ${isActive('/') ? 'active' : ''}`}>
