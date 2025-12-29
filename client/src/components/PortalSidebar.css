@@ -1,7 +1,7 @@
 .portal-sidebar {
     width: 72px;
     height: auto;
-    min-height: 200px;
+    /* remove min-height */
     background-color: var(--card-bg);
     display: flex;
     flex-direction: column;

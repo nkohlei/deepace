@@ -18,22 +18,31 @@
     /* Below navbar */
     left: 0;
     z-index: 100;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Hidden State: Collapsed Height */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Ensure it doesn't block clicks when hidden */
+    pointer-events: none;
 }
 
-/* Open State - slides in from left edge of phone-frame */
+/* Open State - Expands Top-Down */
 .portal-sidebar-wrapper.sidebar-open {
-    transform: translateX(0);
+    max-height: 600px;
+    /* Adjust based on content */
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Sidebar Toggle Arrow - Curved tab handle on phone-frame edge */
 .sidebar-toggle-arrow {
     position: absolute;
     left: 0;
-    top: 120px;
+    top: 80px;
+    /* Aligned with top of sidebar area */
     width: 24px;
-    height: 60px;
+    height: 48px;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-left: none;
@@ -54,9 +63,11 @@
     width: 28px;
 }
 
-/* When sidebar is open, move arrow with it */
+/* When sidebar is open, arrow stays or moves? User said "menu opens...". Let's keep arrow visible or integrated. */
+/* If menu opens top-down, arrow should probably stay or rotate */
 .sidebar-toggle-arrow.open {
-    left: 72px;
+    /* Maybe rotate icon? */
+    background: var(--bg-hover);
 }
 
 /* Main Content Wrapper */
@@ -85,7 +96,18 @@
         top: 0;
         left: 0;
         height: 100%;
+        max-height: 100vh;
+        /* Reset for mobile */
+        transform: translateX(-100%);
+        /* Use slide for mobile */
+        transition: transform 0.3s ease;
         z-index: 1000;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .portal-sidebar-wrapper.sidebar-open {
+        transform: translateX(0);
     }
 
     .main-content-wrapper {
@@ -108,6 +130,13 @@
 .mobile-sidebar-overlay.active {
     opacity: 1;
     pointer-events: auto;
+}
+
+/* HIDE OVERLAY ON DESKTOP */
+@media (min-width: 769px) {
+    .mobile-sidebar-overlay {
+        display: none;
+    }
 }
 
 /* Desktop phone-frame effect */
