@@ -7,7 +7,9 @@
     background: var(--bg-card);
     /* Consistent with card bg */
     border-bottom: 1px solid var(--border-color);
-    z-index: 1000;
+    z-index: 1100;
+    /* Ensure high enough z-index */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-container {
@@ -18,8 +20,10 @@
     padding: 0 24px;
     margin: 0 auto;
     width: 100%;
-    max-width: 600px;
+    max-width: 750px;
     /* Match phone-frame width */
+    position: relative;
+    /* Ensure container respects z-index */
 }
 
 .nav-left {

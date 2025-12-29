@@ -3,7 +3,7 @@
     display: flex;
     margin: 0 auto;
     width: 100%;
-    max-width: 600px;
+    max-width: 750px;
     /* Phone-width frame */
     min-height: 100vh;
     position: relative;
@@ -41,8 +41,10 @@
     left: 0;
     top: 80px;
     /* Aligned with top of sidebar area */
-    width: 24px;
-    height: 48px;
+    width: 32px;
+    /* Wider base */
+    height: 64px;
+    /* Taller */
     background: #0f172a;
     /* Solid dark background matching sidebar */
     border: 1px solid var(--border-color);

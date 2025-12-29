@@ -205,13 +205,15 @@ const Navbar = () => {
                             </>
                         ) : (
                             <Link to="/login" className="login-btn-header" style={{
-                                padding: '8px 16px',
+                                padding: '10px 20px',
                                 background: 'var(--primary-color)',
                                 color: 'white',
-                                borderRadius: '20px',
+                                borderRadius: '24px',
                                 textDecoration: 'none',
-                                fontWeight: '600',
-                                fontSize: '0.9rem'
+                                fontWeight: '700',
+                                fontSize: '0.95rem',
+                                whiteSpace: 'nowrap',
+                                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
                             }}>
                                 Giriş Yap
                             </Link>

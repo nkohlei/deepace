@@ -94,7 +94,7 @@ const PortalSidebar = () => {
                     className="sidebar-item"
                     onClick={() => {
                         setShowCreateModal(true);
-                        closeSidebar();
+                        // Do not close sidebar as per request
                     }}
                     data-tooltip="Portal Oluştur"
                 >
