@@ -4,7 +4,7 @@ import { getImageUrl } from '../utils/imageUtils';
 import { useNavigate } from 'react-router-dom';
 
 const UserBar = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     if (!user) return null;
@@ -41,7 +41,7 @@ const UserBar = () => {
                     {/* Banner */}
                     <div style={{ height: '60px', backgroundColor: user.profile?.bannerColor || '#000' }}>
                         {user.profile?.coverImage && (
-                            <img src={getImageUrl(user.profile.coverImage)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={getImageUrl(user.profile.coverImage)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Cover" />
                         )}
                     </div>
 
@@ -59,7 +59,7 @@ const UserBar = () => {
                             cursor: 'pointer'
                         }} onClick={() => navigate(`/profile`)}>
                             {user.profile?.avatar ? (
-                                <img src={getImageUrl(user.profile.avatar)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={getImageUrl(user.profile.avatar)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Avatar" />
                             ) : (
                                 <div style={{ width: '100%', height: '100%', backgroundColor: '#5865F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', color: 'white' }}>
                                     {user.username?.[0]?.toUpperCase()}
@@ -138,7 +138,6 @@ const UserBar = () => {
                     }}
                     onClick={() => setShowPopover(!showPopover)}
                 >
-                    {/* ... rest of existing UserBar content ... */}
                     <div style={{ position: 'relative' }}>
                         {user.profile?.avatar ? (
                             <img
@@ -227,7 +226,8 @@ const UserBar = () => {
                 `}
                 </style>
             </div>
-            );
+        </div>
+    );
 };
 
-            export default UserBar;
+export default UserBar;
