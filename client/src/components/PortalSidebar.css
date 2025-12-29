@@ -1,7 +1,7 @@
 .portal-sidebar {
-    width: 72px;
-    height: auto;
-    /* remove min-height */
+    width: 100%;
+    height: 100%;
+    /* Full height of wrapper */
     background-color: #0f172a;
     /* Solid dark background */
     display: flex;
@@ -11,15 +11,17 @@
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    /* Curved tab shape - rounded on right side like browser tabs */
-    border-radius: 0 30px 30px 0;
-    /* Organic shadow */
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    /* Flat rail for V3 */
+    border-radius: 0;
+    /* Remove curved tab shape */
+    box-shadow: none;
+    /* Remove shadow for seamless look */
     /* Border on right side only */
-    border-right: 2px solid var(--primary-color, #3b82f6);
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-top: none;
+    border-bottom: none;
     position: relative;
+    z-index: 10;
 }
 
 .portal-sidebar::-webkit-scrollbar {

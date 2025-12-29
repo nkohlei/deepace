@@ -235,15 +235,15 @@ textarea:focus {
   margin: 0 auto;
 }
 
-/* Phone Frame Container */
+/* Full Screen App Wrapper */
 .app-wrapper {
   width: 100%;
-  max-width: 750px;
-  /* Phone-width frame, centered */
-  margin: 0 auto;
-  min-height: 100vh;
-  background: var(--gradient-space);
+  max-width: 100%;
+  min-height: 100%;
+  background: var(--bg-dark);
+  /* Removed gradient space */
   position: relative;
+  flex: 1;
 }
 
 /* App wrapper with nav spacing */
@@ -253,18 +253,7 @@ textarea:focus {
   min-height: 100vh;
 }
 
-/* Desktop: Show phone frame effect */
-@media (min-width: 520px) {
-  body {
-    background: var(--bg-dark);
-  }
-
-  .app-wrapper {
-    border-left: 1px solid var(--border-neon);
-    border-right: 1px solid var(--border-neon);
-    box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
-  }
-}
+/* Desktop Phone Frame Effect Removed for V3 Full Screen */
 
 /* Text utilities */
 .text-primary {

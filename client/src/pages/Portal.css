@@ -125,9 +125,10 @@
 
 
 .portal-feed-container {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
+    width: 100%;
+    margin: 0;
+    padding: 20px 40px;
+    /* Added side padding for better look on large screens */
 }
 
 .empty-portal {

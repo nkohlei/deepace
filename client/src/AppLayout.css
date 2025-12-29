@@ -1,129 +1,83 @@
-/* Main App Layout - Narrow phone-frame, centered */
+/* Main App Layout - Full Screen Discord Style */
 .app-container {
     display: flex;
-    margin: 0 auto;
-    width: 100%;
-    max-width: 750px;
-    /* Phone-width frame */
-    min-height: 100vh;
-    position: relative;
-    /* For absolute positioning of sidebar */
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
     background-color: var(--bg-primary);
 }
 
-/* Sidebar Wrapper - Curved tab on left edge of phone-frame */
+/* Sidebar Wrapper - Fixed Left Rail */
 .portal-sidebar-wrapper {
-    position: absolute;
-    top: 80px;
-    /* Below navbar */
-    left: 0;
+    width: 72px;
+    /* Fixed width sidebar */
+    height: 100%;
+    position: relative;
+    /* Part of flex flow on desktop */
     z-index: 100;
-    /* Hidden State: Collapsed Height */
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    /* Ensure it doesn't block clicks when hidden */
-    pointer-events: none;
-}
-
-/* Open State - Expands Top-Down */
-.portal-sidebar-wrapper.sidebar-open {
-    max-height: 600px;
-    /* Adjust based on content */
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-color);
+    background: var(--bg-darker);
+    /* Always visible on desktop */
+    max-height: 100vh;
     opacity: 1;
     pointer-events: auto;
 }
 
-/* Sidebar Toggle Arrow - Curved tab handle on phone-frame edge */
+/* Override existing sidebar transition/hiding for Desktop */
+.portal-sidebar-wrapper.sidebar-open {
+    /* No change needed for desktop if always open, but keep class handling implies mobile toggle */
+}
+
+/* Sidebar Toggle Arrow - HIDDEN on Desktop for V3 (Permanent Sidebar) */
 .sidebar-toggle-arrow {
-    position: absolute;
-    left: 0;
-    top: 80px;
-    /* Aligned with top of sidebar area */
-    width: 32px;
-    /* Wider base */
-    height: 64px;
-    /* Taller */
-    background: #0f172a;
-    /* Solid dark background matching sidebar */
-    border: 1px solid var(--border-color);
-    border-left: none;
-    border-radius: 0 16px 16px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 101;
-    color: var(--text-secondary);
-    box-shadow: 3px 0 12px rgba(0, 0, 0, 0.25);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
 }
 
-/* When sidebar is open, move arrow to the right of the sidebar */
-.sidebar-toggle-arrow.open {
-    left: 72px;
-    /* Width of sidebar */
-    border-radius: 0 16px 16px 0;
-    background: #0f172a;
-    transform: rotate(180deg);
-    /* Flip arrow */
-}
-
-.sidebar-toggle-arrow:hover {
-    background: var(--bg-hover);
-    color: var(--primary-color);
-    width: 28px;
-}
-
-/* When sidebar is open, arrow stays or moves? User said "menu opens...". Let's keep arrow visible or integrated. */
-/* If menu opens top-down, arrow should probably stay or rotate */
-/* Cleaned up duplicate rule */
-
-/* Main Content Wrapper */
+/* Main Content Wrapper - Fluid */
 .main-content-wrapper {
     flex-grow: 1;
     min-width: 0;
+    height: 100%;
     position: relative;
     background-color: var(--bg-primary);
-    width: 100%;
+    overflow-y: auto;
+    /* Scrollable content area */
+    display: flex;
+    flex-direction: column;
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .app-container {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    .sidebar-toggle-arrow {
-        display: none;
-        /* Mobile uses Navbar Hamburger */
+        flex-direction: column;
+        /* Or keep row but sidebar hidden */
     }
 
     .portal-sidebar-wrapper {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100%;
-        max-height: 100vh;
-        /* Reset for mobile */
+        width: 280px;
+        /* Standard mobile drawer width */
         transform: translateX(-100%);
-        /* Use slide for mobile */
+        border-right: none;
         transition: transform 0.3s ease;
-        z-index: 1000;
-        opacity: 1;
-        pointer-events: auto;
+        z-index: 2000;
     }
 
     .portal-sidebar-wrapper.sidebar-open {
         transform: translateX(0);
     }
 
-    .main-content-wrapper {
-        padding-bottom: 80px;
+    .sidebar-toggle-arrow {
+        display: none;
     }
 }
+
+/* Removing Desktop Phone Frame Effects */
+/* (Block removed) */
 
 /* Mobile Sidebar Overlay */
 .mobile-sidebar-overlay {
@@ -142,22 +96,8 @@
     pointer-events: auto;
 }
 
-/* HIDE OVERLAY ON DESKTOP */
 @media (min-width: 769px) {
     .mobile-sidebar-overlay {
         display: none;
-    }
-}
-
-/* Desktop phone-frame effect */
-@media (min-width: 769px) {
-    body {
-        background: var(--bg-dark, #0a0a0a);
-    }
-
-    .app-container {
-        border-left: 1px solid var(--border-color);
-        border-right: 1px solid var(--border-color);
-        box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
     }
 }
