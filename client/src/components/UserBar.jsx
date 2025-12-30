@@ -23,14 +23,24 @@ const UserBar = () => {
     if (!user) return null;
 
     return (
-        <div className="user-bar-container" style={{ position: 'relative' }}>
+        <div className="user-bar-container" style={{
+            position: 'fixed',
+            bottom: '16px',
+            left: '84px', // 72px sidebar + margin
+            width: '260px',
+            zIndex: 999,
+            backgroundColor: '#232428',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            border: '1px solid rgba(255,255,255,0.06)'
+        }}>
             {/* User Popover (Mini Profile) */}
             {showPopover && (
                 <div className="user-popover slide-up-animation" style={{
                     position: 'absolute',
                     bottom: '60px', /* Above the UserBar */
-                    left: '8px',
-                    width: '340px',
+                    left: '0',
+                    width: '300px',
                     backgroundColor: '#111214',
                     borderRadius: '8px',
                     boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
@@ -116,13 +126,13 @@ const UserBar = () => {
 
             <div style={{
                 height: '52px',
-                backgroundColor: '#232428', // Slightly lighter than darkest
+                // backgroundColor: '#232428', // Removed internal background logic, handled by container
                 padding: '0 8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexShrink: 0,
-                borderTop: '1px solid rgba(255,255,255,0.06)'
+                borderRadius: '8px' // Match parent
             }}>
                 {/* User Info */}
                 <div

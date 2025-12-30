@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import UserBar from './UserBar';
+
 import { getImageUrl } from '../utils/imageUtils';
 
 const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel }) => {
@@ -247,8 +247,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
 
             </div>
 
-            {/* Bottom User Bar */}
-            <UserBar />
+
 
             <style>{`
                 .channel-item:hover {

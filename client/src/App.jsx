@@ -24,6 +24,7 @@ import Contact from './pages/Contact';
 import Portal from './pages/Portal';
 import PortalSidebar from './components/PortalSidebar';
 import Maintenance from './pages/Maintenance';
+import UserBar from './components/UserBar';
 import './AppLayout.css';
 
 // 🔧 MAINTENANCE MODE - Set to true to show maintenance page
@@ -59,6 +60,9 @@ const AppLayout = () => {
             <div className={`portal-sidebar-wrapper ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <PortalSidebar />
             </div>
+
+            {/* Global User Bar */}
+            <UserBar />
 
             <div className="main-content-wrapper">
                 <Routes>
