@@ -21,7 +21,7 @@ const Maintenance = () => {
         const playAudio = async () => {
             if (audioRef.current) {
                 try {
-                    audioRef.current.volume = 0.5;
+                    audioRef.current.volume = 1.0;
                     await audioRef.current.play();
                     setIsMuted(false);
                 } catch (err) {
