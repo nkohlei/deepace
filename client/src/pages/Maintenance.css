@@ -1,68 +1,155 @@
+/* Maintenance.css */
 .maintenance-container {
-    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #050505;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
-    padding: 20px;
+    z-index: 9999;
 }
 
-.maintenance-content {
-    text-align: center;
-    max-width: 500px;
-    padding: 60px 40px;
-    background: rgba(20, 20, 30, 0.9);
-    border-radius: 24px;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-        0 0 40px rgba(59, 130, 246, 0.1);
+/* Floating Images Background */
+.floating-images-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
 }
 
-.maintenance-icon {
-    font-size: 80px;
-    margin-bottom: 24px;
-    animation: pulse 2s ease-in-out infinite;
+.floating-image {
+    position: absolute;
+    bottom: -200px; /* Start below screen */
+    width: 300px; /* Medium size */
+    opacity: 0.6;
+    animation-name: floatUp;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
 }
 
-@keyframes pulse {
+.floating-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    filter: grayscale(20%) sepia(20%) brightness(0.8);
+}
 
-    0%,
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        bottom: -300px;
+    }
     100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
+        transform: translateY(-120vh) rotate(360deg);
+        bottom: 120%;
     }
 }
 
-.maintenance-content h1 {
-    font-size: 2rem;
-    font-weight: 800;
+/* Overlay to darken background for text readability */
+.maintenance-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 80%);
+    z-index: 2;
+    backdrop-filter: blur(2px);
+}
+
+/* Main Content */
+.maintenance-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
     color: #fff;
-    margin: 0 0 16px 0;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    padding: 2rem;
+    max-width: 800px;
 }
 
-.maintenance-content p {
-    font-size: 1.1rem;
-    color: #9ca3af;
-    line-height: 1.8;
-    margin: 0 0 32px 0;
-}
-
-.maintenance-footer {
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.maintenance-footer span {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #6b7280;
-    letter-spacing: 2px;
+/* Glitch Text Effect for "Yenileniyoruz" */
+.glitch-text {
+    font-size: 5rem;
+    font-weight: 900;
     text-transform: uppercase;
+    position: relative;
+    letter-spacing: 4px;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #00ff00;
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #00ff00; }
+    25% { text-shadow: -2px 2px 0px #ff0000, 2px -2px 0px #00ff00; }
+    50% { text-shadow: 2px -2px 0px #ff0000, -2px 2px 0px #00ff00; }
+    75% { text-shadow: -2px -2px 0px #ff0000, 2px 2px 0px #00ff00; }
+    100% { text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #00ff00; }
+}
+
+.message-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+    transform: skewX(-10deg);
+    border-left: 5px solid #ff3333; /* Aggressive red accent */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.primary-message {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #e0e0e0;
+    transform: skewX(10deg); /* Counter skew */
+}
+
+.secondary-message {
+    font-size: 1.1rem;
+    color: #a0a0a0;
+    font-style: italic;
+    transform: skewX(10deg); /* Counter skew */
+}
+
+/* Brand Tag */
+.brand-tag {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 10;
+}
+
+.brand-tag span {
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.5rem 1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .glitch-text {
+        font-size: 3rem;
+    }
+    
+    .floating-image {
+        width: 150px;
+    }
+    
+    .primary-message {
+        font-size: 1.2rem;
+    }
 }

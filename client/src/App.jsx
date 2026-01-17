@@ -30,7 +30,7 @@ import SplashScreen from './components/SplashScreen';
 import './AppLayout.css';
 
 // 🔧 MAINTENANCE MODE - Set to true to show maintenance page
-const MAINTENANCE_MODE = false;
+const MAINTENANCE_MODE = true;
 
 import { useUI, UIProvider } from './context/UIContext';
 
