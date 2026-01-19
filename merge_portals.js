@@ -2,123 +2,147 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import User from './models/User.js';
 import Portal from './models/Portal.js';
 import Post from './models/Post.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Robust Env Loading
-try {
-    const envPath = path.join(__dirname, '.env');
-    if (fs.existsSync(envPath)) {
-        const envConfig = dotenv.parse(fs.readFileSync(envPath));
-        for (const k in envConfig) {
-            process.env[k] = envConfig[k];
-        }
-        console.log('Env loaded manually.');
-    } else {
-        dotenv.config(); // Fallback
-    }
-} catch (e) {
-    console.error('Env load error:', e);
+// 1. Explicitly load .env from current directory
+const envPath = path.resolve(process.cwd(), '.env');
+console.log(`Loading .env from: ${envPath}`);
+
+if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+} else {
+    console.error('CRITICAL: .env file not found!');
+    process.exit(1);
+}
+
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+if (!MONGO_URI) {
+    console.error('CRITICAL: MONGO_URI is not defined in .env');
+    console.log('Env Keys:', Object.keys(process.env));
+    process.exit(1);
 }
 
 const mergePortals = async () => {
     try {
-        if (!process.env.MONGO_URI) {
-            throw new Error('MONGO_URI missing');
-        }
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('MongoDB Connected');
+        console.log('Connecting to MongoDB...');
+        await mongoose.connect(MONGO_URI);
+        console.log('MongoDB Connected.');
 
-        // 1. Find Portals with fuzzy matching
+        // 2. Find Portals (Case insensitive, flexible spaces)
         const portals = await Portal.find({});
+        console.log(`Found ${portals.length} portals in DB.`);
 
-        let source = portals.find(p => /test\s?1/i.test(p.name));
-        let target = portals.find(p => /deepace\s?global/i.test(p.name));
+        // Regex for "test 1" (matches "test 1", "Test 1", "test1")
+        const sourceRegex = /test\s?1/i;
+        // Regex for "deepace global" (matches "deepace global", "Deepace Global")
+        const targetRegex = /deepace\s?global/i;
+
+        const source = portals.find(p => sourceRegex.test(p.name));
+        const target = portals.find(p => targetRegex.test(p.name));
 
         if (!source) {
-            console.log('Source portal matching "test 1" not found. Available names:');
-            portals.forEach(p => console.log(`- ${p.name}`));
+            console.error('❌ Source portal (test 1) not found.');
+            console.log('Available portals:', portals.map(p => p.name).join(', '));
             process.exit(1);
         }
         if (!target) {
-            console.log('Target portal matching "deepace global" not found. Available names:');
-            portals.forEach(p => console.log(`- ${p.name}`));
+            console.error('❌ Target portal (deepace global) not found.');
+            console.log('Available portals:', portals.map(p => p.name).join(', '));
             process.exit(1);
         }
 
-        console.log(`Merging '${source.name}' (${source._id}) -> '${target.name}' (${target._id})`);
+        console.log('------------------------------------------------');
+        console.log(`SOURCE: ${source.name} (${source._id})`);
+        console.log(`TARGET: ${target.name} (${target._id})`);
+        console.log('------------------------------------------------');
 
-        // 2. Merge Channels
+        // 3. Merge Channels
         let channelsAdded = 0;
-        if (source.channels) {
+        if (source.channels && source.channels.length > 0) {
             for (const ch of source.channels) {
-                // Check by name (case insensitive)
-                const exists = target.channels.some(tc => tc.name.toLowerCase() === ch.name.toLowerCase());
-                if (!exists) {
-                    target.channels.push(ch);
+                const alreadyExists = target.channels && target.channels.some(
+                    tc => tc.name.toLowerCase() === ch.name.toLowerCase()
+                );
+
+                if (!alreadyExists) {
+                    target.channels.push(ch); // Mongoose will handle subdoc creation
                     channelsAdded++;
                 }
             }
         }
-        console.log(`Channels merged: ${channelsAdded} new channels added.`);
+        console.log(`✅ Channels Merged: ${channelsAdded} new channels added.`);
 
-        // 3. Merge Members
-        const initialMemberCount = target.members.length;
-        const sourceMembers = source.members.map(m => m.toString());
-        const targetMembers = new Set(target.members.map(m => m.toString()));
-        sourceMembers.forEach(id => targetMembers.add(id));
-        target.members = Array.from(targetMembers);
+        // 4. Merge Members
+        const initialMembers = target.members ? target.members.length : 0;
+        const sourceMembers = source.members || [];
+        // Use Set to avoid duplicates
+        const memberSet = new Set(target.members.map(m => m.toString()));
+        sourceMembers.forEach(m => memberSet.add(m.toString()));
+        target.members = Array.from(memberSet);
+        console.log(`✅ Members Merged: ${initialMembers} -> ${target.members.length}`);
 
-        // Merge Admins
-        const sourceAdmins = source.admins.map(m => m.toString());
-        const targetAdmins = new Set(target.admins.map(m => m.toString()));
-        sourceAdmins.forEach(id => targetAdmins.add(id));
-        target.admins = Array.from(targetAdmins);
-
-        await target.save();
-        console.log(`Members merged. Total: ${target.members.length} (was ${initialMemberCount})`);
-
-        // 4. Move Posts
-        const postUpdateResult = await Post.updateMany(
-            { portal: source._id },
-            { portal: target._id }
-        );
-        console.log(`Posts moved: ${postUpdateResult.modifiedCount}`);
-
-        // Also update posts channel refs if they used ID references that are specific to source portal
-        // Since we copied channels, they have NEW IDs if created new, or same structure if simple objects? 
-        // Portal.channels schema is subdocuments with _id.
-        // When pushed to target, mongoose might generate NEW _ids for them.
-        // This is tricky. If posts reference channel NAME, it's fine. 
-        // My Post model uses String for channel (name or ID). 
-        // If it used IDs from the old portal, those IDs might not exist in the new portal's subdoc array.
-        // However, standardizing on 'general' helps. 
-        // For custom channels, posts might be orphaned visually if IDs don't match.
-        // But the user's request is mainly about posts being visible.
-        // Let's assume name matching for now or that we are fine.
-
-        // 5. Update Users (joinedPortals)
-        const usersToUpdate = await User.find({ joinedPortals: source._id });
-        console.log(`Updating ${usersToUpdate.length} users...`);
-
-        for (const user of usersToUpdate) {
-            user.joinedPortals = user.joinedPortals.filter(p => p.toString() !== source._id.toString());
-            if (!user.joinedPortals.some(p => p.toString() === target._id.toString())) {
-                user.joinedPortals.push(target._id);
-            }
-            await user.save();
+        // 5. Merge Admins
+        const adminSet = new Set(target.admins.map(a => a.toString()));
+        if (source.admins) {
+            source.admins.forEach(a => adminSet.add(a.toString()));
         }
+        target.admins = Array.from(adminSet);
+        console.log(`✅ Admins Merged.`);
 
-        console.log('Migration completed successfully.');
-        process.exit();
+        // Save Target Portal
+        await target.save();
+        console.log('💾 Target portal saved with new data.');
+
+        // 6. Move Posts
+        // Update all posts belonging to source portal to target portal
+        const postResult = await Post.updateMany(
+            { portal: source._id },
+            { $set: { portal: target._id } }
+        );
+        console.log(`✅ Posts Moved: ${postResult.modifiedCount} posts transferred.`);
+
+        // 7. Update Users 'joinedPortals' list
+        // Users who were in source need to have source removed and target added (if not already there)
+        const usersToUpdate = await User.find({ joinedPortals: source._id });
+        console.log(`Processing ${usersToUpdate.length} users for profile updates...`);
+
+        let usersUpdatedCount = 0;
+        for (const user of usersToUpdate) {
+            let changed = false;
+            // Remove source ID
+            const originalLength = user.joinedPortals.length;
+            user.joinedPortals = user.joinedPortals.filter(pid => pid.toString() !== source._id.toString());
+
+            if (user.joinedPortals.length !== originalLength) changed = true;
+
+            // Add target ID if not present
+            if (!user.joinedPortals.some(pid => pid.toString() === target._id.toString())) {
+                user.joinedPortals.push(target._id);
+                changed = true;
+            }
+
+            if (changed) {
+                await user.save();
+                usersUpdatedCount++;
+            }
+        }
+        console.log(`✅ User Profiles Updated: ${usersUpdatedCount} users.`);
+
+        console.log('------------------------------------------------');
+        console.log('🎉 MIGRATION COMPLETED SUCCESSFULLY!');
+        console.log('------------------------------------------------');
+        process.exit(0);
+
     } catch (err) {
-        console.error('Migration Error:', err);
+        console.error('Migration Failed:', err);
         process.exit(1);
     }
 };
