@@ -82,8 +82,8 @@ const PortalSidebar = () => {
                     left: 78px; /* Slightly further out */
                     top: 50%;
                     transform: translateY(-50%);
-                    background-color: #111214;
-                    color: white;
+                    background-color: var(--bg-card);
+                    color: var(--text-primary);
                     padding: 8px 12px;
                     border-radius: 6px;
                     font-size: 14px;
@@ -94,7 +94,8 @@ const PortalSidebar = () => {
                     transition: all 0.1s cubic-bezier(0.1, 0.7, 1.0, 0.1);
                     z-index: 1000;
                     pointer-events: none;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    box-shadow: var(--shadow-popover);
+                    border: 1px solid var(--border-subtle);
                 }
 
                 .portal-tooltip .tooltip-arrow {
@@ -106,7 +107,7 @@ const PortalSidebar = () => {
                     height: 0;
                     border-top: 6px solid transparent;
                     border-bottom: 6px solid transparent;
-                    border-right: 6px solid #111214;
+                    border-right: 6px solid var(--bg-card);
                 }
 
                 .sidebar-item:hover .portal-tooltip {

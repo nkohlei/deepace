@@ -29,27 +29,27 @@ const UserBar = () => {
             left: '84px', // 72px sidebar + margin
             width: '260px',
             zIndex: 999,
-            backgroundColor: '#232428',
-            borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            border: '1px solid rgba(255,255,255,0.06)'
+            backgroundColor: 'var(--bg-darker)',
+            borderRadius: '12px',
+            boxShadow: 'var(--shadow-card)',
+            border: '1px solid var(--border-subtle)'
         }}>
             {/* User Popover (Mini Profile) */}
             {showPopover && (
                 <div className="user-popover slide-up-animation" style={{
                     position: 'absolute',
-                    bottom: '60px', /* Above the UserBar */
+                    bottom: '64px',
                     left: '0',
                     width: '300px',
-                    backgroundColor: '#111214',
-                    borderRadius: '8px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                    backgroundColor: 'var(--bg-card)',
+                    borderRadius: '12px',
+                    boxShadow: 'var(--shadow-popover)',
                     overflow: 'hidden',
                     zIndex: 1000,
-                    border: '1px solid #1e1f22'
+                    border: '1px solid var(--border-subtle)'
                 }}>
                     {/* Banner */}
-                    <div style={{ height: '60px', backgroundColor: user.profile?.bannerColor || '#000' }}>
+                    <div style={{ height: '80px', backgroundColor: user.profile?.bannerColor || 'var(--bg-darker)' }}>
                         {user.profile?.coverImage && (
                             <img src={getImageUrl(user.profile.coverImage)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Cover" />
                         )}
@@ -63,15 +63,15 @@ const UserBar = () => {
                             width: '80px',
                             height: '80px',
                             borderRadius: '50%',
-                            border: '6px solid #111214',
-                            backgroundColor: '#111214',
+                            border: '6px solid var(--bg-card)',
+                            backgroundColor: 'var(--bg-card)',
                             overflow: 'hidden',
                             cursor: 'pointer'
                         }} onClick={() => navigate(`/profile`)}>
                             {user.profile?.avatar ? (
                                 <img src={getImageUrl(user.profile.avatar)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Avatar" />
                             ) : (
-                                <div style={{ width: '100%', height: '100%', backgroundColor: '#5865F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', color: 'white' }}>
+                                <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--primary-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px', color: '#000' }}>
                                     {user.username?.[0]?.toUpperCase()}
                                 </div>
                             )}
@@ -81,9 +81,9 @@ const UserBar = () => {
                                 right: '4px',
                                 width: '16px',
                                 height: '16px',
-                                backgroundColor: '#23a559',
+                                backgroundColor: 'var(--primary-green)',
                                 borderRadius: '50%',
-                                border: '3px solid #111214'
+                                border: '3px solid var(--bg-card)'
                             }} />
                         </div>
                     </div>
@@ -91,12 +91,12 @@ const UserBar = () => {
                     {/* Content */}
                     <div style={{ padding: '50px 16px 16px 16px' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', cursor: 'pointer' }} onClick={() => navigate(`/profile`)}>
-                            <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#dbdee1', margin: 0 }}>{user.profile?.displayName || user.username}</h3>
-                            <span style={{ fontSize: '14px', color: '#dbdee1' }}>{user.username}</span>
+                            <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>{user.profile?.displayName || user.username}</h3>
+                            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{user.username}</span>
                         </div>
 
                         {/* Status Message */}
-                        <div style={{ marginTop: '16px', fontSize: '14px', color: '#dbdee1' }}>
+                        <div style={{ marginTop: '16px', fontSize: '14px', color: 'var(--text-tertiary)' }}>
                             {user.profile?.bio || 'Evcil hayvanı olması için efsanevi bir yaratık seç'}
                         </div>
 
@@ -104,11 +104,11 @@ const UserBar = () => {
                         <button style={{
                             width: '100%',
                             marginTop: '16px',
-                            padding: '8px',
-                            backgroundColor: '#4e5058',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
+                            padding: '10px',
+                            backgroundColor: 'var(--bg-input)',
+                            color: 'var(--text-primary)',
+                            border: '1px solid var(--border-subtle)',
+                            borderRadius: '6px',
                             fontWeight: '600',
                             cursor: 'pointer',
                             fontSize: '14px',
@@ -126,13 +126,12 @@ const UserBar = () => {
 
             <div style={{
                 height: '52px',
-                // backgroundColor: '#232428', // Removed internal background logic, handled by container
                 padding: '0 8px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexShrink: 0,
-                borderRadius: '8px' // Match parent
+                borderRadius: '8px'
             }}>
                 {/* User Info */}
                 <div
@@ -142,9 +141,10 @@ const UserBar = () => {
                         alignItems: 'center',
                         gap: '8px',
                         cursor: 'pointer',
-                        padding: '4px',
+                        padding: '4px 8px',
                         borderRadius: '4px',
-                        marginRight: 'auto'
+                        marginRight: 'auto',
+                        transition: 'background-color 0.2s'
                     }}
                     onClick={() => setShowPopover(!showPopover)}
                 >
@@ -160,11 +160,11 @@ const UserBar = () => {
                                 width: '32px',
                                 height: '32px',
                                 borderRadius: '50%',
-                                backgroundColor: '#5865F2',
+                                backgroundColor: 'var(--primary-cyan)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: 'white',
+                                color: '#000',
                                 fontSize: '14px',
                                 fontWeight: 'bold'
                             }}>
@@ -177,16 +177,16 @@ const UserBar = () => {
                             right: '-2px',
                             width: '10px',
                             height: '10px',
-                            backgroundColor: '#23a559', // Online green
+                            backgroundColor: 'var(--primary-green)',
                             borderRadius: '50%',
-                            border: '2px solid #0b0f19'
+                            border: '2px solid var(--bg-darker)'
                         }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span style={{ fontSize: '13px', fontWeight: '600', color: 'white' }}>
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>
                             {user.username}
                         </span>
-                        <span style={{ fontSize: '11px', color: '#b9bbbe' }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
                             #{user._id.substring(0, 4)}
                         </span>
                     </div>
@@ -196,8 +196,8 @@ const UserBar = () => {
                 <div style={{ display: 'flex' }}>
                     <button
                         className="user-control-btn"
-                        title="Mikrofon (Temsili)"
-                        style={{ background: 'transparent', border: 'none', color: '#b9bbbe', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
+                        title="Temsili Mikrofon"
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V5a3 3 0 0 1 3-3z" />
@@ -208,8 +208,8 @@ const UserBar = () => {
                     </button>
                     <button
                         className="user-control-btn"
-                        title="Kulaklık (Temsili)"
-                        style={{ background: 'transparent', border: 'none', color: '#b9bbbe', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
+                        title="Temsili Kulaklık"
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 18v-6a9 9 0 0 1 18 0v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -220,7 +220,7 @@ const UserBar = () => {
                         className="user-control-btn"
                         title="Ayarlar"
                         onClick={() => navigate('/settings')}
-                        style={{ background: 'transparent', border: 'none', color: '#b9bbbe', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', padding: '6px', cursor: 'pointer', borderRadius: '4px' }}
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="3"></circle>
@@ -231,7 +231,8 @@ const UserBar = () => {
                 <style>
                     {`
                 .user-bar-info:hover, .user-control-btn:hover {
-                    background-color: rgba(255,255,255,0.06) !important;
+                    background-color: var(--bg-hover) !important;
+                    color: var(--text-primary) !important;
                 }
                 `}
                 </style>
