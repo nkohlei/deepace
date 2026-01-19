@@ -7,6 +7,7 @@ import MembersSidebar from '../components/MembersSidebar';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
 import { useUI } from '../context/UIContext';
+import PortalSettingsModal from '../components/PortalSettingsModal';
 import './Portal.css';
 
 const Portal = () => {
@@ -139,12 +140,9 @@ const Portal = () => {
         }
     };
 
-    import PortalSettingsModal from '../components/PortalSettingsModal';
 
-    // ... (keep earlier imports)
+    // Owner Check
 
-    // Inside Portal component
-    // ...
     const isOwner = user && portal && portal.owner && (
         portal.owner._id === user._id || portal.owner === user._id
     );
