@@ -177,4 +177,41 @@ textarea:focus {
 
 .app-content {
   padding-top: var(--nav-top-height);
+  padding-bottom: 60px;
+  /* Space for bottom nav if added later, or just breathe room */
+}
+
+/* Mobile Global Overrides */
+@media (max-width: 768px) {
+  :root {
+    --nav-top-height: 56px;
+    /* Slightly taller for touch targets or kept standard */
+  }
+
+  html {
+    font-size: 15px;
+    /* Slightly smaller base font */
+  }
+
+  .app-content {
+    padding-bottom: 80px;
+    /* More bottom space for mobile interactions */
+  }
+
+  /* Container adjustments */
+  .card {
+    border-radius: 0;
+    /* Full width feel */
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    /* Flatter design on mobile */
+  }
+
+  /* Inputs */
+  input,
+  textarea {
+    font-size: 16px;
+    /* Prevent zoom on iOS */
+  }
 }

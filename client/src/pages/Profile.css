@@ -240,13 +240,35 @@
 @media (max-width: 550px) {
     .profile-card-container {
         max-width: 100%;
-        margin: 0 10px;
+        margin: 0;
+        /* Full width */
+        border-radius: 0;
+        /* No corners on mobile */
+    }
+
+    .profile-card {
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid var(--border-subtle);
+        box-shadow: none;
     }
 
     .profile-page-content {
-        padding: 10px;
+        padding: 0;
+        /* Remove outer padding */
         align-items: flex-start;
-        padding-top: 20px;
+        padding-top: 0;
+        /* Handled by spacer or nav */
+        min-height: auto;
+    }
+
+    .card-cover-section {
+        height: 120px;
+        /* Slightly shorter */
+    }
+
+    .card-info-section {
+        padding: 0 16px 20px;
     }
 }
 

@@ -252,19 +252,31 @@
     .mobile-menu-btn {
         display: flex;
         /* Show Hamburger */
+        padding: 4px;
+        /* Smaller touch target visual but keep hit area */
     }
 
     .bottom-nav {
-        display: block;
+        display: flex;
+        /* Flex to align items */
+        justify-content: space-around;
+        /* Distribute evenly */
+        align-items: center;
         /* Show Bottom Nav */
     }
 
     .nav-container {
-        padding: 0 16px;
+        padding: 0 12px;
+        /* Tighter padding */
     }
 
     .logo-text {
         font-size: 1.1rem;
+    }
+
+    .navbar {
+        height: 56px;
+        /* Match root var */
     }
 }
 

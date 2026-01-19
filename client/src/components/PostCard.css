@@ -402,3 +402,35 @@
     width: 14px;
     height: 14px;
 }
+
+/* Mobile Post Card Optimizations */
+@media (max-width: 768px) {
+    .post-card.twitter-layout {
+        padding: 10px 12px;
+        grid-template-columns: 42px 1fr;
+        /* Smaller avatar column */
+        border-bottom: 1px solid var(--border-subtle);
+        /* Explicit separator */
+    }
+
+    .author-avatar,
+    .author-placeholder {
+        width: 36px;
+        height: 36px;
+    }
+
+    .post-content-text p {
+        font-size: 1rem;
+        /* readable but compact */
+    }
+
+    .post-actions {
+        padding-right: 0;
+        margin-top: 6px;
+    }
+
+    .action-btn {
+        padding: 6px 8px;
+        /* Easier to tap but visually smaller space */
+    }
+}
