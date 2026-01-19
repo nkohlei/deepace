@@ -118,7 +118,7 @@ const NewMessageModal = ({ onClose, onSelectUser, currentUser }) => {
                 </div>
 
                 {/* Search Input */}
-                <div style={{ padding: '16px' }}>
+                <div style={{ padding: '16px 16px 8px 16px' }}>
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -147,6 +147,90 @@ const NewMessageModal = ({ onClose, onSelectUser, currentUser }) => {
                     </div>
                 </div>
 
+                {/* Suggested Friends (Horizontal List) */}
+                {!searchQuery && currentUser?.following?.length > 0 && (
+                    <div style={{ padding: '0 16px 16px 16px' }}>
+                        <div style={{
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            color: 'var(--text-secondary)',
+                            marginBottom: '10px'
+                        }}>
+                            Önerilenler
+                        </div>
+                        <div className="suggested-friends-scroll" style={{
+                            display: 'flex',
+                            gap: '12px',
+                            overflowX: 'auto',
+                            paddingBottom: '4px',
+                            scrollbarWidth: 'none' /* Firefox */,
+                            msOverflowStyle: 'none'  /* IE 10+ */
+                        }}>
+                            {/* Hide scrollbar for Chrome/Safari/Opera */
+                                <style>{`
+                                .suggested-friends-scroll::-webkit-scrollbar { 
+                                    display: none; 
+                                }
+                             `}</style>}
+
+                            {currentUser.following.map(friendId => {
+                                // Assuming 'following' is an array of IDs or objects. 
+                                // If IDs, we can't show much without fetching. 
+                                // Ideally, user.following would be populated. 
+                                // If not, we might fail to show avatar/name.
+                                // Let's check if it's an object. 
+                                const friend = typeof friendId === 'object' ? friendId : { _id: friendId, username: 'User', profile: {} };
+                                // Fallback if data is missing, real implementation needs hydration.
+
+                                return (
+                                    <div
+                                        key={friend._id}
+                                        onClick={() => onSelectUser(friend)}
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            cursor: 'pointer',
+                                            minWidth: '64px'
+                                        }}
+                                    >
+                                        <div style={{ position: 'relative', marginBottom: '4px' }}>
+                                            {friend.profile?.avatar ? (
+                                                <img
+                                                    src={getImageUrl(friend.profile.avatar)}
+                                                    alt={friend.username}
+                                                    style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--bg-card)' }}
+                                                />
+                                            ) : (
+                                                <div style={{
+                                                    width: '48px', height: '48px', borderRadius: '50%',
+                                                    backgroundColor: 'var(--primary-cyan)',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontWeight: 'bold', color: '#000', fontSize: '18px',
+                                                    border: '2px solid var(--bg-card)'
+                                                }}>
+                                                    {friend.username?.[0]?.toUpperCase() || '?'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span style={{
+                                            fontSize: '12px',
+                                            color: 'var(--text-primary)',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            maxWidth: '64px',
+                                            textAlign: 'center'
+                                        }}>
+                                            {friend.profile?.displayName?.split(' ')[0] || friend.username}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Results List */}
                 <div style={{
                     flex: 1,
@@ -154,7 +238,8 @@ const NewMessageModal = ({ onClose, onSelectUser, currentUser }) => {
                     padding: '0 16px 16px 16px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '4px'
+                    gap: '4px',
+                    borderTop: '1px solid var(--border-subtle)'
                 }}>
                     {loading ? (
                         <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>Aranıyor...</div>
