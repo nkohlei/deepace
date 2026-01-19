@@ -3,8 +3,8 @@ import axios from 'axios';
 import { getImageUrl } from '../utils/imageUtils';
 import './PortalSettingsModal.css';
 
-const PortalSettingsModal = ({ portal, onClose, onUpdate, currentUser }) => {
-    const [activeTab, setActiveTab] = useState('overview'); // overview, channels, members
+const PortalSettingsModal = ({ portal, onClose, onUpdate, currentUser, initialTab = 'overview' }) => {
+    const [activeTab, setActiveTab] = useState(initialTab); // overview, channels, members
     const [loading, setLoading] = useState(false);
 
     // Overview State

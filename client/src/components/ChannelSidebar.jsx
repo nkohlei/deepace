@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import { getImageUrl } from '../utils/imageUtils';
 
-const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel, className }) => {
+const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel, className, canManage }) => {
     if (!portal) return null;
 
     // Combine default 'general' with dynamic channels
@@ -35,7 +35,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                 cursor: 'pointer',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
                 background: '#1a1b1e' // Fallback color
-            }} onClick={onEdit}>
+            }} onClick={() => onEdit('overview')}>
                 {/* Banner Image */}
                 <div style={{
                     position: 'absolute',
@@ -136,30 +136,32 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                     </div>
                 </div>
 
-                {/* 3. Browse Channels (Kanallara Göz At) */}
+                {/* 3. Browse Channels (Kanallara Göz At) replaced/augmented with Header */}
                 <div style={{
-                    padding: '6px 8px',
+                    padding: '16px 8px 4px 8px',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
+                    justifyContent: 'space-between',
                     color: '#949ba4',
-                    cursor: 'pointer',
-                    borderRadius: '4px',
-                    marginBottom: '16px',
-                    transition: 'background 0.1s'
+                    textTransform: 'uppercase',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    fontFamily: 'var(--font-primary)'
                 }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M4 6h16M4 12h16M4 18h8" />
-                        <circle cx="18" cy="18" r="3" />
-                        <line x1="20.2" y1="20.2" x2="22" y2="22" />
-                    </svg>
-                    <span style={{ fontSize: '15px', fontWeight: '600' }}>Kanallara Göz At</span>
+                    <span>Kanallar</span>
+                    {/* Plus Button for Admins */}
+                    {canManage && (
+                        <div
+                            onClick={(e) => { e.stopPropagation(); onEdit && onEdit('channels'); }}
+                            style={{ cursor: 'pointer', padding: '0 4px', fontSize: '18px', fontWeight: 'bold' }}
+                            title="Kanal Oluştur"
+                        >
+                            +
+                        </div>
+                    )}
                 </div>
 
-                {/* Separator */}
-                <div style={{ height: '1px', backgroundColor: 'rgba(255,255,255,0.06)', margin: '0 4px 16px 4px' }}></div>
-
-                {/* 4. Channel List */}
+                {/* Channel List */}
                 {channels.map(channel => {
                     const isActive = isSelected(channel.id);
                     const isAnnouncement = channel.type === 'announcement' || channel.name.includes('announcements');
