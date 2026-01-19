@@ -19,9 +19,13 @@ const PortalSettingsModal = ({ portal, onClose, onUpdate, currentUser, initialTa
     // Channel State
     const [newChannelName, setNewChannelName] = useState('');
 
-    const isOwner = portal.owner._id === currentUser._id || portal.owner === currentUser._id;
+    // Safe Accessors
+    const ownerId = portal.owner?._id || portal.owner;
+    const currentUserId = currentUser?._id;
+    const isOwner = ownerId && currentUserId && (ownerId === currentUserId);
+
     // Admins IDs are simple strings if not populated deep, handled carefully
-    const isAdmin = isOwner || (portal.admins && portal.admins.some(a => (a._id || a) === currentUser._id));
+    const isAdmin = isOwner || (portal.admins && currentUserId && portal.admins.some(a => (a._id || a) === currentUserId));
 
     // --- Overview Handlers ---
     const handleSaveOverview = async () => {
@@ -191,7 +195,7 @@ const PortalSettingsModal = ({ portal, onClose, onUpdate, currentUser, initialTa
                                 {portal.members && portal.members.map(member => {
                                     const memberId = member._id || member;
                                     const isAdminMember = portal.admins.some(a => (a._id || a) === memberId);
-                                    const isOwnerMember = (portal.owner._id || portal.owner) === memberId;
+                                    const isOwnerMember = ownerId === memberId;
 
                                     return (
                                         <div key={memberId} className="member-row">
