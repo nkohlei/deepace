@@ -10,6 +10,10 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Portal'
     },
+    channel: {
+        type: String, // 'general' or Channel ObjectId
+        default: 'general'
+    },
     content: {
         type: String,
         maxlength: 5000

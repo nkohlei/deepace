@@ -49,6 +49,7 @@ const Portal = () => {
                 title: 'Message', // Backend expects title
                 content: messageText,
                 portalId: id,
+                channel: currentChannel,
                 type: 'text'
             });
 
@@ -77,6 +78,12 @@ const Portal = () => {
     }, [id]);
 
     useEffect(() => {
+        if (id) {
+            fetchChannelPosts();
+        }
+    }, [id, currentChannel]);
+
+    useEffect(() => {
         if (portal && user) {
             const memberCheck = portal.members?.includes(user._id) ||
                 user.joinedPortals?.some(p => p._id === portal._id || p === portal._id);
@@ -87,21 +94,32 @@ const Portal = () => {
     const fetchPortalData = async () => {
         setLoading(true);
         try {
-            const [portalRes, postsRes] = await Promise.all([
-                axios.get(`/api/portals/${id}`),
-                axios.get(`/api/portals/${id}/posts`)
-            ]);
-
-            setPortal(portalRes.data);
-            setPosts(postsRes.data);
+            const res = await axios.get(`/api/portals/${id}`);
+            setPortal(res.data);
             setEditFormData({
-                name: portalRes.data.name,
-                description: portalRes.data.description || '',
-                privacy: portalRes.data.privacy || 'public'
+                name: res.data.name,
+                description: res.data.description || '',
+                privacy: res.data.privacy || 'public'
             });
+            // Initial post fetch will trigger by useEffect depending on default channel
         } catch (err) {
             setError('Portal yüklenemedi');
             console.error(err);
+            setLoading(false);
+        }
+    };
+
+    const fetchChannelPosts = async () => {
+        try {
+            // If currentChannel is a name (like 'general') or ID. 
+            // Our backend handles 'general' or ID.
+            // But wait, sidebar uses names for display? 
+            // Sidebar uses: { id: ch._id || ch.name, ... }
+            // If it uses ID, we send ID. If it uses 'general', we send 'general'.
+            const res = await axios.get(`/api/portals/${id}/posts?channel=${currentChannel}`);
+            setPosts(res.data);
+        } catch (err) {
+            console.error('Fetch posts failed', err);
         } finally {
             setLoading(false);
         }

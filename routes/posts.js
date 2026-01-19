@@ -54,6 +54,7 @@ router.post('/', protect, (req, res, next) => {
 
         if (portalId) {
             postData.portal = portalId;
+            postData.channel = req.body.channel || 'general'; // Default to general if in portal
         }
 
         if (req.file) {

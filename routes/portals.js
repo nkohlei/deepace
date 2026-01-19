@@ -42,7 +42,8 @@ router.post('/', protect, async (req, res) => {
             avatar,
             owner: req.user._id,
             admins: [req.user._id],
-            members: [req.user._id]
+            members: [req.user._id],
+            channels: [{ name: 'genel', type: 'text' }]
         });
 
         // Add to user's joined portals
@@ -124,7 +125,25 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/posts', async (req, res) => {
     try {
         const portalId = req.params.id;
-        const posts = await Post.find({ portal: portalId })
+        const channel = req.query.channel || 'general';
+
+        // Define query based on channel
+        let query = { portal: portalId };
+
+        if (channel === 'general') {
+            // Match 'general' explicitly, OR posts with no channel (legacy)
+            query.$or = [
+                { channel: 'general' },
+                { channel: 'genel' }, // Handle turkish var
+                { channel: { $exists: false } },
+                { channel: null }
+            ];
+        } else {
+            // Specific channel ID or name
+            query.channel = channel;
+        }
+
+        const posts = await Post.find(query)
             .populate('author', 'username profile.avatar verificationBadge')
             .sort({ createdAt: -1 });
 
