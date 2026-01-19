@@ -9,6 +9,18 @@ import { getImageUrl } from '../utils/imageUtils';
 import Badge from '../components/Badge';
 import './Inbox.css';
 
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
+import Navbar from '../components/Navbar';
+import MessageBubble from '../components/MessageBubble';
+import NewMessageModal from '../components/NewMessageModal'; // Import Modal
+import { getImageUrl } from '../utils/imageUtils';
+import Badge from '../components/Badge';
+import './Inbox.css';
+
 const Inbox = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -23,6 +35,7 @@ const Inbox = () => {
     const messagesEndRef = useRef(null);
     const [media, setMedia] = useState(null);
     const [replyingTo, setReplyingTo] = useState(null);
+    const [showNewMessageModal, setShowNewMessageModal] = useState(false); // Modal State
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -121,6 +134,12 @@ const Inbox = () => {
         setSelectedUser(null);
         setMessages([]);
     };
+
+    const handleStartNewConversation = (user) => {
+        setSelectedUser(user);
+        fetchMessages(user._id);
+        setShowNewMessageModal(false);
+    }
 
     const handleReply = (message) => {
         setReplyingTo(message);
@@ -240,84 +259,98 @@ const Inbox = () => {
         <div className="app-wrapper">
             <Navbar />
             <main className="app-content">
-                <div className="inbox-container">
-                    {!selectedUser ? (
-                        <div className="conversations-view">
-                            <div className="inbox-header">
-                                <h1>Mesajlar</h1>
-                                <button className="compose-btn" onClick={() => navigate('/search')} title="Yeni mesaj">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                    </svg>
+                <div className={`inbox-container ${selectedUser ? 'chat-active' : ''}`}>
+                    {/* Left Side: Conversations */}
+                    <div className="conversations-view">
+                        <div className="inbox-header">
+                            <h1>Mesajlar</h1>
+                            <button className="compose-btn" onClick={() => setShowNewMessageModal(true)} title="Yeni Mesaj">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="search-container">
+                            <div className="search-input-wrapper">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input
+                                    type="text"
+                                    placeholder="Mesajlarda ara"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        {loading ? (
+                            <div className="spinner-container"><div className="spinner"></div></div>
+                        ) : filteredConversations.length === 0 ? (
+                            <div className="empty-inbox">
+                                <p>Henüz mesajın yok.</p>
+                                <button className="btn-secondary" onClick={() => setShowNewMessageModal(true)} style={{ marginTop: '10px' }}>
+                                    Mesaj Başlat
                                 </button>
                             </div>
-                            <div className="search-container">
-                                <div className="search-input-wrapper">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="11" cy="11" r="8"></circle>
-                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                    </svg>
-                                    <input
-                                        type="text"
-                                        placeholder="Ara"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            {loading ? (
-                                <div className="spinner-container"><div className="spinner"></div></div>
-                            ) : filteredConversations.length === 0 ? (
-                                <div className="empty-inbox"><p>Mesaj yok</p></div>
-                            ) : (
-                                <div className="conversations-list">
-                                    {filteredConversations.map((conv) => (
-                                        <div key={conv.user._id} className={`conversation-item ${conv.unreadCount > 0 ? 'unread' : ''}`} onClick={() => handleConversationClick(conv)}>
-                                            {conv.unreadCount > 0 && <div className="unread-dot"></div>}
-                                            <div className="conv-avatar-wrapper">
-                                                {conv.user.profile?.avatar ? (
-                                                    <img src={getImageUrl(conv.user.profile.avatar)} alt="" className="conv-avatar" />
-                                                ) : (
-                                                    <div className="conv-avatar-placeholder">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="conv-content">
-                                                <div className="conv-header">
-                                                    <div className="conv-user-info">
-                                                        <span className="conv-name">{conv.user.profile?.displayName || conv.user.username}</span>
-                                                        <Badge type={conv.user.verificationBadge} />
-                                                    </div>
-                                                    <span className="conv-time">{formatTime(conv.lastMessage.createdAt)}</span>
+                        ) : (
+                            <div className="conversations-list">
+                                {filteredConversations.map((conv) => (
+                                    <div
+                                        key={conv.user._id}
+                                        className={`conversation-item ${conv.unreadCount > 0 ? 'unread' : ''} ${selectedUser?._id === conv.user._id ? 'active' : ''}`}
+                                        onClick={() => handleConversationClick(conv)}
+                                    >
+                                        {conv.unreadCount > 0 && <div className="unread-dot"></div>}
+                                        <div className="conv-avatar-wrapper">
+                                            {conv.user.profile?.avatar ? (
+                                                <img src={getImageUrl(conv.user.profile.avatar)} alt="" className="conv-avatar" />
+                                            ) : (
+                                                <div className="conv-avatar-placeholder">
+                                                    <span style={{ fontWeight: 'bold' }}>{conv.user.username?.[0]?.toUpperCase()}</span>
                                                 </div>
-                                                <p className="conv-preview">
-                                                    {conv.user._id === conv.lastMessage.sender._id ? '' : 'Sen: '}
-                                                    {conv.lastMessage.content || (conv.lastMessage.media ? '📷 Fotoğraf' : 'Mesaj')}
-                                                </p>
-                                            </div>
+                                            )}
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ) : (
+                                        <div className="conv-content">
+                                            <div className="conv-header">
+                                                <div className="conv-user-info">
+                                                    <span className="conv-name">{conv.user.profile?.displayName || conv.user.username}</span>
+                                                    <Badge type={conv.user.verificationBadge} />
+                                                </div>
+                                                <span className="conv-time">{formatTime(conv.lastMessage.createdAt)}</span>
+                                            </div>
+                                            <p className="conv-preview">
+                                                {conv.user._id === conv.lastMessage.sender._id ? '' : 'Sen: '}
+                                                {conv.lastMessage.content || (conv.lastMessage.media ? '📷 Fotoğraf' : 'Mesaj')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Side: Chat */}
+                    {selectedUser ? (
                         <div className="chat-view">
                             <div className="chat-header">
                                 <button className="back-btn" onClick={handleBackToList}>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+                                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                    </svg>
                                 </button>
-                                <div className="chat-header-content">
+                                <div className="chat-header-content" style={{ cursor: 'pointer' }} onClick={() => navigate(`/profile/${selectedUser.username}`)}>
                                     <span className="chat-header-name">
                                         {selectedUser.profile?.displayName || selectedUser.username}
                                         <Badge type={selectedUser.verificationBadge} />
                                     </span>
-                                    {selectedUser.createdAt && (
-                                        <span className="chat-header-joined">{formatJoinedDate(selectedUser.createdAt)}</span>
+                                    {selectedUser.username && (
+                                        <span className="chat-header-joined">@{selectedUser.username}</span>
                                     )}
                                 </div>
-                                <button className="chat-header-info-btn">
+                                <button className="chat-header-info-btn" onClick={() => navigate(`/profile/${selectedUser.username}`)}>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
                                         <circle cx="12" cy="12" r="10"></circle>
                                         <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -362,12 +395,8 @@ const Inbox = () => {
 
                             <form onSubmit={handleSendMessage} className="message-form">
                                 <div className="input-actions-left">
-
                                     <button type="button" className="icon-btn" title="GIF">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M9 10h-2v4h2"></path><path d="M12 10v4"></path><path d="M15 10h2"></path><path d="M15 12h1.5"></path><path d="M15 14h2"></path></svg>
-                                    </button>
-                                    <button type="button" className="icon-btn" title="Emoji">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                                     </button>
                                 </div>
 
@@ -377,8 +406,14 @@ const Inbox = () => {
                                         placeholder="Mesaj yaz..."
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSendMessage(e);
+                                            }
+                                        }}
                                     />
-                                    {/* Image Upload Button (Moved Inside Wrapper) */}
+                                    {/* Image Upload Button */}
                                     <input
                                         type="file"
                                         ref={fileInputRef}
@@ -398,8 +433,27 @@ const Inbox = () => {
                                 </button>
                             </form>
                         </div>
+                    ) : (
+                        <div className="chat-view" style={{ alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)' }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <h2>Mesaj seç</h2>
+                                <p>Mevcut sohbetlerinden birini seç veya yeni bir mesaj başlat.</p>
+                                <button className="btn-primary" onClick={() => setShowNewMessageModal(true)} style={{ marginTop: '20px', padding: '10px 24px', borderRadius: '24px' }}>
+                                    Yeni Mesaj
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </div>
+
+                {/* New Message Modal */}
+                {showNewMessageModal && (
+                    <NewMessageModal
+                        currentUser={user}
+                        onClose={() => setShowNewMessageModal(false)}
+                        onSelectUser={handleStartNewConversation}
+                    />
+                )}
             </main>
         </div>
     );
