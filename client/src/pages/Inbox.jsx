@@ -5,19 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import Navbar from '../components/Navbar';
 import MessageBubble from '../components/MessageBubble';
+import NewMessageModal from '../components/NewMessageModal';
 import { getImageUrl } from '../utils/imageUtils';
 import Badge from '../components/Badge';
 import './Inbox.css';
-
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
-import { useSocket } from '../context/SocketContext';
-import Navbar from '../components/Navbar';
-import MessageBubble from '../components/MessageBubble';
-import NewMessageModal from '../components/NewMessageModal'; // Import Modal
-import { getImageUrl } from '../utils/imageUtils';
 import Badge from '../components/Badge';
 import './Inbox.css';
 
