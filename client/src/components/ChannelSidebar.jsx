@@ -5,12 +5,15 @@ import { getImageUrl } from '../utils/imageUtils';
 const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel, className }) => {
     if (!portal) return null;
 
-    // Use portal channels or fallback
-    const channels = (portal?.channels && portal.channels.length > 0)
-        ? portal.channels.map(ch => ({ id: ch._id || ch.name, name: ch.name, type: ch.type || 'text' }))
-        : [
-            { id: 'general', name: 'genel', type: 'text' }
-        ];
+    // Combine default 'general' with dynamic channels
+    const channels = [
+        { id: 'general', name: 'genel', type: 'text' },
+        ...(portal?.channels?.map(ch => ({
+            id: ch._id || ch.name,
+            name: ch.name,
+            type: ch.type || 'text'
+        })) || [])
+    ];
 
     const isSelected = (id) => currentChannel === id;
 
