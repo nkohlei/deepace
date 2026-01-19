@@ -4,15 +4,15 @@ const SplashScreen = ({ onFinish }) => {
     const [fading, setFading] = useState(false);
 
     useEffect(() => {
-        // Start fading out after 2.5 seconds
+        // Start fading out after 3 seconds
         const timer = setTimeout(() => {
             setFading(true);
-        }, 2500);
+        }, 3000);
 
-        // Notify parent to unmount after animation (e.g. 3.5s total)
+        // Notify parent to unmount after animation (4s total)
         const cleanup = setTimeout(() => {
             if (onFinish) onFinish();
-        }, 3500);
+        }, 4000);
 
         return () => {
             clearTimeout(timer);
@@ -23,7 +23,7 @@ const SplashScreen = ({ onFinish }) => {
     return (
         <div className={`splash-screen ${fading ? 'fade-out' : ''}`}>
             <div className="splash-content">
-                <h1 className="deepace-text">DEEPACE</h1>
+                <img src="/logo.png" alt="Oxypace" className="splash-logo" />
             </div>
 
             <style>{`
@@ -47,58 +47,27 @@ const SplashScreen = ({ onFinish }) => {
                     pointer-events: none;
                 }
 
-                .deepace-text {
-                    font-size: 8rem;
-                    font-weight: 900;
-                    letter-spacing: 12px;
-                    text-transform: uppercase;
-                    margin: 0;
-                    
-                    /* Gradient Text */
-                    background: linear-gradient(
-                        135deg, 
-                        #00C6FF 0%, 
-                        #0072FF 25%, 
-                        #FF7300 75%, 
-                        #FF0055 100%
-                    );
-                    background-size: 300% 300%;
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    color: transparent;
-                    
-                    /* Glow Effect */
-                    filter: drop-shadow(0 0 15px rgba(0, 114, 255, 0.6))
-                            drop-shadow(0 0 30px rgba(255, 115, 0, 0.4));
-                    
-                    /* Animation */
-                    animation: gradientMove 3s ease infinite, pulseGlow 2s ease-in-out infinite alternate;
+                .splash-logo {
+                    width: 250px;
+                    height: auto;
+                    filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.6)) brightness(1.2);
+                    animation: sway 2s ease-in-out infinite alternate, glowPulse 2s infinite alternate;
                 }
 
-                @keyframes gradientMove {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
+                @keyframes sway {
+                    0% { transform: rotate(-10deg) scale(1); }
+                    100% { transform: rotate(10deg) scale(1.1); }
                 }
 
-                @keyframes pulseGlow {
-                    0% {
-                        filter: drop-shadow(0 0 10px rgba(0, 114, 255, 0.5))
-                                drop-shadow(0 0 20px rgba(255, 115, 0, 0.3));
-                        transform: scale(1);
-                    }
-                    100% {
-                        filter: drop-shadow(0 0 25px rgba(0, 198, 255, 0.8))
-                                drop-shadow(0 0 50px rgba(255, 115, 0, 0.6));
-                        transform: scale(1.05); /* Slight breathe */
-                    }
+                @keyframes glowPulse {
+                    0% { filter: drop-shadow(0 0 15px rgba(255, 69, 0, 0.5)) brightness(1); }
+                    100% { filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8)) brightness(1.3); }
                 }
 
                 /* Mobile Adjustment */
                 @media (max-width: 768px) {
-                    .deepace-text {
-                        font-size: 4rem;
-                        letter-spacing: 6px;
+                    .splash-logo {
+                        width: 180px;
                     }
                 }
             `}</style>
