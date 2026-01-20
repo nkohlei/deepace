@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 
 import { getImageUrl } from '../utils/imageUtils';
-import { getImageUrl } from '../utils/imageUtils';
 
 const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChannel, className, canManage }) => {
     if (!portal) return null;
