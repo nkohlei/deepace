@@ -35,7 +35,8 @@ const InviteUserModal = ({ portalId, onClose }) => {
             await axios.post(`/api/portals/${portalId}/invite`, { userId });
             setInvitedUsers(prev => new Set(prev).add(userId));
         } catch (err) {
-            alert(err.response?.data?.message || 'Davet edilemedi');
+            console.error('Invite failed:', err.response?.data);
+            alert(err.response?.data?.message || 'İşlem sırasında bir hata oluştu.');
         }
     };
 
