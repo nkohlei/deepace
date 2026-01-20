@@ -2,6 +2,7 @@ import express from 'express';
 import { protect } from '../middleware/auth.js';
 import Message from '../models/Message.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import multer from 'multer';
 import path from 'path';
 import { storage } from '../config/cloudinary.js';
@@ -129,6 +130,23 @@ router.post('/', protect, (req, res, next) => {
 
         req.app.get('io').to(recipientId).emit('newMessage', populatedMessage);
         req.app.get('io').to(req.user._id.toString()).emit('messageSent', populatedMessage);
+
+        // Create Notification
+        try {
+            const notification = await Notification.create({
+                recipient: recipientId,
+                sender: req.user._id,
+                type: 'message'
+            });
+
+            const io = req.app.get('io');
+            if (io) {
+                const populatedNotif = await notification.populate('sender', 'username profile.displayName profile.avatar');
+                io.to(recipientId).emit('newNotification', populatedNotif);
+            }
+        } catch (notifErr) {
+            console.error('Message notification failed:', notifErr);
+        }
 
         res.status(201).json(populatedMessage);
     } catch (error) {

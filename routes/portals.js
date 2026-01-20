@@ -465,30 +465,10 @@ router.post('/:id/invite', protect, async (req, res) => {
             return res.status(400).json({ message: 'Bu kullanıcı zaten üye.' });
         }
 
-        const notification = await Notification.create({
-            recipient: userId,
-            sender: req.user._id,
-            type: 'portal_invite',
-            portal: portal._id
-        });
+        // We no longer send a specialized portal_invite notification here
+        // as the frontend sends a formal message which triggers a 'message' notification.
 
-        const io = req.app.get('io');
-        if (io) {
-            try {
-                // Safer multi-populate
-                const populated = await notification.populate([
-                    { path: 'sender', select: 'username profile.displayName profile.avatar' },
-                    { path: 'portal', select: 'name avatar' }
-                ]);
-
-                io.to(userId.toString()).emit('newNotification', populated);
-            } catch (popErr) {
-                console.error('Socket notification populate failed:', popErr);
-                // We don't fail the whole request just because socket notification failed
-            }
-        }
-
-        res.json({ message: 'Davet başarıyla gönderildi' });
+        res.json({ message: 'Davet başarıyla açıklandı (Mesaj yoluyla)' });
     } catch (error) {
         console.error('Invite error details:', {
             portalId: req.params.id,

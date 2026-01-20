@@ -232,25 +232,28 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
                         ) : null}
 
                         {displayPortal ? (
-                            <div className="shared-portal-card">
+                            <Link to={`/portal/${displayPortal._id}`} className="shared-portal-card">
                                 <div className="shared-portal-header">
-                                    <img
-                                        src={getImageUrl(displayPortal.avatar)}
-                                        alt={displayPortal.name}
-                                        className="shared-portal-avatar"
-                                    />
+                                    <div className="shared-portal-avatar-container">
+                                        <img
+                                            src={getImageUrl(displayPortal.avatar)}
+                                            alt={displayPortal.name}
+                                            className="shared-portal-avatar"
+                                        />
+                                        <div className="portal-badge">P</div>
+                                    </div>
                                     <div className="shared-portal-info">
                                         <h4>{displayPortal.name}</h4>
-                                        <p>{displayPortal.description?.substring(0, 60) || 'Dinamik bir portal...'}</p>
+                                        <p>{displayPortal.description?.substring(0, 80) || 'Dinamik bir topluluk portalı...'}</p>
                                     </div>
                                 </div>
-                                <button
-                                    className="view-portal-btn"
-                                    onClick={() => window.location.href = `/portal/${displayPortal._id}`}
-                                >
-                                    Portalı Görüntüle
-                                </button>
-                            </div>
+                                <div className="view-portal-footer">
+                                    <span>Portalı Görüntüle</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </Link>
                         ) : message.sharedPortal ? (
                             <div className="shared-portal-card fallback">
                                 <div className="shared-portal-content" style={{ color: portalLoadingError ? 'var(--error-color)' : 'inherit' }}>
