@@ -8,6 +8,7 @@ import MessageBubble from '../components/MessageBubble';
 import NewMessageModal from '../components/NewMessageModal';
 import { getImageUrl } from '../utils/imageUtils';
 import Badge from '../components/Badge';
+import UserBar from '../components/UserBar';
 import './Inbox.css';
 
 const Inbox = () => {
@@ -318,6 +319,7 @@ const Inbox = () => {
                                 ))}
                             </div>
                         )}
+                        <UserBar />
                     </div>
 
                     {/* Right Side: Chat */}
