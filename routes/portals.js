@@ -437,11 +437,11 @@ router.post('/:id/invite', protect, async (req, res) => {
         if (!portal) return res.status(404).json({ message: 'Portal not found' });
         if (!userId) return res.status(400).json({ message: 'User ID is required' });
 
-        if (!portal.members.includes(req.user._id)) {
+        if (!portal.members.some(m => m.toString() === req.user._id.toString())) {
             return res.status(403).json({ message: 'You are not a member of this portal' });
         }
 
-        if (portal.members.includes(userId)) {
+        if (portal.members.some(m => m.toString() === userId.toString())) {
             return res.status(400).json({ message: 'User is already a member' });
         }
 
