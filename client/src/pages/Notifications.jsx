@@ -158,7 +158,7 @@ const Notifications = () => {
 
                                 return (
                                     <Link
-                                        to={notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`}
+                                        to={notif.type === 'message' ? '/inbox' : (notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`)}
                                         key={notif._id}
                                         className={`notification-item ${!notif.read ? 'unread' : ''}`}
                                     >
@@ -176,6 +176,8 @@ const Notifications = () => {
                                                 {notif.type === 'reply' && '↩️'}
                                                 {notif.type === 'follow' && '👤'}
                                                 {notif.type === 'follow_request' && '👤'}
+                                                {notif.type === 'message' && '✉️'}
+                                                {notif.type === 'portal_invite' && '🏰'}
                                             </div>
                                         </div>
 
@@ -187,6 +189,8 @@ const Notifications = () => {
                                                 {notif.type === 'reply' && ' yorumuna yanıt verdi: '}
                                                 {notif.type === 'follow' && ' seni takip etmeye başladı.'}
                                                 {notif.type === 'follow_request' && ' seni takip etmek istiyor.'}
+                                                {notif.type === 'message' && ' sana bir mesaj gönderdi.'}
+                                                {notif.type === 'portal_invite' && ' seni bir portala davet etti.'}
                                             </p>
                                             {(notif.type === 'comment' || notif.type === 'reply') && notif.comment && (
                                                 <p className="notif-text-preview">"{notif.comment.content}"</p>
