@@ -1,14 +1,16 @@
 /* Inbox Container */
 .inbox-container {
     display: flex;
-    height: 100vh;
-    /* Full viewport height for fixing layout issues */
+    height: calc(100vh - var(--nav-top-height));
+    /* Exact remaining height */
     width: 100%;
     background-color: var(--bg-dark);
-    /* Global background */
     overflow: hidden;
-    position: relative;
-    /* Fix scrolling context */
+    /* No outer scroll */
+    position: fixed;
+    /* Stick it */
+    top: var(--nav-top-height);
+    left: 0;
 }
 
 /* --- Conversations List (Left Side) --- */
@@ -252,10 +254,9 @@
     display: flex;
     flex-direction: column;
     background-color: var(--bg-dark);
-    /* Make sure background is solid */
-    min-width: 0;
-    /* Flexbox overflow fix */
     height: 100%;
+    overflow: hidden;
+    /* Trap scroll here */
 }
 
 /* Chat Header */
@@ -327,15 +328,15 @@
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    /* Enable scrolling */
+    /* Scroll ONLY here */
     padding: 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    /* Better separation */
     scroll-behavior: smooth;
     background-color: var(--bg-dark);
-    /* Ensure background is not transparent */
+    min-height: 0;
+    /* Flexbox nested scroll fix */
 }
 
 /* Force messages to show */
@@ -347,16 +348,16 @@
 /* Input Area */
 .message-form {
     padding: 16px 24px;
-    /* Wider padding */
     background-color: var(--bg-dark);
-    /* Match bg */
     border-top: 1px solid var(--border-subtle);
     display: flex;
     align-items: flex-end;
-    /* Align bottom for multi-line */
     gap: 12px;
     min-height: 76px;
     box-sizing: border-box;
+    flex-shrink: 0;
+    /* Never shrink */
+    /* No absolute positioning needed, it's the last item in flex col */
 }
 
 .input-actions-left {
