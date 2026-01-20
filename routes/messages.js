@@ -11,16 +11,16 @@ const router = express.Router();
 // Configure multer for message attachments with Cloudinary
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif/;
+        const allowedTypes = /jpeg|jpg|png|gif|mp4|webm|mov|quicktime/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = allowedTypes.test(file.mimetype);
 
         if (extname && mimetype) {
             return cb(null, true);
         }
-        cb(new Error('Only image files are allowed (jpeg, jpg, png, gif)'));
+        cb(new Error('Only images and videos are allowed'));
     }
 });
 

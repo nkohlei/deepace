@@ -20,7 +20,7 @@ const postSchema = new mongoose.Schema({
     },
     mediaType: {
         type: String,
-        enum: ['none', 'image', 'gif'],
+        enum: ['none', 'image', 'gif', 'video'],
         default: 'none'
     },
     media: {

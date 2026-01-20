@@ -26,7 +26,9 @@ const Inbox = () => {
     const [media, setMedia] = useState(null);
     const [replyingTo, setReplyingTo] = useState(null);
     const [showNewMessageModal, setShowNewMessageModal] = useState(false); // Modal State
+    const [showPlusMenu, setShowPlusMenu] = useState(false);
     const fileInputRef = useRef(null);
+    const videoInputRef = useRef(null);
 
     useEffect(() => {
         fetchConversations();
@@ -365,9 +367,16 @@ const Inbox = () => {
                             </div>
 
                             {media && (
-                                <div className="media-preview">
-                                    <img src={URL.createObjectURL(media)} alt="Preview" />
-                                    <button type="button" onClick={() => { setMedia(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}>×</button>
+                                <div className="media-preview" style={{ padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', display: 'flex', alignItems: 'center' }}>
+                                    {media.type.startsWith('video') ? (
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+                                            <span>🎥</span>
+                                            <span>Video seçildi</span>
+                                        </div>
+                                    ) : (
+                                        <img src={URL.createObjectURL(media)} alt="Preview" style={{ maxHeight: '200px', maxWidth: '100%', borderRadius: '4px' }} />
+                                    )}
+                                    <button type="button" onClick={() => { setMedia(null); if (fileInputRef.current) fileInputRef.current.value = ''; if (videoInputRef.current) videoInputRef.current.value = ''; }} style={{ marginLeft: '10px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '16px' }}>×</button>
                                 </div>
                             )}
 
@@ -389,20 +398,55 @@ const Inbox = () => {
                                     {/* Plus / Upload Button */}
                                     <button
                                         type="button"
-                                        className="upload-btn"
-                                        onClick={() => fileInputRef.current?.click()}
-                                        title="Dosya Yükle"
+                                        className={`upload-btn ${showPlusMenu ? 'active' : ''}`}
+                                        onClick={() => setShowPlusMenu(!showPlusMenu)}
+                                        title="Yükle"
                                     >
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16 13H13V16C13 16.55 12.55 17 12 17C11.45 17 11 16.55 11 16V13H8C7.45 13 7 12.55 7 12C7 11.45 7.45 11 8 11H11V8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8V11H16C16.55 11 17 11.45 17 12C17 12.55 16.55 13 16 13Z" />
                                         </svg>
                                     </button>
 
+                                    {/* Plus Menu Popover */}
+                                    {showPlusMenu && (
+                                        <>
+                                            <div
+                                                style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+                                                onClick={() => setShowPlusMenu(false)}
+                                            />
+                                            <div className="plus-menu" style={{ bottom: '80px', left: '20px' }}>
+                                                <div className="plus-menu-item" onClick={() => { fileInputRef.current.click(); setShowPlusMenu(false); }}>
+                                                    <div className="plus-menu-icon">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                                    </div>
+                                                    Görsel Yükle
+                                                </div>
+                                                <div className="plus-menu-item" onClick={() => { videoInputRef.current.click(); setShowPlusMenu(false); }}>
+                                                    <div className="plus-menu-icon">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                                    </div>
+                                                    Video Yükle
+                                                </div>
+                                                <div className="plus-menu-item" onClick={() => { alert('GIF yükleme yakında!'); setShowPlusMenu(false); }}>
+                                                    <div className="plus-menu-icon" style={{ fontWeight: 800, fontSize: '10px' }}>GIF</div>
+                                                    GIF Yükle
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
                                     <input
                                         type="file"
                                         ref={fileInputRef}
                                         style={{ display: 'none' }}
-                                        accept="image/*"
+                                        accept="image/png, image/jpeg, image/jpg"
+                                        onChange={handleFileSelect}
+                                    />
+                                    <input
+                                        type="file"
+                                        ref={videoInputRef}
+                                        style={{ display: 'none' }}
+                                        accept="video/mp4, video/webm, video/quicktime"
                                         onChange={handleFileSelect}
                                     />
 
@@ -421,30 +465,13 @@ const Inbox = () => {
 
                                     {/* Right Side Icons */}
                                     <div className="input-right-actions">
-                                        <button type="button" className="input-action-btn" title="Hediye Gönder (Yakında)">
+                                        <button type="button" className="input-action-btn" title="Emoji (Yakında)">
                                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <rect x="3" y="8" width="18" height="4" rx="1" ry="1"></rect>
-                                                <line x1="12" y1="8" x2="12" y2="21"></line>
-                                                <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
-                                                <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
-                                            </svg>
-                                        </button>
-                                        <button type="button" className="input-action-btn" title="GIF Seç">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                                <path d="M9 10h-2v4h2"></path>
-                                                <path d="M12 10v4"></path>
-                                                <path d="M15 10h2"></path>
-                                                <path d="M15 12h1.5"></path>
-                                                <path d="M15 14h2"></path>
-                                            </svg>
-                                        </button>
-                                        <button type="button" className="input-action-btn" title="Çıkartma (Yakında)">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <smile cx="12" cy="12" r="10"></smile>
                                                 <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
                                                 <line x1="9" y1="9" x2="9.01" y2="9"></line>
                                                 <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                                <circle cx="12" cy="12" r="10"></circle>
                                             </svg>
                                         </button>
                                     </div>
@@ -461,19 +488,22 @@ const Inbox = () => {
                                 </button>
                             </div>
                         </div>
-                    )}
-                </div>
+                    )
+                    }
+                </div >
 
                 {/* New Message Modal */}
-                {showNewMessageModal && (
-                    <NewMessageModal
-                        currentUser={user}
-                        onClose={() => setShowNewMessageModal(false)}
-                        onSelectUser={handleStartNewConversation}
-                    />
-                )}
-            </main>
-        </div>
+                {
+                    showNewMessageModal && (
+                        <NewMessageModal
+                            currentUser={user}
+                            onClose={() => setShowNewMessageModal(false)}
+                            onSelectUser={handleStartNewConversation}
+                        />
+                    )
+                }
+            </main >
+        </div >
     );
 };
 

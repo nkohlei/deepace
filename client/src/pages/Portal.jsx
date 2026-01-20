@@ -33,33 +33,40 @@ const Portal = () => {
     // Plus Menu State
     const [showPlusMenu, setShowPlusMenu] = useState(false);
     const fileInputRef = useRef(null);
+    const videoInputRef = useRef(null);
+    const [mediaFile, setMediaFile] = useState(null);
 
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
-            alert(`Dosya seçildi: ${file.name}\n(Bu özellik yakında aktif olacak!)`);
+            setMediaFile(file);
             setShowPlusMenu(false);
         }
     };
 
     const handleSendMessage = async () => {
-        if (!messageText.trim()) return;
+        if (!messageText.trim() && !mediaFile) return;
 
         try {
-            const res = await axios.post('/api/posts', {
-                title: 'Message', // Backend expects title
-                content: messageText,
-                portalId: id,
-                channel: currentChannel,
-                type: 'text'
+            const formData = new FormData();
+            formData.append('title', 'Message');
+            if (messageText) formData.append('content', messageText);
+            formData.append('portalId', id);
+            formData.append('channel', currentChannel);
+            formData.append('type', 'text');
+            if (mediaFile) formData.append('media', mediaFile);
+
+            const res = await axios.post('/api/posts', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             // Optimistic update or refresh
             setPosts([res.data, ...posts]);
             setMessageText('');
+            setMediaFile(null);
         } catch (err) {
             console.error('Send message failed', err);
-            alert('Mesaj gönderilemedi');
+            alert(`Mesaj gönderilemedi: ${err.response?.data?.message || err.message}`);
         }
     };
 
@@ -242,6 +249,7 @@ const Portal = () => {
                             </div>
 
                             {/* Message Input Area */}
+                            {/* Message Input Area */}
                             {isMember && (
                                 <div className="channel-input-area" style={{ position: 'relative' }}>
                                     {/* Plus Menu Popover */}
@@ -252,19 +260,21 @@ const Portal = () => {
                                                 onClick={() => setShowPlusMenu(false)}
                                             />
                                             <div className="plus-menu">
-                                                <div className="plus-menu-item" onClick={() => fileInputRef.current.click()}>
+                                                <div className="plus-menu-item" onClick={() => { fileInputRef.current.click(); setShowPlusMenu(false); }}>
                                                     <div className="plus-menu-icon">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                                                     </div>
-                                                    Dosya Yükle
+                                                    Görsel Yükle
                                                 </div>
-                                                <div className="plus-menu-item" onClick={() => { alert('GIF seçici yakında!'); setShowPlusMenu(false); }}>
-                                                    <div className="plus-menu-icon" style={{ fontWeight: 800, fontSize: '12px' }}>GIF</div>
-                                                    GIF Ara
+                                                <div className="plus-menu-item" onClick={() => { videoInputRef.current.click(); setShowPlusMenu(false); }}>
+                                                    <div className="plus-menu-icon">
+                                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                                                    </div>
+                                                    Video Yükle
                                                 </div>
-                                                <div className="plus-menu-item" onClick={() => { alert('Anket oluşturma yakında!'); setShowPlusMenu(false); }}>
-                                                    <div className="plus-menu-icon" style={{ fontWeight: 800, fontSize: '12px' }}>GIF</div>
-                                                    Anket Oluştur
+                                                <div className="plus-menu-item" onClick={() => { alert('GIF yükleme yakında!'); setShowPlusMenu(false); }}>
+                                                    <div className="plus-menu-icon" style={{ fontWeight: 800, fontSize: '10px' }}>GIF</div>
+                                                    GIF Yükle
                                                 </div>
                                             </div>
                                         </>
@@ -274,7 +284,14 @@ const Portal = () => {
                                         ref={fileInputRef}
                                         onChange={handleFileSelect}
                                         style={{ display: 'none' }}
-                                        multiple
+                                        accept="image/png, image/jpeg, image/jpg"
+                                    />
+                                    <input
+                                        type="file"
+                                        ref={videoInputRef}
+                                        onChange={handleFileSelect}
+                                        style={{ display: 'none' }}
+                                        accept="video/mp4, video/webm, video/quicktime"
                                     />
 
                                     <div className="message-input-wrapper">
@@ -294,6 +311,16 @@ const Portal = () => {
                                                 <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16 13H13V16C13 16.55 12.55 17 12 17C11.45 17 11 16.55 11 16V13H8C7.45 13 7 12.55 7 12C7 11.45 7.45 11 8 11H11V8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8V11H16C16.55 11 17 11.45 17 12C17 12.55 16.55 13 16 13Z" />
                                             </svg>
                                         </button>
+
+                                        {mediaFile && (
+                                            <div className="input-media-preview" style={{ marginRight: '10px', display: 'flex', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '4px' }}>
+                                                <span style={{ fontSize: '12px', color: 'var(--text-primary)', marginRight: '6px' }}>
+                                                    {mediaFile.type.startsWith('video') ? '🎥 Video' : '🖼️ Görsel'}
+                                                </span>
+                                                <button onClick={() => setMediaFile(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>×</button>
+                                            </div>
+                                        )}
+
                                         <input
                                             type="text"
                                             placeholder={`#${currentChannel === 'general' ? 'genel' : currentChannel} kanalına mesaj gönder`}
@@ -307,17 +334,13 @@ const Portal = () => {
                                             }}
                                         />
                                         <div className="input-right-actions">
-                                            <button className="input-action-btn">
+                                            <button className="input-action-btn" title="Emoji (Yakında)">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <path d="M14.828 14.828a4 4 0 1 0-5.656-5.656 4 4 0 0 0 5.656 5.656zm-8.485 2.829l-2.828 2.828 5.657 5.657 2.828-2.829a8 8 0 1 1-5.657-5.657z"></path>
-                                                </svg>
-                                            </button>
-                                            <button className="input-action-btn">
-                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <smile cx="12" cy="12" r="10"></smile>
                                                     <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
                                                     <line x1="9" y1="9" x2="9.01" y2="9"></line>
                                                     <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                                    <circle cx="12" cy="12" r="10"></circle>
                                                 </svg>
                                             </button>
                                         </div>

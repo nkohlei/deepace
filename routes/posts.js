@@ -13,16 +13,16 @@ import { storage } from '../config/cloudinary.js';
 // Configure multer for file uploads with Cloudinary
 const upload = multer({
     storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /jpeg|jpg|png|gif/;
+        const allowedTypes = /jpeg|jpg|png|gif|mp4|webm|mov|quicktime/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = allowedTypes.test(file.mimetype);
 
         if (extname && mimetype) {
             cb(null, true);
         } else {
-            cb(new Error('Only images and GIFs are allowed'));
+            cb(new Error('Only images (jpg, png, gif) and videos (mp4, webm, mov) are allowed'));
         }
     },
 });
@@ -59,7 +59,11 @@ router.post('/', protect, (req, res, next) => {
 
         if (req.file) {
             postData.media = req.file.path;
-            postData.mediaType = req.file.mimetype.includes('gif') ? 'gif' : 'image';
+            if (req.file.mimetype.includes('video')) {
+                postData.mediaType = 'video';
+            } else {
+                postData.mediaType = req.file.mimetype.includes('gif') ? 'gif' : 'image';
+            }
         }
 
         const post = await Post.create(postData);
