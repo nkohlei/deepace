@@ -18,6 +18,10 @@ const CreatePost = () => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 25 * 1024 * 1024) {
+                setError('Dosya boyutu 25MB\'dan büyük olamaz.');
+                return;
+            }
             setMediaFile(file);
             setMediaPreview(URL.createObjectURL(file));
         }

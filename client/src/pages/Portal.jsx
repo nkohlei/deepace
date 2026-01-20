@@ -30,15 +30,19 @@ const Portal = () => {
     // UI Toggles
     const [showMembers, setShowMembers] = useState(false); // Default to closed as requested
 
-    // Plus Menu State
     const [showPlusMenu, setShowPlusMenu] = useState(false);
     const fileInputRef = useRef(null);
     const videoInputRef = useRef(null);
+    const gifInputRef = useRef(null);
     const [mediaFile, setMediaFile] = useState(null);
 
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > 25 * 1024 * 1024) {
+                alert('Dosya boyutu 25MB\'dan büyük olamaz.');
+                return;
+            }
             setMediaFile(file);
             setShowPlusMenu(false);
         }
@@ -272,7 +276,7 @@ const Portal = () => {
                                                     </div>
                                                     Video Yükle
                                                 </div>
-                                                <div className="plus-menu-item" onClick={() => { alert('GIF yükleme yakında!'); setShowPlusMenu(false); }}>
+                                                <div className="plus-menu-item" onClick={() => { gifInputRef.current.click(); setShowPlusMenu(false); }}>
                                                     <div className="plus-menu-icon" style={{ fontWeight: 800, fontSize: '10px' }}>GIF</div>
                                                     GIF Yükle
                                                 </div>
@@ -292,6 +296,13 @@ const Portal = () => {
                                         onChange={handleFileSelect}
                                         style={{ display: 'none' }}
                                         accept="video/mp4, video/webm, video/quicktime"
+                                    />
+                                    <input
+                                        type="file"
+                                        ref={gifInputRef}
+                                        onChange={handleFileSelect}
+                                        style={{ display: 'none' }}
+                                        accept="image/gif"
                                     />
 
                                     <div className="message-input-wrapper">
@@ -315,7 +326,7 @@ const Portal = () => {
                                         {mediaFile && (
                                             <div className="input-media-preview" style={{ marginRight: '10px', display: 'flex', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '4px' }}>
                                                 <span style={{ fontSize: '12px', color: 'var(--text-primary)', marginRight: '6px' }}>
-                                                    {mediaFile.type.startsWith('video') ? '🎥 Video' : '🖼️ Görsel'}
+                                                    {mediaFile.type.startsWith('video') ? '🎥 Video' : (mediaFile.type.includes('gif') ? '👾 GIF' : '🖼️ Görsel')}
                                                 </span>
                                                 <button onClick={() => setMediaFile(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>×</button>
                                             </div>
