@@ -438,11 +438,11 @@ router.post('/:id/invite', protect, async (req, res) => {
         if (!userId) return res.status(400).json({ message: 'User ID is required' });
 
         if (!portal.members.some(m => m.toString() === req.user._id.toString())) {
-            return res.status(403).json({ message: 'You are not a member of this portal' });
+            return res.status(403).json({ message: 'Bu portala üye değilsiniz.' });
         }
 
         if (portal.members.some(m => m.toString() === userId.toString())) {
-            return res.status(400).json({ message: 'User is already a member' });
+            return res.status(400).json({ message: 'Bu kullanıcı zaten üye.' });
         }
 
         const notification = await Notification.create({
@@ -454,18 +454,29 @@ router.post('/:id/invite', protect, async (req, res) => {
 
         const io = req.app.get('io');
         if (io) {
-            const populated = await notification.populate('sender', 'username profile.displayName profile.avatar');
-            // Populate portal details for the notification payload if needed, currently notification model usually populates standard fields in frontend
-            // But we might need portal details in the socket event
-            const fullyPopulated = await populated.populate('portal', 'name avatar');
+            try {
+                // Safer multi-populate
+                const populated = await notification.populate([
+                    { path: 'sender', select: 'username profile.displayName profile.avatar' },
+                    { path: 'portal', select: 'name avatar' }
+                ]);
 
-            io.to(userId.toString()).emit('newNotification', fullyPopulated);
+                io.to(userId.toString()).emit('newNotification', populated);
+            } catch (popErr) {
+                console.error('Socket notification populate failed:', popErr);
+                // We don't fail the whole request just because socket notification failed
+            }
         }
 
-        res.json({ message: 'Invitation sent' });
+        res.json({ message: 'Davet başarıyla gönderildi' });
     } catch (error) {
-        console.error('Invite error:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Invite error details:', {
+            portalId: req.params.id,
+            targetUserId: req.body.userId,
+            senderId: req.user?._id,
+            error: error.message
+        });
+        res.status(500).json({ message: 'Sunucu hatası: ' + error.message });
     }
 });
 
