@@ -6,13 +6,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import User from './models/User.js';
 import Portal from './models/Portal.js';
-import Post from './models/Post.js'; // Just to check count
+import Post from './models/Post.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Env Loading
+// Robust Env Loading
 const envPath = path.resolve(process.cwd(), '.env');
+console.log(`Loading .env from: ${envPath}`);
+
 if (fs.existsSync(envPath)) {
     dotenv.config({ path: envPath });
 } else {
@@ -22,7 +24,10 @@ if (fs.existsSync(envPath)) {
 
 const deletePortal = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
+        const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+        if (!MONGO_URI) throw new Error('MONGO_URI missing');
+
+        await mongoose.connect(MONGO_URI);
         console.log('MongoDB Connected.');
 
         const portalName = 'test 1';
