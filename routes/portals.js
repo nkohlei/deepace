@@ -3,7 +3,7 @@ import Portal from '../models/Portal.js';
 import Post from '../models/Post.js';
 import User from '../models/User.js';
 import Notification from '../models/Notification.js';
-import { protect } from '../middleware/auth.js';
+import { protect, optionalProtect } from '../middleware/auth.js';
 import multer from 'multer';
 import path from 'path';
 import { storage } from '../config/cloudinary.js';
@@ -100,8 +100,8 @@ router.get('/', optionalProtect, async (req, res) => {
 });
 // @desc    Get portal by ID
 // @route   GET /api/portals/:id
-// @access  Private (if private) / Public
-router.get('/:id', async (req, res) => {
+// @access  Public
+router.get('/:id', optionalProtect, async (req, res) => {
     try {
         const portal = await Portal.findById(req.params.id)
             .populate('owner', 'username profile.avatar')
@@ -112,7 +112,18 @@ router.get('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Portal not found' });
         }
 
-        res.json(portal);
+        const portalObj = portal.toObject();
+        const userId = req.user?._id?.toString();
+
+        if (userId) {
+            portalObj.isMember = portal.members.some(m => (m._id || m).toString() === userId);
+            portalObj.isRequested = portal.joinRequests?.some(r => r.toString() === userId);
+        } else {
+            portalObj.isMember = false;
+            portalObj.isRequested = false;
+        }
+
+        res.json(portalObj);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
