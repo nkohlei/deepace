@@ -112,9 +112,9 @@
 }
 
 .modern-portal-card {
-    background-color: #1a1b1e;
-    /* Darker, more premium bg */
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: var(--card-bg);
+    /* Theme aware */
+    border: 1px solid var(--border-color);
     border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
@@ -128,13 +128,15 @@
 
 .modern-portal-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 12px 30px var(--shadow-color-dark);
+    /* Softer shadow */
     border-color: var(--primary-cyan);
 }
 
 .card-banner {
     height: 130px;
-    background-color: #2b2d31;
+    background-color: var(--bg-secondary);
+    /* Theme aware */
     position: relative;
     transition: height 0.3s ease;
 }
@@ -151,11 +153,11 @@
     height: 72px;
     border-radius: 20px;
     padding: 5px;
-    background-color: #1a1b1e;
-    /* Match card bg */
+    background-color: var(--card-bg);
+    /* Theme aware */
     position: relative;
     z-index: 2;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 10px var(--shadow-color-medium);
 }
 
 .card-icon-img,

@@ -21,12 +21,12 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
         <div className={`channel-sidebar ${className || ''}`} style={{
             // Width is handled by CSS class
             height: '100%',
-            backgroundColor: '#2b2d31',
+            backgroundColor: 'var(--bg-secondary)',
             display: 'flex',
             flexDirection: 'column',
             flexShrink: 0,
             overflow: 'hidden',
-            borderRight: '1px solid rgba(255,255,255,0.06)'
+            borderRight: '1px solid var(--border-subtle)'
         }}>
             {/* 1. Header with Full Image Banner */}
             <div style={{
@@ -34,7 +34,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                 position: 'relative',
                 cursor: 'pointer',
                 boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                background: '#1a1b1e' // Fallback color
+                background: 'var(--bg-card)' // Fallback color
             }} onClick={() => onEdit('overview')}>
                 {/* Banner Image */}
                 <div style={{
@@ -254,46 +254,49 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
 
 
             <style>{`
-                .channel-sidebar {
-                    width: 350px;
-                    transition: width 0.3s ease, transform 0.3s ease;
+            .channel-sidebar {
+                width: 350px;
+            transition: width 0.3s ease, transform 0.3s ease;
                 }
-                @media (max-width: 768px) {
-                    .channel-sidebar {
-                        width: 240px; /* Smaller width on mobile */
-                        position: fixed;
-                        top: 0;
-                        left: 72px; /* Next to portal sidebar */
-                        z-index: 2000;
-                        height: 100%;
-                        transform: translateX(-200%); /* Hidden by default */
-                        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            @media (max-width: 768px) {
+                    .channel - sidebar {
+                width: 240px; /* Smaller width on mobile */
+            position: fixed;
+            top: 0;
+            left: 72px; /* Next to portal sidebar */
+            z-index: 2000;
+            height: 100%;
+            transform: translateX(-200%); /* Hidden by default */
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
                     }
-                    .channel-sidebar.mobile-open {
-                        transform: translateX(0); /* Shown when toggled */
+            .channel-sidebar.mobile-open {
+                transform: translateX(0); /* Shown when toggled */
                     }
                 }
 
-                .channel-item:hover {
-                    background-color: rgba(79, 84, 92, 0.32) !important;
-                    color: #dcddde !important;
+            .channel-item:hover {
+                background - color: var(--bg-hover) !important;
+            color: var(--text-primary) !important;
                 }
-                .channel-item.active {
-                    background-color: rgba(79, 84, 92, 0.6) !important;
-                    color: white !important;
+            .channel-item.active {
+                background - color: var(--bg-hover) !important;
+            color: var(--primary-color) !important;
                 }
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 4px;
+            .channel-item.active svg {
+                color: var(--primary-color);
                 }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #202225;
-                    border-radius: 4px;
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
                 }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background-color: #2b2d31;
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: var(--border-subtle);
+            border-radius: 4px;
+                }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background - color: transparent;
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 
