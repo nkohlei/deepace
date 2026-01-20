@@ -158,7 +158,7 @@ const Notifications = () => {
 
                                 return (
                                     <Link
-                                        to={notif.type === 'message' ? '/inbox' : (notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`)}
+                                        to={notif.type === 'message' ? `/inbox?user=${notif.sender.username}` : (notif.post ? `/post/${notif.post._id}` : `/profile/${notif.sender.username}`)}
                                         key={notif._id}
                                         className={`notification-item ${!notif.read ? 'unread' : ''}`}
                                     >
