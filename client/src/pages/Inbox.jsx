@@ -385,16 +385,30 @@ const Inbox = () => {
                             )}
 
                             <form onSubmit={handleSendMessage} className="message-form">
-                                <div className="input-actions-left">
-                                    <button type="button" className="icon-btn" title="GIF">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M9 10h-2v4h2"></path><path d="M12 10v4"></path><path d="M15 10h2"></path><path d="M15 12h1.5"></path><path d="M15 14h2"></path></svg>
-                                    </button>
-                                </div>
-
                                 <div className="message-input-wrapper">
+                                    {/* Plus / Upload Button */}
+                                    <button
+                                        type="button"
+                                        className="upload-btn"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        title="Dosya Yükle"
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16 13H13V16C13 16.55 12.55 17 12 17C11.45 17 11 16.55 11 16V13H8C7.45 13 7 12.55 7 12C7 11.45 7.45 11 8 11H11V8C11 7.45 11.45 7 12 7C12.55 7 13 7.45 13 8V11H16C16.55 11 17 11.45 17 12C17 12.55 16.55 13 16 13Z" />
+                                        </svg>
+                                    </button>
+
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        style={{ display: 'none' }}
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                    />
+
                                     <input
                                         type="text"
-                                        placeholder="Mesaj yaz..."
+                                        placeholder={`@${selectedUser.username} kullanıcısına mesaj gönder`}
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         onKeyDown={(e) => {
@@ -404,24 +418,37 @@ const Inbox = () => {
                                             }
                                         }}
                                     />
-                                    {/* Image Upload Button */}
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        style={{ display: 'none' }}
-                                        accept="image/*"
-                                        onChange={handleFileSelect}
-                                    />
-                                    <button type="button" className="icon-btn input-icon-btn" onClick={() => fileInputRef.current?.click()} title="Resim Ekle">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                    </button>
-                                </div>
 
-                                <button type="submit" className="send-btn-small" disabled={!newMessage.trim() && !media}>
-                                    <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                                    </svg>
-                                </button>
+                                    {/* Right Side Icons */}
+                                    <div className="input-right-actions">
+                                        <button type="button" className="input-action-btn" title="Hediye Gönder (Yakında)">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <rect x="3" y="8" width="18" height="4" rx="1" ry="1"></rect>
+                                                <line x1="12" y1="8" x2="12" y2="21"></line>
+                                                <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+                                                <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path>
+                                            </svg>
+                                        </button>
+                                        <button type="button" className="input-action-btn" title="GIF Seç">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <path d="M9 10h-2v4h2"></path>
+                                                <path d="M12 10v4"></path>
+                                                <path d="M15 10h2"></path>
+                                                <path d="M15 12h1.5"></path>
+                                                <path d="M15 14h2"></path>
+                                            </svg>
+                                        </button>
+                                        <button type="button" className="input-action-btn" title="Çıkartma (Yakında)">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     ) : (
