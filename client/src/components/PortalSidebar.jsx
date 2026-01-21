@@ -78,7 +78,7 @@ const PortalSidebar = () => {
                 <style>{`
                 .portal-tooltip {
                     position: absolute;
-                    left: 62px; /* Adjusted for 56px sidebar */
+                    left: 56px; /* Adjusted for 50px sidebar */
                     top: 50%;
                     transform: translateY(-50%);
                     background-color: var(--bg-card);

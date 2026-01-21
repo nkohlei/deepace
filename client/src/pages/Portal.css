@@ -150,6 +150,20 @@
     background-color: var(--bg-dark);
     flex-shrink: 0;
     z-index: 20;
+    /* Ensure it stays at bottom if parent flex fails or on mobile */
+    position: relative;
+    /* Default for desktop */
+}
+
+@media (max-width: 768px) {
+    .channel-input-area {
+        position: sticky;
+        /* Or fixed if container scroll is weird, but sticky usually better in flex col */
+        bottom: 0;
+        padding: 12px;
+        border-top: 1px solid var(--border-subtle);
+        /* Separator on mobile */
+    }
 }
 
 .message-input-wrapper {

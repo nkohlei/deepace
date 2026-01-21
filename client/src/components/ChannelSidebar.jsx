@@ -288,7 +288,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                     max-width: 85vw;
                     position: fixed;
                     top: 0;
-                    left: 56px;
+                    left: 50px;
                     z-index: 2000;
                     height: 100vh;
                     transform: translateX(-100%);
@@ -305,7 +305,7 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
             
             @media (max-width: 480px) {
                 .channel-sidebar {
-                    max-width: calc(100vw - 56px);
+                    max-width: calc(100vw - 50px);
                 }
                 
                 .channel-header {
