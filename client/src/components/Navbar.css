@@ -257,12 +257,8 @@
     }
 
     .bottom-nav {
-        display: flex;
-        /* Flex to align items */
-        justify-content: space-around;
-        /* Distribute evenly */
-        align-items: center;
-        /* Show Bottom Nav */
+        display: none !important;
+        /* User requested removal in window mode */
     }
 
     .nav-container {

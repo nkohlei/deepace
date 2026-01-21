@@ -111,6 +111,13 @@
     width: 100%;
 }
 
+@media (max-width: 768px) {
+    .modern-portals-grid {
+        grid-template-columns: 1fr;
+        /* Force vertical single column */
+    }
+}
+
 .modern-portal-card {
     background-color: var(--card-bg);
     /* Theme aware */

@@ -78,7 +78,7 @@ const PortalSidebar = () => {
                 <style>{`
                 .portal-tooltip {
                     position: absolute;
-                    left: 78px; /* Slightly further out */
+                    left: 62px; /* Adjusted for 56px sidebar */
                     top: 50%;
                     transform: translateY(-50%);
                     background-color: var(--bg-card);
@@ -153,9 +153,9 @@ const PortalSidebar = () => {
                     className="sidebar-item toggle-channels-btn"
                     onClick={(e) => {
                         e.stopPropagation();
-                        const { toggleSidebar } = useUI(); // Access context here if not available in scope, but we have 'closeSidebar' in destructuring. Better to use from prop or destructure 'toggleSidebar' at top.
+                        toggleSidebar();
                     }}
-                // We need toggleSidebar available in the component body
+                    title="Yan Menüyü Aç/Kapat"
                 >
                     <div className="portal-icon">
                         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
