@@ -13,6 +13,7 @@
 /* Sidebar Wrapper - Fixed Left Rail */
 .portal-sidebar-wrapper {
     width: 72px;
+    /* Desktop default */
     height: 100%;
     position: relative;
     z-index: 100;

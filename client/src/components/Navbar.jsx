@@ -244,42 +244,24 @@ const Navbar = () => {
                 </div>
             </header>
 
-            {/* Bottom Navigation */}
+            {/* Mobile Floating Create Button (Always Visible on Mobile) */}
+            <Link to="/create" className="mobile-fab-create">
+                <div className="fab-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                </div>
+            </Link>
+
+            {/* Bottom Navigation (Hidden per request, keeping code if needed later) */}
             {user && (
-                <nav className="bottom-nav">
+                <nav className="bottom-nav" style={{ display: 'none' }}>
                     <div className="nav-container">
-
-
-                        {/* Search Removed from Bottom Nav as per request */}
-
-                        <Link to="/create" className="nav-item create-btn">
-                            <div className="create-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="12" y1="5" x2="12" y2="19" />
-                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
-                            </div>
-                        </Link>
-
                         <Link to="/inbox" className={`nav-item ${isActive('/inbox') ? 'active' : ''}`}>
                             <svg viewBox="0 0 24 24" fill={isActive('/inbox') ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
                                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                             </svg>
-                        </Link>
-
-                        {/* Profile - Direct Link */}
-                        <Link
-                            to="/profile"
-                            className={`nav-item profile-link ${isActive('/profile') ? 'active' : ''}`}
-                        >
-                            {user?.profile?.avatar ? (
-                                <img src={getImageUrl(user.profile.avatar)} alt={user?.username || 'User'} className="nav-avatar" />
-                            ) : (
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                    <circle cx="12" cy="7" r="4" />
-                                </svg>
-                            )}
                         </Link>
                     </div>
                 </nav>

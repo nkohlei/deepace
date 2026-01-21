@@ -275,6 +275,71 @@
         height: 56px;
         /* Match root var */
     }
+
+    .nav-right {
+        gap: 8px;
+        /* Tighter gap for mobile */
+        margin-left: auto;
+        /* Push to right */
+        display: flex;
+        align-items: center;
+        width: auto;
+        /* content width */
+        justify-content: flex-end;
+    }
+
+    .logo-text {
+        font-size: 1rem;
+        /* Smaller logo text */
+    }
+
+    /* Ensure buttons are visible */
+    /* Ensure buttons are visible */
+    .theme-toggle-btn-modern,
+    .notification-btn,
+    .header-icon {
+        display: flex !important;
+        visibility: visible !important;
+    }
+}
+
+/* Mobile Floating Action Button */
+.mobile-fab-create {
+    display: none;
+    /* Hidden on desktop */
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 2000;
+    text-decoration: none;
+}
+
+.fab-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    transition: transform 0.2s;
+}
+
+.mobile-fab-create:active .fab-icon {
+    transform: scale(0.95);
+}
+
+.fab-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+@media (max-width: 900px) {
+    .mobile-fab-create {
+        display: block;
+    }
 }
 
 /* Shared Nav Item Styles */

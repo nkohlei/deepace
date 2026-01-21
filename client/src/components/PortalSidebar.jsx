@@ -78,7 +78,7 @@ const PortalSidebar = () => {
                 <style>{`
                 .portal-tooltip {
                     position: absolute;
-                    left: 48px; /* Adjusted for 42px sidebar */
+                    left: 78px; /* Default Desktop (72px + gap) */
                     top: 50%;
                     transform: translateY(-50%);
                     background-color: var(--bg-card);
@@ -95,6 +95,12 @@ const PortalSidebar = () => {
                     pointer-events: none;
                     box-shadow: var(--shadow-popover);
                     border: 1px solid var(--border-subtle);
+                }
+
+                @media (max-width: 768px) {
+                    .portal-tooltip {
+                        left: 48px; /* Mobile (42px + gap) */
+                    }
                 }
 
                 .portal-tooltip .tooltip-arrow {
