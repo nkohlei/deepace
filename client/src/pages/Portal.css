@@ -96,7 +96,8 @@
     overflow-y: auto;
     /* Scroll enabled here */
     overflow-x: hidden;
-    padding: 20px 40px;
+    padding: 100px 40px 20px 40px;
+    /* Top padding increased for overlay input box */
     width: 100%;
     /* Remove automatic padding that might cause scroll on empty */
     min-height: 0;
@@ -146,28 +147,41 @@
 
 /* Message Input Area - Fixed at bottom visually via flex */
 .channel-input-area {
-    padding: 16px;
-    margin: 16px 24px 0 24px;
+    padding: 16px 24px;
+    margin: 0;
+    width: 100%;
     /* Removed background/border for single layer look */
     background-color: transparent;
     border: none;
     box-shadow: none;
     flex-shrink: 0;
     z-index: 20;
-    position: relative;
+    position: absolute;
+    /* Overlay on top of the feed */
+    top: 0;
+    left: 0;
+    right: 0;
     /* Pass layout responsibility to children or keep as transparent wrapper */
+    pointer-events: none;
+    /* Let clicks pass through empty space if needed */
+}
+
+.channel-input-area>* {
+    pointer-events: auto;
+    /* Re-enable clicks on the input box itself */
 }
 
 @media (max-width: 768px) {
     .channel-input-area {
-        margin: 16px;
-        padding: 0;
-        /* Remove padding to let inner box fill */
-        position: relative;
+        margin: 0;
+        padding: 16px;
+        position: absolute;
+        /* Match desktop absolute overlay */
+        top: 0;
         bottom: auto;
-        left: auto;
-        right: auto;
-        width: auto;
+        left: 0;
+        right: 0;
+        width: 100%;
         background: transparent;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
