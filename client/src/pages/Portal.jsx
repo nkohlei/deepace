@@ -241,46 +241,6 @@ const Portal = () => {
                     <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                         {/* Channel Content (Feed) */}
                         <div className="channel-messages-area" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                            {error === 'private' ? (
-                                <div className="portal-privacy-screen">
-                                    <div className="privacy-card">
-                                        <div className="privacy-icon">🔒</div>
-                                        <img src={getImageUrl(portal.avatar)} alt="" className="privacy-avatar" />
-                                        <h2>{portal.name}</h2>
-                                        <p className="privacy-desc">{portal.description || 'Bu portal gizlidir.'}</p>
-                                        <p className="privacy-hint">İçeriği görmek ve mesajlaşmak için üye olmalısın.</p>
-
-                                        {portal.isRequested ? (
-                                            <button className="privacy-join-btn requested" disabled>İstek Gönderildi</button>
-                                        ) : (
-                                            <button className="privacy-join-btn" onClick={handleJoin}>
-                                                {portal.privacy === 'private' ? 'Üyelik İsteği Gönder' : 'Portala Katıl'}
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="portal-feed-container discord-feed">
-                                    {/* Feed Header / Welcome */}
-                                    {posts.length === 0 && !loading && (
-                                        <div className="empty-portal">
-                                            <div className="empty-portal-icon">👋</div>
-                                            <h3>#{currentChannel === 'general' ? 'genel' : currentChannel} kanalına hoş geldin!</h3>
-                                            <p>
-                                                {currentChannel === 'general'
-                                                    ? `Burası ${portal.name} sunucusunun başlangıcı.`
-                                                    : 'Bu kanalda henüz mesaj yok. İlk mesajı sen at!'}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {/* Posts List */}
-                                    {posts.map((post) => (
-                                        <PostCard key={post._id} post={post} />
-                                    ))}
-                                </div>
-                            )}
-
                             {/* Message Input Area */}
                             {isMember && (
                                 <div className="channel-input-area" style={{ position: 'relative' }}>
@@ -379,11 +339,52 @@ const Portal = () => {
                                                     <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
                                                     <line x1="9" y1="9" x2="9.01" y2="9"></line>
                                                     <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
                                                     <circle cx="12" cy="12" r="10"></circle>
                                                 </svg>
                                             </button>
                                         </div>
                                     </div>
+                                </div>
+                            )}
+
+                            {error === 'private' ? (
+                                <div className="portal-privacy-screen">
+                                    <div className="privacy-card">
+                                        <div className="privacy-icon">🔒</div>
+                                        <img src={getImageUrl(portal.avatar)} alt="" className="privacy-avatar" />
+                                        <h2>{portal.name}</h2>
+                                        <p className="privacy-desc">{portal.description || 'Bu portal gizlidir.'}</p>
+                                        <p className="privacy-hint">İçeriği görmek ve mesajlaşmak için üye olmalısın.</p>
+
+                                        {portal.isRequested ? (
+                                            <button className="privacy-join-btn requested" disabled>İstek Gönderildi</button>
+                                        ) : (
+                                            <button className="privacy-join-btn" onClick={handleJoin}>
+                                                {portal.privacy === 'private' ? 'Üyelik İsteği Gönder' : 'Portala Katıl'}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="portal-feed-container discord-feed">
+                                    {/* Feed Header / Welcome */}
+                                    {posts.length === 0 && !loading && (
+                                        <div className="empty-portal">
+                                            <div className="empty-portal-icon">👋</div>
+                                            <h3>#{currentChannel === 'general' ? 'genel' : currentChannel} kanalına hoş geldin!</h3>
+                                            <p>
+                                                {currentChannel === 'general'
+                                                    ? `Burası ${portal.name} sunucusunun başlangıcı.`
+                                                    : 'Bu kanalda henüz mesaj yok. İlk mesajı sen at!'}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Posts List */}
+                                    {posts.map((post) => (
+                                        <PostCard key={post._id} post={post} />
+                                    ))}
                                 </div>
                             )}
                         </div>
