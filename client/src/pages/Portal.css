@@ -148,29 +148,30 @@
 .channel-input-area {
     padding: 16px;
     margin: 16px 24px 0 24px;
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
+    /* Removed background/border for single layer look */
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
     flex-shrink: 0;
     z-index: 20;
     position: relative;
-    box-shadow: var(--shadow-sm);
+    /* Pass layout responsibility to children or keep as transparent wrapper */
 }
 
 @media (max-width: 768px) {
     .channel-input-area {
         margin: 16px;
-        padding: 12px;
+        padding: 0;
+        /* Remove padding to let inner box fill */
         position: relative;
         bottom: auto;
         left: auto;
         right: auto;
         width: auto;
-        background: var(--bg-card);
+        background: transparent;
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        border: 1px solid var(--border-subtle);
-        border-radius: 12px;
+        border: none;
         box-shadow: none;
     }
 
@@ -191,15 +192,19 @@
 }
 
 .message-input-wrapper {
-    background-color: var(--bg-input);
-    /* Replaced #383a40 */
+    background-color: rgba(30, 31, 34, 0.5);
+    /* Semi-transparent dark */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 16px;
     display: flex;
     align-items: center;
     padding: 0 16px;
     height: 56px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+    /* Subtle shadow for depth */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Subtle transparent border */
     position: relative;
     transition: all 0.2s ease;
 }

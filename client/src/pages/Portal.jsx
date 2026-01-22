@@ -314,7 +314,7 @@ const Portal = () => {
                                         {mediaFile && (
                                             <div className="input-media-preview" style={{ marginRight: '10px', display: 'flex', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '4px' }}>
                                                 <span style={{ fontSize: '12px', color: 'var(--text-primary)', marginRight: '6px' }}>
-                                                    {mediaFile.type.startsWith('video') ? '🎥 Video' : (mediaFile.type.includes('gif') ? '👾 GIF' : '🖼️ Görsel')}
+                                                    {mediaFile.type.startsWith('video') ? '🎥' : (mediaFile.type.includes('gif') ? '👾' : '🖼️')}
                                                 </span>
                                                 <button onClick={() => setMediaFile(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>×</button>
                                             </div>
