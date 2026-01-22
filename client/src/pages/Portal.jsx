@@ -209,8 +209,8 @@ const Portal = () => {
 
     return (
         <div className="app-wrapper full-height discord-layout">
-            {/* Global Navbar */}
-            <Navbar />
+            {/* Global Navbar - Hide when editing settings */}
+            {!editing && <Navbar />}
 
             <div className="discord-split-view">
                 <ChannelSidebar
