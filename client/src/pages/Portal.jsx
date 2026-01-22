@@ -178,6 +178,10 @@ const Portal = () => {
         }
     };
 
+    const handleDeletePost = (postId) => {
+        setPosts(prevPosts => prevPosts.filter(p => p._id !== postId));
+    };
+
     const handleJoin = async () => {
         try {
             const res = await axios.post(`/api/portals/${id}/join`);
@@ -417,7 +421,7 @@ const Portal = () => {
 
                                     {/* Posts List */}
                                     {posts.map((post) => (
-                                        <PostCard key={post._id} post={post} />
+                                        <PostCard key={post._id} post={post} onDelete={handleDeletePost} />
                                     ))}
                                 </div>
                             )}
