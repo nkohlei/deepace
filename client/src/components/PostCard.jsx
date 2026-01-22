@@ -216,6 +216,35 @@ const PostCard = ({ post, onDelete, onUnsave, isAdmin }) => {
         setShowMenu(false);
     };
 
+    // Auto-close menu on outside click (Mobile/General)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showMenu) {
+                // If click is not inside the menu or on the toggle button, close it.
+                // Note: We rely on event bubbling and specific class names or refs if needed.
+                // But a simple document click that isn't stopped by the menu itself acts as "outside".
+                // However, we stopped propagation on the menu itself.
+                // So any click that reaches document is "outside".
+                setShowMenu(false);
+            }
+        };
+
+        if (showMenu) {
+            document.addEventListener('click', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [showMenu]);
+
+    const handleMouseLeave = () => {
+        // Desktop: Close menu when cursor leaves the post card
+        if (window.innerWidth > 768) {
+            setShowMenu(false);
+        }
+    };
+
     if (hidden && !showAnyway) {
         return (
             <div className="post-card foggy-hidden">
@@ -229,7 +258,11 @@ const PostCard = ({ post, onDelete, onUnsave, isAdmin }) => {
     }
 
     return (
-        <article className={`post-card twitter-layout ${post.isOptimistic ? 'optimistic' : ''}`} onClick={handleCardClick}>
+        <article
+            className={`post-card twitter-layout ${post.isOptimistic ? 'optimistic' : ''}`}
+            onClick={handleCardClick}
+            onMouseLeave={handleMouseLeave}
+        >
             {/* Left Column: Avatar */}
             <div className="post-left">
                 <Link
