@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import passport from 'passport';
 import User from '../models/User.js';
-import { sendVerificationEmail } from '../config/email.js';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../config/email.js';
 
 const router = express.Router();
 
@@ -175,8 +175,84 @@ router.get('/google/callback',
         const token = generateToken(req.user._id);
 
         // Redirect to frontend with token
-        res.redirect(`${process.env.CLIENT_URL}/auth/google/success?token=${token}`);
     }
 );
+
+// @route   POST /api/auth/forgot-password
+// @desc    Request password reset
+// @access  Public
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            // Security: Don't reveal if user exists
+            return res.json({ message: 'If an account exists with this email, a reset code has been sent.' });
+        }
+
+        // Generate 6-digit code
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Set token and expiration (15 minutes)
+        user.resetPasswordToken = resetCode;
+        user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+
+        await user.save();
+
+        try {
+            await sendPasswordResetEmail(user.email, user.username, resetCode);
+            res.json({ message: 'If an account exists with this email, a reset code has been sent.' });
+        } catch (emailError) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+            return res.status(500).json({ message: 'Error sending email' });
+        }
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// @route   POST /api/auth/reset-password
+// @desc    Reset password
+// @access  Public
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        if (!email || !code || !newPassword) {
+            return res.status(400).json({ message: 'Please provide all fields' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+        }
+
+        const user = await User.findOne({
+            email,
+            resetPasswordToken: code,
+            resetPasswordExpires: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset code' });
+        }
+
+        // Set new password
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save();
+
+        res.json({ message: 'Password has been reset successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 export default router;

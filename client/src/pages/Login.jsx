@@ -73,7 +73,10 @@ const Login = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Şifre</label>
+                        <div className="label-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label htmlFor="password">Şifre</label>
+                            <Link to="/forgot-password" style={{ fontSize: '13px', color: '#667eea', textDecoration: 'none' }}>Şifremi Unuttum</Link>
+                        </div>
                         <div className="password-input-wrapper">
                             <input
                                 type={showPassword ? 'text' : 'password'}
