@@ -22,7 +22,7 @@ const MessageBubble = ({ message, isOwn, onDelete, onReply, onReact }) => {
             const blobUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = blobUrl;
-            a.download = `deepace-msg-${Date.now()}.png`;
+            a.download = `oxypace-msg-${Date.now()}.png`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(blobUrl);

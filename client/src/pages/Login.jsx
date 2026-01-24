@@ -50,7 +50,7 @@ const Login = () => {
         <div className="auth-container">
             <div className="auth-card fade-in">
                 <div className="auth-logo">
-                    <span className="logo-text">deepace</span>
+                    <span className="logo-text">oxypace</span>
                 </div>
 
                 <div className="auth-header">

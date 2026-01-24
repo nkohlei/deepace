@@ -87,12 +87,12 @@ const Register = () => {
         <div className="auth-container">
             <div className="auth-card fade-in">
                 <div className="auth-logo">
-                    <span className="logo-text">deepace</span>
+                    <span className="logo-text">oxypace</span>
                 </div>
 
                 <div className="auth-header">
                     <h1>Hesap Oluştur</h1>
-                    <p>Deepace'e katıl ve dünyayla bağlan</p>
+                    <p>Oxypace'e katıl ve dünyayla bağlan</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">

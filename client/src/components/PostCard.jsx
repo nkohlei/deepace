@@ -183,7 +183,7 @@ const PostCard = ({ post, onDelete, onUnsave, isAdmin }) => {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `deepace-post-${post._id}.${post.mediaType === 'video' ? 'mp4' : 'png'}`;
+            a.download = `oxypace-post-${post._id}.${post.mediaType === 'video' ? 'mp4' : 'png'}`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);

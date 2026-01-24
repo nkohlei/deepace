@@ -37,7 +37,7 @@ const httpServer = createServer(app);
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://deepace.vercel.app',
+    'https://oxypace.vercel.app',
     process.env.CLIENT_URL
 ].filter(Boolean);
 
