@@ -19,7 +19,7 @@ const ForgotPassword = () => {
             const response = await axios.post('/api/auth/forgot-password', { email });
             setMessage(response.data.message);
         } catch (err) {
-            setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+            setError(err.response?.data?.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setLoading(false);
         }
