@@ -237,16 +237,11 @@ router.delete('/:id', protect, async (req, res) => {
 
         await post.deleteOne();
 
-        // Decrement post count
-        await User.findByIdAndUpdate(req.user._id, { $inc: { postCount: -1 } });
-
         res.json({ message: 'Post deleted successfully' });
     } catch (error) {
         console.error('Delete post error:', error);
         res.status(500).json({ message: 'Server error' });
     }
-    res.status(500).json({ message: 'Server error' });
-}
 });
 
 // @route   PUT /api/posts/:id/pin
