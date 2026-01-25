@@ -10,6 +10,9 @@ export const initializeSocket = (io) => {
             userSockets.set(userId, socket.id);
             socket.join(userId);
             console.log(`👤 User ${userId} joined`);
+
+            // Broadcast online users
+            io.emit('getOnlineUsers', Array.from(userSockets.keys()));
         });
 
         // Handle disconnect
@@ -19,6 +22,9 @@ export const initializeSocket = (io) => {
                 if (socketId === socket.id) {
                     userSockets.delete(userId);
                     console.log(`👋 User ${userId} disconnected`);
+
+                    // Broadcast online users
+                    io.emit('getOnlineUsers', Array.from(userSockets.keys()));
                     break;
                 }
             }

@@ -1,21 +1,21 @@
 
+import { useSocket } from '../context/SocketContext';
 import { getImageUrl } from '../utils/imageUtils';
 
 const MembersSidebar = ({ members = [] }) => {
-    // Mock data for visual matching if members prop is empty or simple
-    // In real app, grouped by status
-    const onlineMembers = [
-        { id: 'me', username: 'nkohlei', avatar: null, status: 'online', role: 'owner' },
-    ];
+    const { onlineUsers } = useSocket();
 
-    // Fallback to prop members if available, otherwise mock
-    const allMembers = members.length > 0 ? members : [
-        { id: 1, username: 'eminipek00', avatar: null, status: 'offline' },
-        { id: 2, username: 'sametkaraca0', avatar: null, status: 'offline' }
-    ];
+    // Filter members based on socket status
+    const online = members.filter(m => {
+        // Handle both string IDs (if not populated) and objects
+        const id = m._id || m.id || m;
+        return onlineUsers.includes(id);
+    });
 
-    const online = onlineMembers;
-    const offline = allMembers.filter(m => m.id !== 'me');
+    const offline = members.filter(m => {
+        const id = m._id || m.id || m;
+        return !onlineUsers.includes(id);
+    });
 
     return (
         <div className="members-sidebar custom-scrollbar">

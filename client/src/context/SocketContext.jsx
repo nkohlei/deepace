@@ -15,6 +15,7 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
     const [connected, setConnected] = useState(false);
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const { user, isAuthenticated } = useAuth();
 
     useEffect(() => {
@@ -44,6 +45,10 @@ export const SocketProvider = ({ children }) => {
                 newSocket.emit('join', user._id);
             });
 
+            newSocket.on('getOnlineUsers', (users) => {
+                setOnlineUsers(users);
+            });
+
             newSocket.on('disconnect', () => {
                 console.log('❌ Socket disconnected');
                 setConnected(false);
@@ -60,6 +65,7 @@ export const SocketProvider = ({ children }) => {
     const value = {
         socket,
         connected,
+        onlineUsers
     };
 
     return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
