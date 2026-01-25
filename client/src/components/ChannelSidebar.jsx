@@ -142,6 +142,24 @@ const ChannelSidebar = ({ portal, isMember, onEdit, currentChannel, onChangeChan
                             <span style={{ fontSize: '13px', color: '#dbdee1', fontWeight: '700' }}>
                                 Bildirimler
                             </span>
+                            {portal.joinRequests && portal.joinRequests.length > 0 && (
+                                <div style={{
+                                    backgroundColor: '#ed4245',
+                                    color: 'white',
+                                    fontSize: '11px',
+                                    fontWeight: 'bold',
+                                    padding: '0 6px',
+                                    borderRadius: '8px',
+                                    minWidth: '16px',
+                                    height: '16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                                }}>
+                                    {portal.joinRequests.length}
+                                </div>
+                            )}
                         </div>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ color: '#dbdee1' }}>
                             <path d="M9 18l6-6-6-6" />

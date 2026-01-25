@@ -80,7 +80,6 @@ const PortalNotifications = ({ portalId }) => {
             {/* Header */}
             <div className="notifications-header">
                 <h2>Portal Bildirimleri</h2>
-                <p className="notifications-subtitle">Üyelik istekleri ve yeni üyeleri görüntüleyin</p>
             </div>
 
             {/* Tab Navigation */}
