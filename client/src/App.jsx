@@ -96,11 +96,7 @@ const AppLayout = () => {
                     />
                     <Route
                         path="/search"
-                        element={
-                            <PrivateRoute>
-                                <Search />
-                            </PrivateRoute>
-                        }
+                        element={<Search />}
                     />
                     <Route
                         path="/profile"

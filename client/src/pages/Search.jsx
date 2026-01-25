@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { useAuth } from '../context/AuthContext';
 import { getImageUrl } from '../utils/imageUtils';
 import Badge from '../components/Badge';
 import './Search.css';
 
+import { useAuth } from '../context/AuthContext';
+
 const Search = () => {
+    const { user } = useAuth(); // Auth context
     const [query, setQuery] = useState('');
     const [userResults, setUserResults] = useState([]);
     const [portalResults, setPortalResults] = useState([]);
@@ -26,8 +30,6 @@ const Search = () => {
         setLoading(true);
         try {
             const res = await axios.get(`/api/portals?keyword=${keyword}`);
-            // If API doesn't return member count, we might need a better endpoint, 
-            // but assuming it returns basic portal objects.
             setPortalResults(res.data);
         } catch (err) {
             console.error(err);
@@ -48,14 +50,19 @@ const Search = () => {
         setSearched(true);
 
         try {
-            // Parallel search
-            const [usersRes, portalsRes] = await Promise.all([
-                axios.get(`/api/users/search?q=${searchQuery}`),
-                axios.get(`/api/portals?keyword=${searchQuery}`)
-            ]);
+            // Parallel search - only if user is logged in for users
+            const promises = [axios.get(`/api/portals?keyword=${searchQuery}`)];
 
-            setUserResults(usersRes.data);
+            if (user) {
+                promises.push(axios.get(`/api/users/search?q=${searchQuery}`));
+            }
+
+            const results = await Promise.all(promises);
+            const portalsRes = results[0];
+            const usersRes = user ? results[1] : { data: [] };
+
             setPortalResults(portalsRes.data);
+            setUserResults(usersRes.data);
         } catch (err) {
             console.error('Search failed:', err);
         } finally {
@@ -65,6 +72,10 @@ const Search = () => {
 
     const handleJoinPortal = async (e, portalId, isPrivate) => {
         e.stopPropagation();
+        if (!user) {
+            navigate('/login');
+            return;
+        }
         try {
             const res = await axios.post(`/api/portals/${portalId}/join`);
             // Update local state to reflect change
@@ -237,7 +248,25 @@ const Search = () => {
                             {/* USERS TAB */}
                             {activeTab === 'users' && (
                                 <div className="users-list">
-                                    {userResults.length === 0 ? (
+                                    {!user ? (
+                                        <div className="empty-search">
+                                            <p>Kişileri aramak için giriş yapmalısınız.</p>
+                                            <button
+                                                onClick={() => navigate('/login')}
+                                                style={{
+                                                    marginTop: '10px',
+                                                    padding: '8px 16px',
+                                                    background: 'var(--primary-color)',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    color: 'white',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Giriş Yap
+                                            </button>
+                                        </div>
+                                    ) : userResults.length === 0 ? (
                                         <div className="empty-search"><p>Kullanıcı bulunamadı.</p></div>
                                     ) : (
                                         userResults.map((user) => (
