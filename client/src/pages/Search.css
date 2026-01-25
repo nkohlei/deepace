@@ -1,6 +1,19 @@
 .search-page-wrapper {
     /* Ensure page takes full width in the new flex layout */
     width: 100%;
+    /* Allow wrapper to grow beyond viewport to enable scrolling in parent */
+    height: auto;
+    min-height: 100vh;
+}
+
+.search-main-content {
+    /* Override global app-content overflow:hidden */
+    overflow: visible !important;
+    height: auto !important;
+    flex: none !important;
+    /* Allow growing */
+    display: block !important;
+    /* Simplify layout for scrolling */
 }
 
 .search-container {
