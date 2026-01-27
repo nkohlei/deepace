@@ -224,22 +224,54 @@ const Navbar = () => {
                         ) : null}
 
                         {/* Unified Profile/Login Button (Always Visible) */}
-                        <Link
-                            to={user ? "/profile" : "/login"}
-                            className="header-icon profile-unified-btn"
-                            title={user ? "Profilim" : "Giriş Yap"}
-                        >
-                            {user?.profile?.avatar ? (
-                                <img src={getImageUrl(user.profile.avatar)} alt="Profile" className="nav-profile-img" />
-                            ) : (
-                                <div className="nav-profile-placeholder">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                        <circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                </div>
-                            )}
-                        </Link>
+                        {/* Unified Profile/Login Button or Guest Actions */}
+                        {user ? (
+                            <Link
+                                to="/profile"
+                                className="header-icon profile-unified-btn"
+                                title="Profilim"
+                            >
+                                {user?.profile?.avatar ? (
+                                    <img src={getImageUrl(user.profile.avatar)} alt="Profile" className="nav-profile-img" />
+                                ) : (
+                                    <div className="nav-profile-placeholder">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                )}
+                            </Link>
+                        ) : (
+                            <div className="guest-nav-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginLeft: '8px' }}>
+                                <Link
+                                    to="/login"
+                                    style={{
+                                        color: 'var(--text-primary)',
+                                        textDecoration: 'none',
+                                        fontWeight: '600',
+                                        fontSize: '0.95rem'
+                                    }}
+                                >
+                                    Giriş Yap
+                                </Link>
+                                <Link
+                                    to="/register"
+                                    style={{
+                                        backgroundColor: 'var(--primary-color)',
+                                        color: '#fff',
+                                        padding: '8px 20px',
+                                        borderRadius: '20px',
+                                        textDecoration: 'none',
+                                        fontWeight: '600',
+                                        fontSize: '0.95rem',
+                                        transition: 'opacity 0.2s'
+                                    }}
+                                >
+                                    Kaydol
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>

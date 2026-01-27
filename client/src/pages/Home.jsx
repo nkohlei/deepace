@@ -42,8 +42,8 @@ const Home = () => {
                 <div className="welcome-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
                     <div style={{ fontSize: '64px', marginBottom: '20px' }}>🌍</div>
                     <h1>Global Message'a Hoş Geldiniz</h1>
-                    <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 40px' }}>
-                        Artık topluluk odaklıyız! Sol menüden bir portala katılın veya arama sayfasından yeni topluluklar keşfedin.
+                    <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+                        İlgi alanlarınıza uygun toplulukları keşfedin, sohbetlere katılın ve dünyayla bağlantı kurun. Oxypace ile sınırları kaldırın.
                     </p>
 
 
@@ -51,9 +51,9 @@ const Home = () => {
                         <button
                             className="btn-primary"
                             onClick={() => navigate('/search')}
-                            style={{ padding: '12px 30px', borderRadius: '25px', border: 'none', background: 'var(--primary-color)', color: 'white', fontSize: '1rem', cursor: 'pointer' }}
+                            style={{ padding: '12px 30px', borderRadius: '25px', border: 'none', background: 'var(--primary-color)', color: 'white', fontSize: '1rem', cursor: 'pointer', fontWeight: '600' }}
                         >
-                            Topluluk Keşfet
+                            Portalları Keşfet
                         </button>
                     </div>
 

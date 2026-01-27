@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/PrivateRoute';
@@ -39,6 +39,7 @@ import { useUI, UIProvider } from './context/UIContext';
 // Separate layout component to use useUI hook
 const AppLayout = () => {
     const { isSidebarOpen, toggleSidebar, closeSidebar } = useUI();
+    const { user } = useAuth();
 
     return (
         <div className="app-container">
@@ -48,22 +49,25 @@ const AppLayout = () => {
                 onClick={closeSidebar}
             />
 
-            {/* Sidebar Toggle Arrow - Visible on Desktop */}
-            {/* Sidebar Toggle Arrow - Visible on Desktop */}
-            <div
-                className={`sidebar-toggle-arrow ${isSidebarOpen ? 'open' : ''}`}
-                onClick={toggleSidebar}
-                title={isSidebarOpen ? "Menüyü Kapat" : "Menüyü Aç"}
-            >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-                    {/* Arrow direction flips via CSS rotation */}
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </div>
+            {/* Sidebar Toggle Arrow - Visible on Desktop - Only if user is logged in */}
+            {user && (
+                <div
+                    className={`sidebar-toggle-arrow ${isSidebarOpen ? 'open' : ''}`}
+                    onClick={toggleSidebar}
+                    title={isSidebarOpen ? "Menüyü Kapat" : "Menüyü Aç"}
+                >
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
+                        {/* Arrow direction flips via CSS rotation */}
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            )}
 
-            <div className={`portal-sidebar-wrapper ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-                <PortalSidebar />
-            </div>
+            {user && (
+                <div className={`portal-sidebar-wrapper ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+                    <PortalSidebar />
+                </div>
+            )}
 
             {/* Global User Bar Removed - Moved to Sidebars */}
 
