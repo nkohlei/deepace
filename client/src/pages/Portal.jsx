@@ -285,7 +285,7 @@ const Portal = () => {
             {/* Guest Login Warning Toast */}
             {showLoginWarning && (
                 <div className="guest-warning-toast">
-                    Lütfen giriş yapın veya kaydolun
+                    Lütfen giriş yapın veya kaydolun!
                 </div>
             )}
 
@@ -451,51 +451,7 @@ const Portal = () => {
                                         Bu kanala mesaj göndermek için üye olmalısın.
                                     </div>
                                 )
-                            ) : (
-                                <div style={{
-                                    padding: '16px 24px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                    backgroundColor: 'var(--bg-secondary)',
-                                    borderTop: '1px solid var(--border-subtle)',
-                                    marginBottom: 0
-                                }}>
-                                    <div>
-                                        <h4 style={{ margin: '0 0 4px 0', color: 'white' }}>Bu portala katıl</h4>
-                                        <p style={{ margin: 0, fontSize: '14px', color: '#b9bbbe' }}>Sohbete katılmak ve paylaşım yapmak için giriş yapmalısın.</p>
-                                    </div>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
-                                        <button
-                                            onClick={() => navigate('/login')}
-                                            style={{
-                                                padding: '8px 16px',
-                                                backgroundColor: 'transparent',
-                                                color: 'white',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                fontWeight: '600'
-                                            }}
-                                        >
-                                            Giriş Yap
-                                        </button>
-                                        <button
-                                            onClick={() => navigate('/register')}
-                                            style={{
-                                                padding: '8px 16px',
-                                                backgroundColor: 'var(--primary-color)',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '4px',
-                                                cursor: 'pointer',
-                                                fontWeight: '600'
-                                            }}
-                                        >
-                                            Kaydol
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                            ) : null}
 
                             {error === 'private' ? (
                                 <div className="portal-privacy-screen">

@@ -873,35 +873,40 @@
         padding: 8px;
     }
 }
+
 /* Guest Login Warning Toast - Modern Slide Down */
 .guest-warning-toast {
     position: fixed;
-    top: -100px; /* Start off-screen */
+    top: -100px;
+    /* Start off-screen */
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(30, 31, 34, 0.95); /* Deep dark background */
+    background-color: rgba(220, 38, 38, 0.95);
+    /* Premium Red */
     color: #fff;
-    padding: 16px 32px;
-    border-radius: 16px;
-    font-weight: 500;
+    padding: 14px 28px;
+    border-radius: 50px;
+    /* Pill shape for modern look */
+    font-weight: 600;
     font-size: 1rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+    /* Red glow shadow */
     z-index: 10001;
     pointer-events: none;
     animation: slideInOut 4s ease-in-out forwards;
     white-space: nowrap;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 /* Optional icon */
 .guest-warning-toast::before {
-    content: '';
+    content: "⚠️";
     font-size: 1.2rem;
 }
 
@@ -910,16 +915,22 @@
         top: -100px;
         opacity: 0;
     }
+
     10% {
-        top: 90px; /* Drop down below header */
+        top: 70px;
+        /* Shorter drop distance (was 90px) */
         opacity: 1;
     }
+
     85% {
-        top: 90px; /* Stay */
+        top: 70px;
+        /* Stay */
         opacity: 1;
     }
+
     100% {
-        top: -100px; /* Log out */
+        top: -100px;
+        /* Log out */
         opacity: 0;
     }
 }
