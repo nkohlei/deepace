@@ -184,7 +184,7 @@ textarea:focus {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: var(--nav-top-height);
+  padding-top: 0;
   /* padding-bottom removed to allow full height apps like Inbox/Portal */
   position: relative;
   overflow: hidden;
