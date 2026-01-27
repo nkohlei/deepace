@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import AdUnit from '../components/AdUnit';
 import './Home.css';
@@ -46,7 +45,6 @@ const Home = () => {
                         İlgi alanlarınıza uygun toplulukları keşfedin, sohbetlere katılın ve dünyayla bağlantı kurun. Oxypace ile sınırları kaldırın.
                     </p>
 
-
                     <div className="action-buttons">
                         <button
                             className="btn-primary home-cta-btn"
@@ -60,7 +58,6 @@ const Home = () => {
                         <AdUnit slot="1234567890" />
                     </div>
                 </div>
-                <Footer />
             </main>
         </div>
     );

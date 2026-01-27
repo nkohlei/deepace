@@ -29,6 +29,7 @@ import PortalSidebar from './components/PortalSidebar';
 import Maintenance from './pages/Maintenance';
 import UserBar from './components/UserBar';
 import SplashScreen from './components/SplashScreen';
+import Footer from './components/Footer';
 import './AppLayout.css';
 
 // 🔧 MAINTENANCE MODE - Set to true to show maintenance page
@@ -164,6 +165,9 @@ const AppLayout = () => {
                     {/* Catch all */}
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
+
+                {/* Global Footer */}
+                <Footer />
             </div>
         </div >
     );
