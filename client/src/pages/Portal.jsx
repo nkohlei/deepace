@@ -31,6 +31,7 @@ const Portal = () => {
 
     // UI Toggles
     const [showMembers, setShowMembers] = useState(false); // Default to closed as requested
+    const [showLoginWarning, setShowLoginWarning] = useState(false); // Guest warning state
 
     const [showPlusMenu, setShowPlusMenu] = useState(false);
     const fileInputRef = useRef(null);
@@ -212,7 +213,9 @@ const Portal = () => {
 
     const handleJoin = async () => {
         if (!user) {
-            navigate('/login');
+            // navigate('/login'); // Removed redirect
+            setShowLoginWarning(true);
+            setTimeout(() => setShowLoginWarning(false), 3000); // Hide after 3s
             return;
         }
         try {
@@ -279,21 +282,29 @@ const Portal = () => {
         <div className="app-wrapper full-height discord-layout">
             {/* Global Navbar - Hide when editing settings */}
             {!editing && <Navbar />}
+            {/* Guest Login Warning Toast */}
+            {showLoginWarning && (
+                <div className="guest-warning-toast">
+                    Lütfen giriş yapın veya kaydolun
+                </div>
+            )}
 
             <div className="discord-split-view">
-                <ChannelSidebar
-                    portal={portal}
-                    isMember={isMember}
-                    canManage={isOwner || isAdmin}
-                    onEdit={(tab) => {
-                        const targetTab = typeof tab === 'string' ? tab : 'overview';
-                        setSettingsTab(targetTab);
-                        setEditing(true);
-                    }}
-                    currentChannel={currentChannel}
-                    onChangeChannel={handleChannelSelect}
-                    className={isSidebarOpen ? 'mobile-open' : ''}
-                />
+                {user && (
+                    <ChannelSidebar
+                        portal={portal}
+                        isMember={isMember}
+                        canManage={isOwner || isAdmin}
+                        onEdit={(tab) => {
+                            const targetTab = typeof tab === 'string' ? tab : 'overview';
+                            setSettingsTab(targetTab);
+                            setEditing(true);
+                        }}
+                        currentChannel={currentChannel}
+                        onChangeChannel={handleChannelSelect}
+                        className={isSidebarOpen ? 'mobile-open' : ''}
+                    />
+                )}
 
                 <main className="discord-main-content">
                     {/* ... Header and Feed as before ... */}
