@@ -479,7 +479,6 @@ const Portal = () => {
                                     ) : null}
 
                                     <div className="portal-feed-container discord-feed">
-                                        <AdUnit slot="5432167890" style={{ marginBottom: '10px' }} />
                                         {/* Feed Header / Welcome */}
                                         {posts.length === 0 && !loading && (
                                             <div className="empty-portal">

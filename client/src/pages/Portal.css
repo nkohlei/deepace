@@ -149,7 +149,7 @@
 
 /* Message Input Area - Relative flow */
 .channel-input-area {
-    padding: 16px 24px;
+    padding: 12px 24px 4px 24px;
     margin: 0;
     width: 100%;
     background-color: transparent;
@@ -428,7 +428,7 @@
 .portal-feed-container {
     width: 100%;
     margin: 0;
-    padding: 10px 40px 20px 40px;
+    padding: 0 40px 20px 40px;
     /* Standard padding */
     flex: 1;
     overflow-y: auto;
