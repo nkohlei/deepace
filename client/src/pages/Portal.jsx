@@ -215,7 +215,7 @@ const Portal = () => {
         if (!user) {
             // navigate('/login'); // Removed redirect
             setShowLoginWarning(true);
-            setTimeout(() => setShowLoginWarning(false), 3000); // Hide after 3s
+            setTimeout(() => setShowLoginWarning(false), 4000); // Wait for full animation (4s)
             return;
         }
         try {
