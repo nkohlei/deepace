@@ -39,25 +39,24 @@ const Home = () => {
         <div className="app-wrapper">
             <Navbar />
             <main className="app-content">
-                <div className="welcome-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
-                    <div style={{ fontSize: '64px', marginBottom: '20px' }}>🌍</div>
-                    <h1>Global Message'a Hoş Geldiniz</h1>
-                    <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+                <div className="welcome-container home-welcome-section">
+                    <div className="home-emoji">🌍</div>
+                    <h1 className="home-title">Global Message'a Hoş Geldiniz</h1>
+                    <p className="home-description">
                         İlgi alanlarınıza uygun toplulukları keşfedin, sohbetlere katılın ve dünyayla bağlantı kurun. Oxypace ile sınırları kaldırın.
                     </p>
 
 
-                    <div className="action-buttons" style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                    <div className="action-buttons">
                         <button
-                            className="btn-primary"
+                            className="btn-primary home-cta-btn"
                             onClick={() => navigate('/search')}
-                            style={{ padding: '12px 30px', borderRadius: '25px', border: 'none', background: 'var(--primary-color)', color: 'white', fontSize: '1rem', cursor: 'pointer', fontWeight: '600' }}
                         >
                             Portalları Keşfet
                         </button>
                     </div>
 
-                    <div style={{ marginTop: '40px' }}>
+                    <div className="home-ad-container">
                         <AdUnit slot="1234567890" />
                     </div>
                 </div>
