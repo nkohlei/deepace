@@ -97,8 +97,8 @@
     overflow-y: auto;
     /* Scroll enabled here */
     overflow-x: hidden;
-    padding: 72px 40px 20px 40px;
-    /* Top padding adjusted for overlay input box */
+    padding: 20px 40px;
+    /* Reduced top padding */
     width: 100%;
     /* Remove automatic padding that might cause scroll on empty */
     min-height: 0;
@@ -147,25 +147,19 @@
     color: var(--text-primary);
 }
 
-/* Message Input Area - Fixed at bottom visually via flex */
+/* Message Input Area - Relative flow */
 .channel-input-area {
     padding: 16px 24px;
     margin: 0;
     width: 100%;
-    /* Removed background/border for single layer look */
     background-color: transparent;
     border: none;
     box-shadow: none;
     flex-shrink: 0;
     z-index: 20;
-    position: absolute;
-    /* Overlay on top of the feed */
-    top: 0;
-    left: 0;
-    right: 0;
-    /* Pass layout responsibility to children or keep as transparent wrapper */
-    pointer-events: none;
-    /* Let clicks pass through empty space if needed */
+    position: relative;
+    /* Changed from absolute to relative */
+    /* Removed top/left/right absolute positioning */
 }
 
 .channel-input-area>* {
@@ -177,12 +171,8 @@
     .channel-input-area {
         margin: 0;
         padding: 16px;
-        position: absolute;
-        /* Match desktop absolute overlay */
-        top: 0;
-        bottom: auto;
-        left: 0;
-        right: 0;
+        position: relative;
+        /* Changed from absolute to relative */
         width: 100%;
         background: transparent;
         backdrop-filter: none;
@@ -438,8 +428,8 @@
 .portal-feed-container {
     width: 100%;
     margin: 0;
-    padding: 95px 40px 20px 40px;
-    /* Top padding 85px to clear absolute input */
+    padding: 10px 40px 20px 40px;
+    /* Standard padding */
     flex: 1;
     overflow-y: auto;
     min-height: 0;

@@ -366,7 +366,7 @@ const Portal = () => {
                                     {/* Message Input Area */}
                                     {user ? (
                                         isMember ? (
-                                            <div className="channel-input-area" style={{ position: 'relative' }}>
+                                            <div className="channel-input-area">
                                                 {/* Plus Menu Popover */}
                                                 {showPlusMenu && (
                                                     <>
