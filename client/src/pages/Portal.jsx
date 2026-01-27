@@ -15,7 +15,7 @@ import './Portal.css';
 
 const Portal = () => {
     const { id } = useParams();
-    const { user, updateUser } = useAuth();
+    const { user, updateUser, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const { isSidebarOpen, closeSidebar } = useUI();
 
@@ -128,14 +128,16 @@ const Portal = () => {
     const bannerInputRef = useRef(null);
 
     useEffect(() => {
-        fetchPortalData();
-    }, [id]);
+        if (!authLoading) {
+            fetchPortalData();
+        }
+    }, [id, authLoading]);
 
     useEffect(() => {
-        if (id) {
+        if (id && !authLoading) {
             fetchChannelPosts();
         }
-    }, [id, currentChannel]);
+    }, [id, currentChannel, authLoading]);
 
     useEffect(() => {
         if (portal && user) {
@@ -267,7 +269,7 @@ const Portal = () => {
     const isAdmin = isOwner || (user && portal && portal.admins && portal.admins.some(a => (a._id || a) === user._id));
 
     // Loading State
-    if (loading || !portal) {
+    if (loading || authLoading || !portal) {
         return (
             <div className="app-wrapper full-height">
                 <Navbar />
