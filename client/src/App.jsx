@@ -42,7 +42,7 @@ const AppLayout = () => {
     const { user } = useAuth();
 
     return (
-        <div className="app-container">
+        <div className={`app-container ${!user ? 'guest-mode' : ''}`}>
             {/* Mobile Overlay */}
             <div
                 className={`mobile-sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}

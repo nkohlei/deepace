@@ -82,6 +82,12 @@
         /* Push content to right to make room for fixed bar */
         width: calc(100vw - 42px);
     }
+
+    /* GUEST MODE - Reset for full width */
+    .app-container.guest-mode .main-content-wrapper {
+        margin-left: 0 !important;
+        width: 100vw !important;
+    }
 }
 
 /* Mobile Sidebar Overlay (Backdrop) */
