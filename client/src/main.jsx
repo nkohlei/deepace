@@ -20,6 +20,12 @@ if (import.meta.env.VITE_API_BASE_URL) {
     // console.warn("VITE_API_BASE_URL not set in production!");
 }
 
+// Initialize Auth Header from localStorage immediately to prevent race conditions
+const token = localStorage.getItem('token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

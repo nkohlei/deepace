@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import './Settings.css';
 
 const Settings = () => {
-    const { logout, user } = useAuth();
+    const { logout, user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     // Navigation State
