@@ -9,6 +9,7 @@ const connectDB = async () => {
     throw new Error('Please define the MONGODB_URI environment variable inside .env');
   }
 
+  // Cache the database connection in serverless environments
   let cached = global.mongoose;
 
   if (!cached) {
@@ -22,6 +23,9 @@ const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      // Vercel serverless optimizations
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

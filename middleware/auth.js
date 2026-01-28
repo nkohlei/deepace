@@ -21,8 +21,17 @@ export const protect = async (req, res, next) => {
 
             next();
         } catch (error) {
-            console.error(error);
-            return res.status(401).json({ message: 'Not authorized, token failed' });
+            console.error('Auth Middleware Error:', error);
+
+            // Differentiate between token errors and system errors (like DB connection)
+            if (error.name === 'JsonWebTokenError') {
+                return res.status(401).json({ message: 'Not authorized, invalid token' });
+            } else if (error.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: 'Not authorized, token expired' });
+            } else {
+                // Return actual system error for debugging (remove in prod if needed, but helpful now)
+                return res.status(500).json({ message: 'Auth System Error: ' + error.message });
+            }
         }
     }
 
